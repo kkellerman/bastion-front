@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/missions/forest_sandbox.tscn" id="1_world"]
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="2_player"]
 [ext_resource type="PackedScene" path="res://scenes/interactables/test_target.tscn" id="3_target"]
+[ext_resource type="PackedScene" path="res://scenes/characters/infantry.tscn" id="4_enemy"]
+[ext_resource type="NavigationMesh" path="res://resources/missions/forest_navigation.tres" id="5_navigation"]
 
 [node name="Main" type="Node3D"]
 
@@ -13,3 +15,13 @@ position = Vector3(0, 0.05, 12)
 
 [node name="TestTarget" parent="." instance=ExtResource("3_target")]
 position = Vector3(0, 0.02, -6)
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
+navigation_mesh = ExtResource("5_navigation")
+
+[node name="GermanInfantry" parent="." node_paths=PackedStringArray("target", "target_aim") instance=ExtResource("4_enemy")]
+position = Vector3(3, 0.05, -20)
+rotation = Vector3(0, 3.1415927, 0)
+target = NodePath("../Player")
+target_aim = NodePath("../Player/Head")
+patrol_points = Array[Vector3]([Vector3(3, 0, -20), Vector3(3, 0, -24)])

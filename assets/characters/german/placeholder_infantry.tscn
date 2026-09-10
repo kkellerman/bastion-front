@@ -1,0 +1,40 @@
+[gd_scene load_steps=6 format=3]
+[sub_resource type="StandardMaterial3D" id="Cloth"]
+albedo_color = Color(0.28, 0.31, 0.27, 1)
+roughness = 0.95
+[sub_resource type="StandardMaterial3D" id="HeadMaterial"]
+albedo_color = Color(0.52, 0.43, 0.33, 1)
+roughness = 0.95
+[sub_resource type="CapsuleMesh" id="Torso"]
+radius = 0.28
+height = 0.85
+[sub_resource type="SphereMesh" id="Head"]
+radius = 0.18
+height = 0.36
+[sub_resource type="BoxMesh" id="Limb"]
+size = Vector3(0.18, 0.65, 0.18)
+[node name="PlaceholderInfantry" type="Node3D"]
+[node name="Torso" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.1, 0)
+mesh = SubResource("Torso")
+material_override = SubResource("Cloth")
+[node name="Head" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.65, 0)
+mesh = SubResource("Head")
+material_override = SubResource("HeadMaterial")
+[node name="LeftLeg" type="MeshInstance3D" parent="."]
+position = Vector3(-0.15, 0.35, 0)
+mesh = SubResource("Limb")
+material_override = SubResource("Cloth")
+[node name="RightLeg" type="MeshInstance3D" parent="."]
+position = Vector3(0.15, 0.35, 0)
+mesh = SubResource("Limb")
+material_override = SubResource("Cloth")
+[node name="LeftArm" type="MeshInstance3D" parent="."]
+position = Vector3(-0.34, 1.1, -0.06)
+mesh = SubResource("Limb")
+material_override = SubResource("Cloth")
+[node name="RightArm" type="MeshInstance3D" parent="."]
+position = Vector3(0.34, 1.1, -0.06)
+mesh = SubResource("Limb")
+material_override = SubResource("Cloth")

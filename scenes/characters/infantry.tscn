@@ -1,0 +1,85 @@
+[gd_scene load_steps=16 format=3]
+[ext_resource type="Script" path="res://scripts/ai/infantry_brain.gd" id="brain"]
+[ext_resource type="Script" path="res://scripts/ai/infantry_vision.gd" id="vision"]
+[ext_resource type="Script" path="res://scripts/ai/infantry_motor.gd" id="motor"]
+[ext_resource type="Script" path="res://scripts/ai/infantry_combat.gd" id="combat"]
+[ext_resource type="Script" path="res://scripts/ai/infantry_status.gd" id="status"]
+[ext_resource type="Script" path="res://scripts/components/health_component.gd" id="health"]
+[ext_resource type="Script" path="res://scripts/components/damage_receiver.gd" id="receiver"]
+[ext_resource type="Script" path="res://scripts/weapons/weapon_base.gd" id="weapon"]
+[ext_resource type="Script" path="res://scripts/weapons/hitscan_shot.gd" id="hitscan"]
+[ext_resource type="Resource" path="res://resources/weapons/infantry_smg.tres" id="data"]
+[ext_resource type="PackedScene" path="res://assets/characters/german/placeholder_infantry.tscn" id="visuals"]
+[sub_resource type="CapsuleShape3D" id="Capsule"]
+radius = 0.35
+height = 1.8
+[sub_resource type="BoxMesh" id="Gun"]
+size = Vector3(0.08, 0.1, 0.65)
+[sub_resource type="SphereMesh" id="Flash"]
+radius = 0.08
+height = 0.16
+[sub_resource type="StandardMaterial3D" id="FlashMaterial"]
+shading_mode = 0
+albedo_color = Color(1, 0.75, 0.2, 1)
+emission_enabled = true
+emission = Color(1, 0.65, 0.15, 1)
+emission_energy_multiplier = 3.0
+
+[node name="Infantry" type="CharacterBody3D"]
+collision_layer = 4
+collision_mask = 3
+floor_snap_length = 0.3
+script = ExtResource("brain")
+[node name="BodyCollision" type="CollisionShape3D" parent="."]
+position = Vector3(0, 0.9, 0)
+shape = SubResource("Capsule")
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("health")
+[node name="DamageReceiver" type="Node" parent="." node_paths=PackedStringArray("body", "health")]
+script = ExtResource("receiver")
+body = NodePath("..")
+health = NodePath("../HealthComponent")
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+path_desired_distance = 0.35
+target_desired_distance = 0.6
+radius = 0.35
+height = 1.8
+[node name="Visuals" parent="." instance=ExtResource("visuals")]
+[node name="Eyes" type="Node3D" parent="."]
+position = Vector3(0, 1.5, 0)
+[node name="Gun" type="MeshInstance3D" parent="Eyes"]
+position = Vector3(0.23, -0.18, -0.25)
+mesh = SubResource("Gun")
+[node name="Muzzle" type="Marker3D" parent="Eyes"]
+position = Vector3(0.23, -0.18, -0.6)
+[node name="Flash" type="MeshInstance3D" parent="Eyes/Muzzle"]
+visible = false
+mesh = SubResource("Flash")
+material_override = SubResource("FlashMaterial")
+cast_shadow = 0
+[node name="Vision" type="Node" parent="." node_paths=PackedStringArray("actor", "eye")]
+script = ExtResource("vision")
+actor = NodePath("..")
+eye = NodePath("../Eyes")
+[node name="Motor" type="Node" parent="." node_paths=PackedStringArray("actor", "agent")]
+script = ExtResource("motor")
+actor = NodePath("..")
+agent = NodePath("../NavigationAgent3D")
+[node name="Combat" type="Node" parent="." node_paths=PackedStringArray("actor", "eye", "muzzle", "flash")]
+script = ExtResource("combat")
+actor = NodePath("..")
+eye = NodePath("../Eyes")
+muzzle = NodePath("../Eyes/Muzzle")
+flash = NodePath("../Eyes/Muzzle/Flash")
+[node name="WeaponBase" type="Node" parent="Combat"]
+script = ExtResource("weapon")
+data = ExtResource("data")
+[node name="HitscanShot" type="Node" parent="Combat"]
+script = ExtResource("hitscan")
+[node name="Status" type="Label3D" parent="." node_paths=PackedStringArray("infantry")]
+position = Vector3(0, 2.2, 0)
+billboard = 1
+font_size = 40
+pixel_size = 0.005
+script = ExtResource("status")
+infantry = NodePath("..")

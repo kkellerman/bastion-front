@@ -1,8 +1,11 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/gameplay/first_person_player.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/components/mouse_look.gd" id="2_look"]
 [ext_resource type="PackedScene" path="res://scenes/weapons/player_weapon.tscn" id="3_weapon"]
+[ext_resource type="Script" path="res://scripts/components/health_component.gd" id="4_health"]
+[ext_resource type="Script" path="res://scripts/components/damage_receiver.gd" id="5_receiver"]
+[ext_resource type="PackedScene" path="res://scenes/ui/player_vitals.tscn" id="6_vitals"]
 
 [sub_resource type="CapsuleShape3D" id="Capsule_body"]
 resource_local_to_scene = true
@@ -15,7 +18,7 @@ height = 1.78
 
 [node name="Player" type="CharacterBody3D"]
 collision_layer = 2
-collision_mask = 1
+collision_mask = 5
 floor_snap_length = 0.3
 floor_constant_speed = true
 script = ExtResource("1_player")
@@ -45,10 +48,22 @@ shooter = NodePath("../../..")
 position = Vector3(0, 0.9, 0)
 shape = SubResource("Capsule_clearance")
 target_position = Vector3(0, 0, 0)
-collision_mask = 1
+collision_mask = 5
 enabled = false
 
 [node name="MouseLook" type="Node" parent="." node_paths=PackedStringArray("player", "head")]
 script = ExtResource("2_look")
 player = NodePath("..")
 head = NodePath("../Head")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("4_health")
+
+[node name="DamageReceiver" type="Node" parent="." node_paths=PackedStringArray("body", "health")]
+script = ExtResource("5_receiver")
+body = NodePath("..")
+health = NodePath("../HealthComponent")
+
+[node name="PlayerVitals" parent="." node_paths=PackedStringArray("player", "health") instance=ExtResource("6_vitals")]
+player = NodePath("..")
+health = NodePath("../HealthComponent")

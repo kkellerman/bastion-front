@@ -1,9 +1,13 @@
 # Bastion Front
 
-Milestone 2: a first-person pistol and movement sandbox for Godot **4.7.x**, using typed
+Requested Milestone 3: an infantry, pistol and movement sandbox for Godot **4.7.x**, using typed
 GDScript, Forward+ and Vulkan. `wolf_like_godot_starter.md` remains the authoritative
 design specification. The primitive forest is a blockout for the future German
 forest approach, not the final visual target.
+
+This milestone follows the user's explicit infantry request. The specification
+labels basic AI as Milestone 4 and the faction framework as Milestone 3; that
+numbering has not been edited, and faction gameplay has not been implemented.
 
 ## Run
 
@@ -31,10 +35,89 @@ player and the outdoor sandbox; neither component depends on a mission manager.
 | Left click | Fire one shot, or recapture the released mouse without firing |
 | Hold right click | Aim with centered sights, narrower FOV and reduced spread |
 | R | Reload |
+| Enter, after player death | Restart the sandbox with full health and ammo |
 
 Losing application focus also releases the mouse. Gravity continues while the
 mouse is released. Click inside the game to resume. Use the window close button
 or Alt+F4 to quit. There is no pause menu.
+Releasing the mouse does not pause the enemy or protect the player from damage.
+
+## Infantry test
+
+One German infantry placeholder patrols roughly **32 metres ahead of spawn, just
+right of the track**. Walk past the target board on its right and approach the
+infantry. A small label shows its current state and health; player health appears
+at the bottom left. Existing movement and pistol controls are unchanged.
+
+The enemy has **100 health** and takes four M1911 hits to kill. Its placeholder SMG
+deals **8 damage per hit**, fires at a deliberately slow **90 RPM** for testing,
+and uses the shared ammo/reload system (30 loaded, 90 reserve, 2.2-second reload).
+The player has 100 health. On death, movement and firing stop; press Enter to
+restart. Enemy corpses remain as non-colliding placeholders until restart.
+
+| State | Behavior |
+| --- | --- |
+| Idle | Wait one second before continuing the patrol; idle indefinitely without points. |
+| Patrol | Follow configured world-space points using NavigationAgent3D. |
+| Alert | React for 0.65 seconds, face the last sighting, or briefly turn if hit without a sighting. |
+| Chase | Navigate toward the last known position, refreshing it only while the player is visible. |
+| Attack | Stop within 12 m and fire only with current visual contact; reload when empty. |
+| Hurt | Stop movement and attack for 0.3 seconds, then return through alert. |
+| Death | Disable AI, weapon processing and collision; lay the primitive body on its side. |
+
+Vision checks a **24 m range**, **100-degree cone**, and an eye-to-player-head
+collision ray. Crouching lowers the player's aim/detection point. Trees, the target
+board and other solid geometry block sight and shots. After losing sight, the
+enemy stops firing immediately, follows the remembered point for up to **4 seconds**,
+then returns to idle/patrol. Hidden player movement never refreshes that point.
+Damage alone causes a hurt/reaction state, not knowledge of the shooter's position.
+
+To test, approach while the enemy faces you and watch Alert -> Chase -> Attack.
+Break sight behind a solid obstacle to verify memory expiry. Shoot the torso with
+the M1911 to see Hurt and then Death. For a fresh enemy after killing it, restart
+the game; there is no enemy respawn system.
+
+## Infantry files and navigation
+
+- `scenes/characters/infantry.tscn`: reusable actor, collision, health, navigation,
+  eyes, muzzle, placeholder gun, composed behavior and state/health label.
+- `scripts/ai/infantry_brain.gd`: state transitions and last-seen memory.
+- `scripts/ai/infantry_vision.gd`: range, field of view and line of sight.
+- `scripts/ai/infantry_motor.gd`: navigation-path movement, turning and gravity.
+- `scripts/ai/infantry_combat.gd`: shared WeaponBase/HitscanShot use and muzzle flash.
+- `scripts/ai/infantry_status.gd`: prototype state/health readout.
+- `assets/characters/german/placeholder_infantry.tscn`: primitive humanoid visuals.
+- `resources/weapons/infantry_smg.tres`: prototype enemy weapon tuning/metadata.
+- `resources/missions/forest_navigation.tres`: committed navigation mesh, loaded by
+  the NavigationRegion3D in `scenes/main.tscn`; no startup bake or manual setup.
+- `scenes/ui/player_vitals.tscn` and `scripts/gameplay/player_vitals.gd`: player
+  health, death and Enter-to-restart handling, composed into the player scene.
+- `tests/infantry_smoke.gd`: integrated navigation, vision, combat, memory and death tests.
+- `tests/bake_navigation.gd`: rebuilds navigation from current static world collision.
+
+Integration modified `scenes/main.tscn`, `scenes/player/player.tscn`,
+`scenes/interactables/test_target.tscn`, `scripts/components/damage_receiver.gd`,
+`scripts/weapons/hitscan_shot.gd` and `project.godot`, plus this README and changelog.
+New scripts have `.gd.uid` sidecars. Movement and mouse-look scripts are unchanged.
+
+The damage receiver is now a Node component with explicit collision-body and
+health references. It registers on that body so hitscan can resolve both static
+targets and CharacterBody3D actors without faction or scene-name branches.
+Shots test World, Player and Infantry collision layers while excluding the shooter.
+The infantry target and target aim point are assigned by the level. Later Allied
+variants can reuse the scripts and swap visual/weapon configuration; there is no
+hard-coded German behavior or duplicated faction AI.
+
+After changing static level geometry, rebuild the mesh with:
+
+```powershell
+godot --headless --path . --script res://tests/bake_navigation.gd
+```
+
+The bake includes solid terrain, trunks, test obstacles and the target board. It
+excludes actor bodies and visual-only foliage. It uses 0.4 m agent clearance,
+1.8 m height, a 0.2 m maximum climb and 35-degree walkable slopes. Patrol points
+are world-space positions configured on the enemy instance in the main scene.
 
 ## Pistol and target
 
@@ -93,7 +176,8 @@ silently firing a hitscan approximation. No faction gameplay has been introduced
 
 - `project.godot`: title, main scene, input mappings, physics layers, gravity,
   resolution and renderer configuration.
-- `scenes/main.tscn`: launch scene; instances `ForestSandbox`, `Player` and `TestTarget`.
+- `scenes/main.tscn`: launch scene; instances `ForestSandbox`, `Player`, `TestTarget`,
+  `GermanInfantry` and a navigation region.
 - `scenes/player/player.tscn`: `CharacterBody3D`, capsule collider, head/camera,
   2.5 m interaction ray, standing-clearance shape cast, mouse-look component and weapon rig.
 - `scenes/missions/forest_sandbox.tscn`: ground, dirt track, solid perimeter,
@@ -121,7 +205,7 @@ Empty `.gitkeep` files preserve the specification's future directory layout:
 `scripts/{ai,weapons,factions,systems}`,
 `resources/{factions,weapons,characters,missions,items}`, `shaders`, and
 `localization`. Reserved folders retain their placeholders; weapon and damage
-folders now contain only the Milestone 2 files described above.
+folders now contain the implemented prototype files described above.
 
 The existing specification and `.gitignore` were not modified. Generated imports,
 caches, logs and validation captures live under the already ignored `.godot/`.
@@ -134,6 +218,8 @@ godot --headless --path . --quit-after 120
 godot --path . --script res://tests/movement_smoke.gd
 godot --headless --path . --script res://tests/weapon_smoke.gd
 godot --path . --script res://tests/weapon_smoke.gd
+godot --headless --path . --script res://tests/infantry_smoke.gd
+godot --path . --script res://tests/infantry_smoke.gd
 ```
 
 The full smoke test requires a display because headless Godot cannot capture the
@@ -152,6 +238,11 @@ With a display it also injects actual mouse/key events to check recapture withou
 firing, semi-automatic hold behavior, aiming and R reload. It saves
 `weapon_aim.png` and `weapon_sandbox.png` in `.godot/validation/`. Run windowed
 suites one at a time, keeping the test window focused.
+
+The infantry suite verifies patrol and a path around the solid target board,
+FOV/range/occlusion, alert/chase/attack, incoming player damage, last-seen memory,
+stopping fire without sight, hurt/death, collision shutdown and player restart.
+The windowed run also saves `infantry_combat.png` under `.godot/validation/`.
 
 For a restricted shell that cannot write the normal Godot user cache, set these
 process-local paths before running the commands:
@@ -178,8 +269,9 @@ the game and did not prevent local importing, rendering or physics tests.
   no interactables or interaction bindings yet.
 - Automated checks do not replace a human movement-feel and mouse-sensitivity
   pass. Tune the exposed movement values in the Player scene as needed.
-- This pass follows the requested first-pistol scope within Milestone 2. The spec's
-  broader SMG prototype remains deferred. No AI, factions, campaigns or objectives.
+- The player still carries only the M1911. The enemy SMG is a simple world-space
+  placeholder, not a finished/equippable MP40. Factions, campaigns and objectives
+  remain deferred.
 - Weapon art, sights, muzzle flash, reload motion and impacts are placeholders.
   Recoil is visual viewmodel kick; there is no camera kick or ballistic recoil model.
   Aiming uses simplified sights and reduced spread; there are no hand animations,
@@ -188,3 +280,10 @@ the game and did not prevent local importing, rendering or physics tests.
   close to walls; obstruction tests still block damage through cover.
 - No ammo pickups, switching, inventory, projectiles or explosives. Later weapon
   types can reuse data and ammo state but need their milestone-specific components.
+- Infantry uses a single head-directed visibility sample, fixed patrol points and
+  short sight memory. There is no hearing, squad AI, cover selection, search pattern,
+  melee, grenade use, animation rig, dialogue or final uniform/equipment art.
+- Navigation handles the baked static world only; moving-obstacle avoidance,
+  off-mesh links and navigation rebuilding during gameplay are not implemented.
+- Player/enemy health uses one collider with uniform damage; there are no body-part
+  multipliers, armor or ragdolls. Enemy ammo is finite and there is no resupply.

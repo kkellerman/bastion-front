@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="data"]
+[resource]
+script = ExtResource("data")
+weapon_id = &"infantry_smg_prototype"
+display_name = "Infantry SMG prototype"
+faction = &"german"
+weapon_class = &"smg"
+damage = 8.0
+rate_of_fire = 90.0
+automatic = true
+magazine_capacity = 30
+starting_reserve = 90
+reserve_ammo_type = &"9mm"
+reload_time = 2.2
+spread = 1.4
+effective_range = 30.0

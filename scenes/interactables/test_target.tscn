@@ -25,10 +25,13 @@ script = ExtResource("target")
 script = ExtResource("health")
 max_health = 100.0
 
-[node name="DamageReceiver" type="StaticBody3D" parent="." node_paths=PackedStringArray("health")]
+[node name="DamageReceiver" type="StaticBody3D" parent="."]
 position = Vector3(0, 1.65, 0)
+
+[node name="HealthReceiver" type="Node" parent="DamageReceiver" node_paths=PackedStringArray("health", "body")]
 script = ExtResource("receiver")
-health = NodePath("../HealthComponent")
+health = NodePath("../../HealthComponent")
+body = NodePath("..")
 
 [node name="Collision" type="CollisionShape3D" parent="DamageReceiver"]
 shape = SubResource("BoardShape")
