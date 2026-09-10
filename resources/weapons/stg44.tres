@@ -1,4 +1,8 @@
-[gd_resource type="Resource" script_class="WeaponData" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="AudioStream" path="res://assets/audio/designed/dry.res" id="1_xdhor"]
+[ext_resource type="AudioStream" path="res://assets/audio/designed/stg44.res" id="2_cg0eq"]
+[ext_resource type="AudioStream" path="res://assets/audio/designed/reload.res" id="3_7splr"]
 [ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="script"]
 [ext_resource type="PackedScene" path="res://assets/weapons/german/stg44_viewmodel.tscn" id="view"]
 
@@ -12,9 +16,11 @@ damage = 28.0
 rate_of_fire = 500.0
 automatic = true
 magazine_capacity = 30
-starting_reserve = 120
 reserve_ammo_type = &"792_kurz"
+starting_reserve = 120
 reload_time = 2.6
 spread = 0.8
-recoil = 3.0
 viewmodel_scene = ExtResource("view")
+muzzle_audio = ExtResource("2_cg0eq")
+reload_audio = ExtResource("3_7splr")
+dry_audio = ExtResource("1_xdhor")

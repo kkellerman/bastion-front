@@ -127,7 +127,6 @@ func _on_reload(active: bool) -> void:
 func _on_impact(hit_position: Vector3, normal: Vector3) -> void:
 	impact_marker.global_position = hit_position + normal * 0.008
 	_impact_remaining = 0.18
-	get_node("/root/CombatAudio").play(&"impact", hit_position)
 
 
 func _equip(next: WeaponBase) -> void:

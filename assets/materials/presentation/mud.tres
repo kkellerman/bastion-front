@@ -1,0 +1,18 @@
+[gd_resource type="StandardMaterial3D" load_steps=4 format=3]
+[ext_resource type="Texture2D" path="res://assets/textures/polyhaven/forest_ground_04/forest_ground_04_diff_1k.jpg" id="albedo"]
+[ext_resource type="Texture2D" path="res://assets/textures/polyhaven/forest_ground_04/forest_ground_04_nor_gl_1k.jpg" id="normal"]
+[ext_resource type="Texture2D" path="res://assets/textures/polyhaven/forest_ground_04/forest_ground_04_rough_1k.jpg" id="rough"]
+[resource]
+albedo_texture = ExtResource("albedo")
+albedo_color = Color(0.27, 0.28, 0.25, 1)
+normal_enabled = true
+normal_texture = ExtResource("normal")
+normal_scale = 0.8
+roughness_texture = ExtResource("rough")
+roughness_texture_channel = 0
+roughness = 0.55
+uv1_triplanar = true
+uv1_world_triplanar = true
+uv1_scale = Vector3(0.55, 0.55, 0.55)
+texture_filter = 4
+

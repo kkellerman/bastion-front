@@ -1,11 +1,15 @@
-[gd_resource type="Resource" script_class="FactionData" load_steps=8 format=3]
-[ext_resource type="Script" path="res://scripts/factions/faction_data.gd" id="script"]
-[ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="weapon_script"]
-[ext_resource type="Resource" path="res://resources/weapons/p38.tres" id="p38"]
+[gd_resource type="Resource" script_class="FactionData" format=3]
+
+[ext_resource type="PackedScene" path="res://assets/characters/german/infantry_field_uniform.tscn" id="3_dwnvw"]
+[ext_resource type="Resource" path="res://resources/characters/german_voice.tres" id="4_hywqm"]
 [ext_resource type="Resource" path="res://resources/weapons/mp40.tres" id="mp40"]
-[ext_resource type="Resource" path="res://resources/weapons/stg44.tres" id="stg44"]
+[ext_resource type="Resource" path="res://resources/weapons/p38.tres" id="p38"]
 [ext_resource type="Resource" path="res://resources/weapons/panzerfaust.tres" id="panzerfaust"]
+[ext_resource type="Script" path="res://scripts/factions/faction_data.gd" id="script"]
+[ext_resource type="Resource" path="res://resources/weapons/stg44.tres" id="stg44"]
 [ext_resource type="Resource" path="res://resources/weapons/stick_grenade.tres" id="stick_grenade"]
+[ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="weapon_script"]
+
 [resource]
 script = ExtResource("script")
 faction_id = &"german"
@@ -14,3 +18,5 @@ spoken_language = &"de"
 weapons = Array[ExtResource("weapon_script")]([ExtResource("p38"), ExtResource("mp40"), ExtResource("stg44"), ExtResource("panzerfaust")])
 grenade = ExtResource("stick_grenade")
 hostile_ids = Array[StringName]([&"allied"])
+uniform_scene = ExtResource("3_dwnvw")
+voice_set = ExtResource("4_hywqm")

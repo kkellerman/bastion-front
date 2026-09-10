@@ -1,0 +1,10 @@
+[gd_resource type="ShaderMaterial" load_steps=5 format=3]
+[ext_resource type="Shader" path="res://shaders/forest_surface.gdshader" id="shader"]
+[ext_resource type="Texture2D" path="res://assets/textures/polyhaven/forest_ground_04/forest_ground_04_diff_1k.jpg" id="diff"]
+[ext_resource type="Texture2D" path="res://assets/textures/polyhaven/forest_ground_04/forest_ground_04_nor_gl_1k.jpg" id="normal"]
+[ext_resource type="Texture2D" path="res://assets/textures/polyhaven/forest_ground_04/forest_ground_04_rough_1k.jpg" id="rough"]
+[resource]
+shader = ExtResource("shader")
+shader_parameter/ground_color = ExtResource("diff")
+shader_parameter/ground_normal = ExtResource("normal")
+shader_parameter/ground_rough = ExtResource("rough")

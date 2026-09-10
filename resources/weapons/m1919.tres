@@ -1,4 +1,8 @@
-[gd_resource type="Resource" script_class="WeaponData" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="AudioStream" path="res://assets/audio/designed/dry.res" id="1_uspui"]
+[ext_resource type="AudioStream" path="res://assets/audio/designed/m1919.res" id="2_2kyxl"]
+[ext_resource type="AudioStream" path="res://assets/audio/designed/reload.res" id="3_k5b0u"]
 [ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="script"]
 
 [resource]
@@ -11,8 +15,10 @@ damage = 22.0
 rate_of_fire = 500.0
 automatic = true
 magazine_capacity = 100
-starting_reserve = 500
 reserve_ammo_type = &"30_cal"
-reload_time = 4
-spread = 1
-recoil = 3.0
+starting_reserve = 500
+reload_time = 4.0
+spread = 1.0
+muzzle_audio = ExtResource("2_2kyxl")
+reload_audio = ExtResource("3_k5b0u")
+dry_audio = ExtResource("1_uspui")

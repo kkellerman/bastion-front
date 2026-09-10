@@ -1,4 +1,6 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=19 format=3]
+[ext_resource type="Script" path="res://scripts/presentation/mission_presentation.gd" id="presentation"]
+[ext_resource type="Script" path="res://scripts/presentation/mission_soundscape.gd" id="soundscape"]
 [ext_resource type="Script" path="res://scripts/gameplay/combat_mission.gd" id="script"]
 [ext_resource type="Resource" path="res://resources/missions/forest_command_post.tres" id="mission"]
 [ext_resource type="Resource" path="res://resources/factions/allied.tres" id="allied"]
@@ -22,6 +24,11 @@ script = ExtResource("script")
 data = ExtResource("mission")
 allied = ExtResource("allied")
 german = ExtResource("german")
+[node name="Presentation" type="Node" parent="."]
+script = ExtResource("presentation")
+[node name="Soundscape" type="Node3D" parent="." node_paths=PackedStringArray("listener")]
+script = ExtResource("soundscape")
+listener = NodePath("../Player/Head/Camera3D")
 [node name="Environment" parent="." instance=ExtResource("environment")]
 [node name="Player" parent="." instance=ExtResource("player")]
 position = Vector3(0, 0.05, 18)

@@ -1,5 +1,8 @@
-[gd_resource type="Resource" script_class="WeaponData" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="WeaponData" format=3]
 
+[ext_resource type="AudioStream" path="res://assets/audio/designed/dry.res" id="1_0uqb5"]
+[ext_resource type="AudioStream" path="res://assets/audio/designed/m1911.res" id="2_w7koq"]
+[ext_resource type="AudioStream" path="res://assets/audio/designed/reload.res" id="3_k4a8q"]
 [ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="data"]
 [ext_resource type="PackedScene" path="res://assets/weapons/allied/m1911_viewmodel.tscn" id="viewmodel"]
 
@@ -9,14 +12,8 @@ weapon_id = &"m1911"
 display_name = "M1911"
 faction = &"allied"
 weapon_class = &"pistol"
-damage = 25.0
-rate_of_fire = 300.0
-automatic = false
-magazine_capacity = 7
 reserve_ammo_type = &"45_acp"
-starting_reserve = 35
-reload_time = 1.8
-recoil = 3.0
-spread = 0.35
-effective_range = 80.0
 viewmodel_scene = ExtResource("viewmodel")
+muzzle_audio = ExtResource("2_w7koq")
+reload_audio = ExtResource("3_k4a8q")
+dry_audio = ExtResource("1_0uqb5")

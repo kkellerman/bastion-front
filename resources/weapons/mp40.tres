@@ -1,4 +1,8 @@
-[gd_resource type="Resource" script_class="WeaponData" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="AudioStream" path="res://assets/audio/designed/dry.res" id="1_y7ck2"]
+[ext_resource type="AudioStream" path="res://assets/audio/designed/mp40.res" id="2_b8u4t"]
+[ext_resource type="AudioStream" path="res://assets/audio/designed/reload.res" id="3_otnaa"]
 [ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="script"]
 [ext_resource type="PackedScene" path="res://assets/weapons/german/mp40_viewmodel.tscn" id="view"]
 
@@ -12,9 +16,11 @@ damage = 20.0
 rate_of_fire = 500.0
 automatic = true
 magazine_capacity = 32
-starting_reserve = 128
 reserve_ammo_type = &"9mm"
+starting_reserve = 128
 reload_time = 2.4
 spread = 1.1
-recoil = 3.0
 viewmodel_scene = ExtResource("view")
+muzzle_audio = ExtResource("2_b8u4t")
+reload_audio = ExtResource("3_otnaa")
+dry_audio = ExtResource("1_y7ck2")

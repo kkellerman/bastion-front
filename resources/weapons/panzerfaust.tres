@@ -1,7 +1,11 @@
-[gd_resource type="Resource" script_class="WeaponData" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="AudioStream" path="res://assets/audio/designed/dry.res" id="1_q00s2"]
+[ext_resource type="AudioStream" path="res://assets/audio/designed/panzerfaust.res" id="2_orelt"]
+[ext_resource type="AudioStream" path="res://assets/audio/designed/reload.res" id="4_fgv0t"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/rocket_projectile.tscn" id="projectile"]
 [ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="script"]
 [ext_resource type="PackedScene" path="res://assets/weapons/german/panzerfaust_viewmodel.tscn" id="view"]
-[ext_resource type="PackedScene" path="res://scenes/weapons/rocket_projectile.tscn" id="projectile"]
 
 [resource]
 script = ExtResource("script")
@@ -11,18 +15,17 @@ faction = &"german"
 weapon_class = &"launcher"
 damage = 250.0
 rate_of_fire = 20.0
-automatic = false
 magazine_capacity = 1
-starting_reserve = 3
 reserve_ammo_type = &"panzerfaust"
-reload_time = 4
-spread = 0
+starting_reserve = 3
+reload_time = 4.0
 recoil = 6.0
-viewmodel_scene = ExtResource("view")
+spread = 0.0
 hitscan_or_projectile = 1
 projectile_scene = ExtResource("projectile")
+viewmodel_scene = ExtResource("view")
+muzzle_audio = ExtResource("2_orelt")
+reload_audio = ExtResource("4_fgv0t")
+dry_audio = ExtResource("1_q00s2")
 projectile_speed = 26.0
 projectile_gravity = 0.35
-fuse_time = 8.0
-explode_on_contact = true
-blast_radius = 5.0

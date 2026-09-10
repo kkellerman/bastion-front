@@ -26,6 +26,8 @@ func fire(data: WeaponData, camera: Node3D, muzzle: Node3D, shooter: CollisionOb
 	if receiver != null:
 		receiver.take_damage(data.damage, shooter)
 	impact.emit(hit["position"], hit["normal"])
+	var surface: StringName = hit["collider"].get_meta(&"surface", &"dirt")
+	get_node("/root/CombatAudio").play(StringName("impact_" + str(surface)), hit["position"])
 
 
 func _trace(camera: Node3D, shooter: CollisionObject3D, start: Vector3, end: Vector3) -> Dictionary:

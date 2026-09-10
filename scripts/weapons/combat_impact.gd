@@ -20,4 +20,3 @@ static func show(context: Node3D, point: Vector3, normal: Vector3) -> void:
 	var tween: Tween = spark.create_tween()
 	tween.tween_property(spark, "transparency", 1.0, 0.18)
 	tween.tween_callback(spark.queue_free)
-	context.get_node("/root/CombatAudio").play(&"impact", point)

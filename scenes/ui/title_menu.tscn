@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="PackedScene" path="res://scenes/missions/command_post_environment.tscn" id="environment"]
+[ext_resource type="Script" path="res://scripts/presentation/title_menu.gd" id="script"]
+[node name="BastionFrontTitle" type="Node3D"]
+script = ExtResource("script")
+[node name="Environment" parent="." instance=ExtResource("environment")]
+[node name="Camera3D" type="Camera3D" parent="."]
+position = Vector3(7, 1.9, -51.5)
+fov = 63.0
+current = true

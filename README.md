@@ -1,14 +1,59 @@
 # Bastion Front
 
-A playable WWII combat and first-mission blockout for **Godot 4.7.x**, typed
+A playable WWII combat and first-mission presentation slice for **Godot 4.7.x**, typed
 GDScript, Forward+ / Vulkan. `wolf_like_godot_starter.md` remains authoritative.
 This pass follows the explicitly expanded combat/mission scope; the specification's
-milestone numbering is unchanged. All assets are placeholders.
+milestone numbering is unchanged. The visual pass combines CC0 photographic PBR
+materials with original interim environment, equipment and sound assets.
+
+## Visual and audio pass
+
+The mission now uses branched conifer and broadleaf meshes, textured trunks/roots,
+wind-responsive foliage, ferns, grass, shrubs, leaf litter, scattered rocks, fallen
+logs and raised rock banks. The forest floor blends an irregular muddy trail and
+wheel ruts. Understory uses small MultiMesh groups with 45 m visibility ranges;
+trees render to 80 m. Fine foliage does not cast expensive individual shadows.
+
+The fortifications have individual sandbags, timber revetments, camouflage strips,
+barbed wire and contextual German signs. Weathered concrete and lower-wall paint
+frame a command post with map/operations, radio, office and storage/records areas.
+Details include original maps, paperwork, telephone, radio controls, typewriter,
+chairs, drawers, crates, suspended lamps and conduit. New office furniture has
+collision and is included in the navigation bake. Most trim uses existing collision.
+
+Weapons have new beveled geometry, barrels, sights, grips, mechanisms and equipment
+details. Shared muzzle flashes use a soft additive shader; recoil includes small
+translation/roll feedback. German infantry use a field-uniform mannequin with
+helmet, boots, webbing and gear; held models follow the equipped firearm.
+
+Forward+ uses ACES tone mapping, restrained desaturation, SSAO, low-intensity SSIL,
+volumetric haze, 65 m directional shadows, 2x MSAA plus FXAA, warm interior lights
+and sky-based material reflections. Settings are tuned rather than maximized.
+
+Audio now uses distinct original layered firearm reports, mechanisms/reload cues,
+surface-specific impacts/footsteps, explosions, wind, birds, distant combat and
+bunker hum. A reverb bus and ambience crossfade distinguish bunker/exterior space.
+These are authored synthesis placeholders, not authentic recordings. German text
+and future recordings are separate in `resources/characters/german_voice.tres`.
+Five categories connect to existing state/reload events; grenade-warning and
+casualty categories are prepared hooks. No fake German speech is generated.
+
+See [ASSET_ATTRIBUTION.md](ASSET_ATTRIBUTION.md) for all sources/licenses and the
+remaining recording/model requirements. Original asset builders live in `tools/`;
+the baked assets are committed and need no generation step to play. Presentation
+composition lives in `scripts/presentation/`, separate from combat state.
 
 ## Run and controls
 
 Open `project.godot` and press **F5**, or run `godot --path .` from this directory.
-The default scene is `res://scenes/missions/forest_command_post.tscn`.
+The default scene is `res://scenes/ui/title_menu.tscn`: **BASTION FRONT**, a live
+bunker backdrop, Allied start, German loadout test, field manual, credits and quit.
+Start the mission directly with:
+
+```powershell
+godot --path . res://scenes/missions/forest_command_post.tscn
+```
+
 The original `scenes/main.tscn` remains the regression sandbox (open it and use F6).
 No plugins, dependencies or asset downloads are required.
 
@@ -74,7 +119,7 @@ after 25 seconds. Range targets reset three seconds after destruction.
 
 ## First mission flow
 
-1. Start in the primitive conifer forest beside a dirt trail. The range on the left
+1. Start in the conifer forest beside a dirt trail. The range on the left
    has two targets, an M1919 and an MG42. Supplies and faction stations are beside/
    behind spawn. F1/F2 or E at stations restart with the chosen faction.
 2. Follow the trail through two patrol encounters. Solid trunks and road obstacles
@@ -143,7 +188,7 @@ without vision. The original sandbox retains its previous AI timing.
   `combat_mission.gd`: coordinator. `PrototypeSession` retains faction on restart.
 - `scenes/weapons/*_projectile.tscn`, `scenes/mounted_weapons/*.tscn`,
   `scenes/pickups/*.tscn`: configured reusable instances.
-- `resources/missions/command_post_navigation.tres`: committed 1,216-polygon bake.
+- `resources/missions/command_post_navigation.tres`: committed 1,236-polygon bake.
   Retain `.gd.uid` sidecars; generated caches/captures remain ignored in `.godot/`.
 
 ## Validation
@@ -160,6 +205,8 @@ godot --headless --path . --script res://tests/infantry_smoke.gd
 godot --headless --path . --script res://tests/combat_prototype_smoke.gd
 godot --headless --path . --script res://tests/defensive_mg_smoke.gd
 godot --path . --script res://tests/mission_flow_smoke.gd
+godot --path . --script res://tests/presentation_smoke.gd
+godot --path . --script res://tests/presentation_capture.gd
 ```
 
 Original suites cover movement, collision/crouch, capture, pistol ammo/reloads/
@@ -169,7 +216,23 @@ reserves, supplies, mounts, factions, hearing and extraction. The defensive MG
 suite verifies live attacks, capture and mounted player death. Mission-flow tests
 inject controls and physically walk the route, mount a gun, collect documents,
 exit and restart. They remove enemies to isolate route/input; combat is tested
-separately. Display runs save screenshots under `.godot/validation/`.
+separately. Display runs save screenshots under `.godot/validation/`; selected
+presentation captures are retained in `docs/screenshots/`. The presentation test
+checks menu-to-mission transition, material/dressing presence, voice slots and audio
+assets. The capture script samples frame rate and draw counts from four viewpoints.
+Headless Dummy-driver runs emit AI hearing events but skip inaudible PCM playback;
+native Vulkan runs validate actual audio-node playback and cleanup.
+
+On the development Radeon 860M at 1280x720 with VSync, the original four sampled
+views measured 60 FPS. After the pass, the forest measured approximately 52-59 FPS
+and the bunker/radio/operations views approximately 60 FPS. These are warm static
+viewpoint samples, not minimum combat frame rates or a cross-hardware guarantee.
+The final forest view submits about 1.9 million primitives across rendering passes;
+the initial unoptimized foliage pass exceeded 14 million and was reduced.
+
+Retained screenshots: [title](docs/screenshots/title_menu.png),
+[forest](docs/screenshots/forest.png), [bunker](docs/screenshots/bunker.png),
+[operations room](docs/screenshots/operations.png).
 
 After static collision edits, rebuild navigation:
 
@@ -195,16 +258,22 @@ rendering, physics or gameplay.
 
 ## Limitations and next phase
 
-- Primitive geometry, uniforms, weapon silhouettes, effects, sounds and motion.
-  Infantry share a visual and generic held gun. German mode is a loadout test.
+- The transformation is an interim art pass, not finished photorealism. Procedural
+  trees, terrain banks, props, equipment and the unrigged German mannequin need
+  professional modeling/animation and production LODs. Allied models remain the
+  earlier placeholder. German mode remains a loadout test.
 - No hands, skeletal reloads, shell ejection, persistent decals, ragdolls, body-part
   damage or camera recoil. Viewmodels can visually clip walls; obstruction still
   blocks damage. Panzerfaust reload represents readying the next disposable unit.
 - Radial grenade damage, no fragment simulation/cooking, armor/vehicle simulation,
   penetration or NPC explosives. Mounted ammo and enemy ammunition are finite.
-- No acoustic occlusion, squad/cover tactics, advanced search, dynamic navigation
+- Authored synthetic effects await licensed recordings and a human audio-mix pass.
+  There is source-position reverb and ambience blending, but no acoustic occlusion.
+  No squad/cover tactics, advanced search, dynamic navigation
   rebakes or moving-obstacle avoidance.
-- One flat-terrain mission; no checkpoints, saving, menus, campaign progression or
+- Playable routes retain the original floor heights; apparent terrain relief is
+  ground shading, roots, debris and perimeter banks, not sculpted terrain traversal.
+  No checkpoints, saving, campaign progression or
   gamepad support. Automated tests do not replace human difficulty/feel/audio tuning.
 
 Next phase: **visual fidelity, licensed sound assets, animation and level polish**.

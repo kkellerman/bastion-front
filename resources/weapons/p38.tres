@@ -1,4 +1,8 @@
-[gd_resource type="Resource" script_class="WeaponData" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="AudioStream" path="res://assets/audio/designed/dry.res" id="1_5b4oi"]
+[ext_resource type="AudioStream" path="res://assets/audio/designed/p38.res" id="2_5xlr0"]
+[ext_resource type="AudioStream" path="res://assets/audio/designed/reload.res" id="3_v22w0"]
 [ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="script"]
 [ext_resource type="PackedScene" path="res://assets/weapons/german/p38_viewmodel.tscn" id="view"]
 
@@ -8,13 +12,11 @@ weapon_id = &"p38"
 display_name = "P38"
 faction = &"german"
 weapon_class = &"pistol"
-damage = 25.0
-rate_of_fire = 300.0
-automatic = false
 magazine_capacity = 8
-starting_reserve = 48
 reserve_ammo_type = &"9mm"
-reload_time = 1.8
+starting_reserve = 48
 spread = 0.4
-recoil = 3.0
 viewmodel_scene = ExtResource("view")
+muzzle_audio = ExtResource("2_5xlr0")
+reload_audio = ExtResource("3_v22w0")
+dry_audio = ExtResource("1_5b4oi")

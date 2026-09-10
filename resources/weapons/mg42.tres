@@ -1,4 +1,8 @@
-[gd_resource type="Resource" script_class="WeaponData" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="AudioStream" path="res://assets/audio/designed/dry.res" id="1_ebeg0"]
+[ext_resource type="AudioStream" path="res://assets/audio/designed/mg42.res" id="2_v6msk"]
+[ext_resource type="AudioStream" path="res://assets/audio/designed/reload.res" id="3_sfmoo"]
 [ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="script"]
 
 [resource]
@@ -11,8 +15,10 @@ damage = 22.0
 rate_of_fire = 1000.0
 automatic = true
 magazine_capacity = 200
-starting_reserve = 600
 reserve_ammo_type = &"792_mauser"
-reload_time = 5
+starting_reserve = 600
+reload_time = 5.0
 spread = 1.4
-recoil = 3.0
+muzzle_audio = ExtResource("2_v6msk")
+reload_audio = ExtResource("3_sfmoo")
+dry_audio = ExtResource("1_ebeg0")

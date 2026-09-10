@@ -1,0 +1,6 @@
+[gd_resource type="Resource" script_class="InfantryVoiceSet" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/presentation/infantry_voice_set.gd" id="script"]
+[resource]
+script = ExtResource("script")
+language = &"de"
+subtitles = Dictionary[StringName, String]({&"spotting": "Feind gesichtet!", &"taking_fire": "Wir werden beschossen!", &"reloading": "Ich lade nach!", &"grenade_warning": "Granate! In Deckung!", &"moving": "Ich rücke vor.", &"lost_sight": "Sichtkontakt verloren.", &"casualty": "Mann ausgefallen!"})

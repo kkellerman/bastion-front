@@ -1,5 +1,27 @@
 # Changelog
 
+## Forest / Command Post Visual and Audio Pass - 2026-09-10
+
+- Added a live BASTION FRONT title menu, Allied/German test starts, controls and
+  asset credits; the mission remains directly runnable.
+- Integrated four verified CC0 Poly Haven photographic PBR texture sets with
+  provenance in ASSET_ATTRIBUTION.md. Added original branched tree meshes, roots,
+  grass/ferns/shrubs/litter, rocks/logs, muddy trail shading and distance culling.
+- Dressed fortifications with individual sandbags, timber, camouflage strips,
+  wire and signs. Added weathered bunker walls, maps, communications equipment,
+  office furniture, records cabinets, crates, lamps and conduit.
+- Tuned ACES, SSAO/SSIL, volumetric haze, shadows and antialiasing.
+  Profiled and reduced excessive foliage geometry/shadow cost.
+- Improved all carried weapon silhouettes and both mounted guns, including beveled
+  surfaces and small details; added a German equipment mannequin and held models.
+- Added original layered audio assets, material impacts/steps, outdoor ambience,
+  distant combat and bunker acoustics. Added correct German subtitle placeholders
+  with separate recording slots; no synthesized speech or external recordings.
+- Preserved combat/controller behavior and existing tests. Rebaked navigation to
+  1,236 polygons around office furniture. Added menu/presentation checks and captures.
+- Art/audio remain interim: final rigged characters/hands, authentic recordings,
+  sculpted terrain and production foliage LODs are still required.
+
 ## Combat Prototype and First Mission Blockout - 2026-09-10
 
 - Followed the explicitly expanded combat/faction/mission scope; retained the

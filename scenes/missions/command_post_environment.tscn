@@ -1,4 +1,6 @@
-[gd_scene load_steps=89 format=3]
+[gd_scene load_steps=90 format=3]
+
+[ext_resource type="Script" path="res://scripts/presentation/forest_presentation.gd" id="presentation"]
 
 [ext_resource type="PackedScene" path="res://assets/environments/germany/placeholder_conifer.tscn" id="tree"]
 
@@ -270,6 +272,7 @@ size = Vector3(1.5, 1.5, 2)
 
 
 [node name="CommandPostEnvironment" type="Node3D"]
+script = ExtResource("presentation")
 [node name="Environment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment")
 [node name="Sun" type="DirectionalLight3D" parent="."]
