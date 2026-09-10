@@ -1,0 +1,55 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/test_target.gd" id="target"]
+[ext_resource type="Script" path="res://scripts/components/health_component.gd" id="health"]
+[ext_resource type="Script" path="res://scripts/components/damage_receiver.gd" id="receiver"]
+[ext_resource type="Material" path="res://assets/materials/timber.tres" id="timber"]
+
+[sub_resource type="StandardMaterial3D" id="BoardMaterial"]
+albedo_color = Color(0.65, 0.60, 0.46, 1)
+roughness = 0.95
+
+[sub_resource type="BoxMesh" id="BoardMesh"]
+size = Vector3(1.6, 1.6, 0.16)
+
+[sub_resource type="BoxShape3D" id="BoardShape"]
+size = Vector3(1.6, 1.6, 0.16)
+
+[sub_resource type="BoxMesh" id="PostMesh"]
+size = Vector3(0.12, 1.2, 0.12)
+
+[node name="TestTarget" type="Node3D"]
+script = ExtResource("target")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("health")
+max_health = 100.0
+
+[node name="DamageReceiver" type="StaticBody3D" parent="." node_paths=PackedStringArray("health")]
+position = Vector3(0, 1.65, 0)
+script = ExtResource("receiver")
+health = NodePath("../HealthComponent")
+
+[node name="Collision" type="CollisionShape3D" parent="DamageReceiver"]
+shape = SubResource("BoardShape")
+
+[node name="Board" type="MeshInstance3D" parent="DamageReceiver"]
+mesh = SubResource("BoardMesh")
+material_override = SubResource("BoardMaterial")
+
+[node name="Post" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.6, 0)
+mesh = SubResource("PostMesh")
+material_override = ExtResource("timber")
+
+[node name="Status" type="Label3D" parent="."]
+position = Vector3(0, 2.85, 0)
+font_size = 56
+pixel_size = 0.006
+billboard = 1
+modulate = Color(0.94, 0.9, 0.75, 1)
+text = "TEST TARGET"
+
+[node name="ResetTimer" type="Timer" parent="."]
+wait_time = 3.0
+one_shot = true

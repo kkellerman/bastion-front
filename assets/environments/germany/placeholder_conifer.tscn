@@ -1,0 +1,44 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Material" path="res://assets/materials/bark.tres" id="1_bark"]
+[ext_resource type="Material" path="res://assets/materials/needles.tres" id="2_needles"]
+
+[sub_resource type="CylinderMesh" id="TrunkMesh"]
+top_radius = 0.17
+bottom_radius = 0.3
+height = 8.0
+radial_segments = 12
+
+[sub_resource type="CylinderShape3D" id="TrunkShape"]
+radius = 0.3
+height = 8.0
+
+[sub_resource type="CylinderMesh" id="CanopyMesh"]
+top_radius = 0.05
+bottom_radius = 2.1
+height = 5.5
+radial_segments = 16
+
+[node name="PlaceholderConifer" type="Node3D"]
+
+[node name="Trunk" type="StaticBody3D" parent="."]
+position = Vector3(0, 4, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Trunk"]
+mesh = SubResource("TrunkMesh")
+material_override = ExtResource("1_bark")
+
+[node name="Collision" type="CollisionShape3D" parent="Trunk"]
+shape = SubResource("TrunkShape")
+
+[node name="LowerCanopy" type="MeshInstance3D" parent="."]
+position = Vector3(0, 6.3, 0)
+mesh = SubResource("CanopyMesh")
+material_override = ExtResource("2_needles")
+
+[node name="UpperCanopy" type="MeshInstance3D" parent="."]
+position = Vector3(0, 8.4, 0)
+scale = Vector3(0.72, 0.8, 0.72)
+mesh = SubResource("CanopyMesh")
+material_override = ExtResource("2_needles")
+

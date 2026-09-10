@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/missions/forest_sandbox.tscn" id="1_world"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/interactables/test_target.tscn" id="3_target"]
+
+[node name="Main" type="Node3D"]
+
+[node name="ForestSandbox" parent="." instance=ExtResource("1_world")]
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+position = Vector3(0, 0.05, 12)
+
+[node name="TestTarget" parent="." instance=ExtResource("3_target")]
+position = Vector3(0, 0.02, -6)
