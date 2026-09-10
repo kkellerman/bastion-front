@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="script"]
+[ext_resource type="PackedScene" path="res://assets/weapons/german/mp40_viewmodel.tscn" id="view"]
+
+[resource]
+script = ExtResource("script")
+weapon_id = &"mp40"
+display_name = "MP40"
+faction = &"german"
+weapon_class = &"smg"
+damage = 20.0
+rate_of_fire = 500.0
+automatic = true
+magazine_capacity = 32
+starting_reserve = 128
+reserve_ammo_type = &"9mm"
+reload_time = 2.4
+spread = 1.1
+recoil = 3.0
+viewmodel_scene = ExtResource("view")

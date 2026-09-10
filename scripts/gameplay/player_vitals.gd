@@ -21,6 +21,9 @@ func _update_health(current: float, _maximum: float) -> void:
 
 
 func _on_death() -> void:
+	var rig: Node3D = player.get_node("Head/Camera3D/WeaponRig") as Node3D
+	if rig.mounted != null:
+		rig.mounted.dismount()
 	label.text = "YOU DIED  —  Enter to restart"
 	player.set_physics_process(false)
 	player.velocity = Vector3.ZERO

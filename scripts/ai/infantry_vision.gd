@@ -10,6 +10,8 @@ extends Node
 func can_see(target: CollisionObject3D, aim_point: Node3D) -> bool:
 	if not is_instance_valid(target) or not is_instance_valid(aim_point):
 		return false
+	if not FactionData.hostile(actor, target):
+		return false
 	var receiver: DamageReceiver = DamageReceiver.from_body(target)
 	if receiver != null and receiver.health.current_health <= 0.0:
 		return false

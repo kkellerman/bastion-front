@@ -10,6 +10,7 @@ extends Node
 func _ready() -> void:
 	assert(body != null and health != null, "DamageReceiver requires a body and health")
 	body.set_meta(&"damage_receiver", self)
+	add_to_group(&"damage_receivers")
 
 
 static func from_body(collider: Object) -> DamageReceiver:
@@ -18,6 +19,19 @@ static func from_body(collider: Object) -> DamageReceiver:
 	return collider.get_meta(&"damage_receiver") as DamageReceiver
 
 
-func take_damage(amount: float) -> void:
+func take_damage(amount: float, source: CollisionObject3D = null) -> void:
+	if source != body and not FactionData.hostile(source, body):
+		return
 	if is_instance_valid(health):
 		health.take_damage(amount * damage_multiplier)
+
+
+func set_faction(data: FactionData) -> void:
+	body.set_meta(&"faction", data)
+
+
+func center() -> Vector3:
+	for child: Node in body.get_children():
+		if child is CollisionShape3D:
+			return (child as CollisionShape3D).global_position
+	return body.global_position

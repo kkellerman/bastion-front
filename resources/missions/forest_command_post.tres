@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="MissionData" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/gameplay/mission_data.gd" id="script"]
+[resource]
+script = ExtResource("script")
+mission_id = &"forest_command_post"
+title = "Forest Command Post"
+briefing = "Follow the trail, breach the fortified perimeter and recover the operations documents. Leave through the rear exit."
+objective_text = "Recover operations documents in the command-post map room (E)."
+extraction_text = "Documents secured. Reach the marked rear exit."

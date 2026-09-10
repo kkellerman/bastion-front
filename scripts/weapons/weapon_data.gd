@@ -20,9 +20,14 @@ enum ShotType { HITSCAN, PROJECTILE }
 @export_range(0.0, 10.0) var spread: float = 0.35
 @export_range(1.0, 1000.0) var effective_range: float = 80.0
 @export var hitscan_or_projectile: ShotType = ShotType.HITSCAN
-## Reserved for the later projectile component; never approximated with hitscan.
 @export var projectile_scene: PackedScene
 @export var viewmodel_scene: PackedScene
 @export var world_model_scene: PackedScene
 @export var muzzle_audio: AudioStream
 @export var reload_audio: AudioStream
+@export var dry_audio: AudioStream
+@export var projectile_speed: float = 30.0
+@export var projectile_gravity: float = 0.0
+@export var fuse_time: float = 8.0
+@export var explode_on_contact: bool = true
+@export var blast_radius: float = 5.0

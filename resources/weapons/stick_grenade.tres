@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="script"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/stick_grenade_projectile.tscn" id="projectile"]
+
+[resource]
+script = ExtResource("script")
+weapon_id = &"stick_grenade"
+display_name = "Stick grenade"
+faction = &"german"
+weapon_class = &"grenade"
+damage = 150.0
+rate_of_fire = 60.0
+automatic = false
+magazine_capacity = 1
+starting_reserve = 3
+reserve_ammo_type = &"stick_grenade"
+reload_time = 1
+spread = 0
+recoil = 3.0
+
+hitscan_or_projectile = 1
+projectile_scene = ExtResource("projectile")
+projectile_speed = 12.0
+projectile_gravity = 1
+fuse_time = 3.0
+explode_on_contact = false
+blast_radius = 6.0

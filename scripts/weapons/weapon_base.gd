@@ -8,7 +8,16 @@ signal reload_changed(active: bool)
 @export var data: WeaponData
 
 var magazine: int = 0
-var reserve: int = 0
+var ammo_pool: AmmoPool
+var _reserve: int = 0
+var reserve: int:
+	get:
+		return ammo_pool.get_amount(data.reserve_ammo_type) if ammo_pool != null else _reserve
+	set(value):
+		if ammo_pool != null:
+			ammo_pool.set_amount(data.reserve_ammo_type, value)
+		else:
+			_reserve = value
 var is_reloading: bool = false
 var _cooldown: float = 0.0
 var _reload_remaining: float = 0.0

@@ -9,6 +9,7 @@ enum State { IDLE, PATROL, ALERT, CHASE, ATTACK, HURT, DEATH }
 @export var patrol_points: Array[Vector3] = []
 @export var memory_duration: float = 4.0
 @export var alert_delay: float = 0.65
+@export var hearing_enabled: bool = false
 
 var state: State = State.IDLE
 var last_known_position: Vector3
@@ -28,6 +29,7 @@ func _ready() -> void:
 	_previous_health = health.current_health
 	health.health_changed.connect(_on_health_changed)
 	health.died.connect(_die)
+	get_node("/root/CombatAudio").noise.connect(_hear_noise)
 
 
 func _physics_process(delta: float) -> void:
@@ -91,6 +93,9 @@ func _set_state(next: State) -> void:
 func _on_health_changed(current: float, _maximum: float) -> void:
 	if current > 0.0 and current < _previous_health and state != State.DEATH:
 		_set_state(State.HURT)
+		var flinch: Tween = create_tween()
+		flinch.tween_property($Visuals, "rotation:x", 0.12, 0.06)
+		flinch.tween_property($Visuals, "rotation:x", 0.0, 0.18)
 	_previous_health = current
 
 
@@ -105,3 +110,15 @@ func _die() -> void:
 	$Visuals.position.y = 0.3
 	$Eyes.visible = false
 	set_physics_process(false)
+
+
+func _hear_noise(point: Vector3, radius: float, source: CollisionObject3D) -> void:
+	if not hearing_enabled or state == State.DEATH or source == self or not FactionData.hostile(self, source):
+		return
+	if global_position.distance_to(point) > radius or sees_target:
+		return
+	# Hearing records the sound event, not a live reference to the hidden player's position.
+	last_known_position = point.snapped(Vector3(2, 0.1, 2))
+	_memory_remaining = memory_duration
+	if state != State.HURT:
+		_set_state(State.ALERT)

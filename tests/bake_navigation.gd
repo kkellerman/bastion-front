@@ -6,7 +6,8 @@ func _initialize() -> void:
 
 
 func _bake() -> void:
-	var packed: PackedScene = load("res://scenes/main.tscn") as PackedScene
+	var mission: bool = "--mission" in OS.get_cmdline_user_args()
+	var packed: PackedScene = load("res://scenes/missions/forest_command_post.tscn" if mission else "res://scenes/main.tscn") as PackedScene
 	var main: Node3D = packed.instantiate() as Node3D
 	main.process_mode = Node.PROCESS_MODE_DISABLED
 	root.add_child(main)
@@ -22,7 +23,7 @@ func _bake() -> void:
 	var source: NavigationMeshSourceGeometryData3D = NavigationMeshSourceGeometryData3D.new()
 	NavigationServer3D.parse_source_geometry_data(mesh, source, main)
 	NavigationServer3D.bake_from_source_geometry_data(mesh, source)
-	var result: Error = ResourceSaver.save(mesh, "res://resources/missions/forest_navigation.tres")
+	var result: Error = ResourceSaver.save(mesh, "res://resources/missions/command_post_navigation.tres" if mission else "res://resources/missions/forest_navigation.tres")
 	print("Navigation bake: ", mesh.get_polygon_count(), " polygons; save result ", result)
 	main.queue_free()
 	await process_frame

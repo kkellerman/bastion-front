@@ -1,5 +1,26 @@
 # Changelog
 
+## Combat Prototype and First Mission Blockout - 2026-09-10
+
+- Followed the explicitly expanded combat/faction/mission scope; retained the
+  authoritative specification and original regression sandbox.
+- Added P38, Thompson, MP40, StG 44, Bazooka and Panzerfaust alongside M1911 using
+  shared weapon resources, switching, individual magazines and pooled reserves.
+- Added Allied/German loadouts and hostility, faction stations, ammo/health/grenade
+  supplies, physics grenades/rockets, cover-aware explosions and self-damage.
+- Added usable M1919 and MG42 emplacements, constrained aiming, belts/reloads,
+  gunner control and capture after gunner death.
+- Added primitive viewmodels, recoil/flash/impact feedback, spatial audio routing
+  with original synthesized sounds, footsteps and final-asset hooks.
+- Preserved enemy sight/memory; added optional hearing, varied weapons, movement
+  and reaction timing, short attack bursts and visible hit reactions.
+- Added the default Forest Command Post mission: range, forest trail, patrols,
+  fortifications, trench approach, defended MG42, bunker rooms, documents and rear
+  extraction. Committed a 1,216-polygon navigation bake.
+- Added combat, defensive MG and physical mission-flow suites; preserved and reran
+  movement, weapon and infantry checks, editor import and Vulkan launch.
+- Next phase: art, sound, animation, encounter pacing and level polish.
+
 ## Requested Milestone 3 - Infantry Prototype - 2026-09-10
 
 - Followed the user's explicit enemy-prototype scope; the specification numbers

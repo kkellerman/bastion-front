@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="script"]
+[ext_resource type="PackedScene" path="res://assets/weapons/allied/thompson_viewmodel.tscn" id="view"]
+
+[resource]
+script = ExtResource("script")
+weapon_id = &"thompson"
+display_name = "Thompson"
+faction = &"allied"
+weapon_class = &"smg"
+damage = 22.0
+rate_of_fire = 600.0
+automatic = true
+magazine_capacity = 30
+starting_reserve = 105
+reserve_ammo_type = &"45_acp"
+reload_time = 2.2
+spread = 1.2
+recoil = 3.0
+viewmodel_scene = ExtResource("view")

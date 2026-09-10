@@ -9,6 +9,11 @@ extends Node3D
 @onready var impact_marker: MeshInstance3D = $ImpactMarker
 
 var viewmodel: WeaponViewModel
+var inventory: WeaponInventory
+var mounted: MountedWeapon
+var _grenade_pending: bool = false
+var _grenade_cooldown: float = 0.0
+var _dry_cooldown: float = 0.0
 var _fire_pending: bool = false
 var _fire_held: bool = false
 var _aim_held: bool = false
@@ -20,7 +25,11 @@ var _impact_remaining: float = 0.0
 
 func _ready() -> void:
 	assert(camera != null and shooter != null, "Weapon rig requires camera and shooter")
-	assert(weapon.data.hitscan_or_projectile == WeaponData.ShotType.HITSCAN, "Projectile component is deferred; do not equip projectile data yet")
+	inventory = WeaponInventory.new()
+	add_child(inventory)
+	inventory.initialize(weapon)
+	inventory.selected.connect(_equip)
+	shooter.set_meta(&"weapon_rig", self)
 	viewmodel = weapon.data.viewmodel_scene.instantiate() as WeaponViewModel
 	add_child(viewmodel)
 	_base_fov = camera.fov
@@ -43,17 +52,43 @@ func _input(event: InputEvent) -> void:
 		_aim_held = event.is_pressed()
 	if event.is_action_pressed("reload"):
 		_reload_pending = true
+	if mounted == null:
+		if event.is_action_pressed("grenade"):
+			_grenade_pending = true
+		for slot: int in range(4):
+			if event.is_action_pressed("slot_" + str(slot + 1)):
+				inventory.select(slot)
+		if event.is_action_pressed("next_weapon"):
+			inventory.select((inventory.index + 1) % inventory.weapons.size())
+		if event.is_action_pressed("previous_weapon"):
+			inventory.select(posmod(inventory.index - 1, inventory.weapons.size()))
 
 
 func _physics_process(delta: float) -> void:
+	_grenade_cooldown = maxf(0.0, _grenade_cooldown - delta)
+	_dry_cooldown = maxf(0.0, _dry_cooldown - delta)
 	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 		_clear_input()
+	if mounted != null:
+		if _reload_pending:
+			if mounted.weapon.try_reload():
+				get_node("/root/CombatAudio").play(&"reload", camera.global_position, shooter)
+		if _fire_held:
+			mounted.fire(camera, shooter)
+		_fire_pending = false
+		_reload_pending = false
+		return
+	if _grenade_pending:
+		throw_grenade()
+	_grenade_pending = false
 	_aiming = _aim_held and not weapon.is_reloading
 	viewmodel.aiming = _aiming
 	if _reload_pending:
 		weapon.try_reload()
 	if _fire_pending or (weapon.data.automatic and _fire_held):
-		weapon.try_fire()
+		if not weapon.try_fire() and weapon.magazine <= 0 and _dry_cooldown <= 0.0:
+			get_node("/root/CombatAudio").play(&"dry", camera.global_position, shooter, weapon.data.dry_audio)
+			_dry_cooldown = 0.3
 	_fire_pending = false
 	_reload_pending = false
 	_impact_remaining = maxf(0.0, _impact_remaining - delta)
@@ -67,6 +102,7 @@ func _notification(what: int) -> void:
 
 
 func _clear_input() -> void:
+	_grenade_pending = false
 	_fire_pending = false
 	_fire_held = false
 	_aim_held = false
@@ -74,14 +110,48 @@ func _clear_input() -> void:
 
 
 func _on_shot() -> void:
-	hitscan.fire(weapon.data, camera, viewmodel.muzzle, shooter, _aiming)
+	if weapon.data.hitscan_or_projectile == WeaponData.ShotType.HITSCAN:
+		hitscan.fire(weapon.data, camera, viewmodel.muzzle, shooter, _aiming)
+	else:
+		ProjectileLauncher.launch(weapon.data, camera, shooter)
 	viewmodel.play_shot(weapon.data)
+	get_node("/root/CombatAudio").play(&"gunshot", camera.global_position, shooter, weapon.data.muzzle_audio)
 
 
 func _on_reload(active: bool) -> void:
 	viewmodel.set_reloading(active, weapon.data)
+	if active:
+		get_node("/root/CombatAudio").play(&"reload", camera.global_position, shooter, weapon.data.reload_audio)
 
 
 func _on_impact(hit_position: Vector3, normal: Vector3) -> void:
 	impact_marker.global_position = hit_position + normal * 0.008
 	_impact_remaining = 0.18
+	get_node("/root/CombatAudio").play(&"impact", hit_position)
+
+
+func _equip(next: WeaponBase) -> void:
+	if weapon.shot_fired.is_connected(_on_shot):
+		weapon.shot_fired.disconnect(_on_shot)
+		weapon.reload_changed.disconnect(_on_reload)
+	weapon = next
+	weapon.shot_fired.connect(_on_shot)
+	weapon.reload_changed.connect(_on_reload)
+	if is_instance_valid(viewmodel):
+		viewmodel.queue_free()
+	viewmodel = weapon.data.viewmodel_scene.instantiate() as WeaponViewModel
+	add_child(viewmodel)
+	$WeaponHUD.bind(weapon)
+	_clear_input()
+
+
+func throw_grenade() -> bool:
+	if inventory.faction == null or _grenade_cooldown > 0.0 or weapon.is_reloading or mounted != null:
+		return false
+	var data: WeaponData = inventory.faction.grenade
+	if inventory.pool.get_amount(data.reserve_ammo_type) <= 0:
+		return false
+	inventory.pool.add(data.reserve_ammo_type, -1)
+	ProjectileLauncher.launch(data, camera, shooter)
+	_grenade_cooldown = 0.8
+	return true

@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=3]
+[ext_resource type="Script" path="res://scripts/gameplay/supply_pickup.gd" id="script"]
+[sub_resource type="BoxMesh" id="Mesh"]
+size = Vector3(0.65, 0.45, 0.45)
+[sub_resource type="BoxShape3D" id="Shape"]
+size = Vector3(1.4, 1.4, 1.4)
+[sub_resource type="StandardMaterial3D" id="Material"]
+albedo_color = Color(0.3, 0.35, 0.2, 1)
+roughness = 0.9
+[node name="Supply" type="Area3D"]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("script")
+kind = 2
+[node name="Collision" type="CollisionShape3D" parent="."]
+position = Vector3(0, 0.6, 0)
+shape = SubResource("Shape")
+[node name="Mesh" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.25, 0)
+mesh = SubResource("Mesh")
+material_override = SubResource("Material")
+[node name="Label" type="Label3D" parent="."]
+position = Vector3(0, 1, 0)
+billboard = 1
+text = "GRENADES"
+font_size = 32

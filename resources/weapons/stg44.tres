@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="script"]
+[ext_resource type="PackedScene" path="res://assets/weapons/german/stg44_viewmodel.tscn" id="view"]
+
+[resource]
+script = ExtResource("script")
+weapon_id = &"stg44"
+display_name = "StG 44 / MP44"
+faction = &"german"
+weapon_class = &"rifle"
+damage = 28.0
+rate_of_fire = 500.0
+automatic = true
+magazine_capacity = 30
+starting_reserve = 120
+reserve_ammo_type = &"792_kurz"
+reload_time = 2.6
+spread = 0.8
+recoil = 3.0
+viewmodel_scene = ExtResource("view")

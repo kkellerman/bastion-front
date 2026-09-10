@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="FactionData" load_steps=7 format=3]
+[ext_resource type="Script" path="res://scripts/factions/faction_data.gd" id="script"]
+[ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="weapon_script"]
+[ext_resource type="Resource" path="res://resources/weapons/m1911.tres" id="m1911"]
+[ext_resource type="Resource" path="res://resources/weapons/thompson.tres" id="thompson"]
+[ext_resource type="Resource" path="res://resources/weapons/bazooka.tres" id="bazooka"]
+[ext_resource type="Resource" path="res://resources/weapons/mk2.tres" id="mk2"]
+[resource]
+script = ExtResource("script")
+faction_id = &"allied"
+display_name = "Allied"
+spoken_language = &"en"
+weapons = Array[ExtResource("weapon_script")]([ExtResource("m1911"), ExtResource("thompson"), ExtResource("bazooka")])
+grenade = ExtResource("mk2")
+hostile_ids = Array[StringName]([&"german"])

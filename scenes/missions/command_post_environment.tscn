@@ -1,0 +1,1250 @@
+[gd_scene load_steps=89 format=3]
+
+[ext_resource type="PackedScene" path="res://assets/environments/germany/placeholder_conifer.tscn" id="tree"]
+
+[ext_resource type="Material" path="res://assets/materials/forest_floor.tres" id="forest_floor"]
+
+[ext_resource type="Material" path="res://assets/materials/mud.tres" id="mud"]
+
+[ext_resource type="Material" path="res://assets/materials/stone.tres" id="stone"]
+
+[ext_resource type="Material" path="res://assets/materials/timber.tres" id="timber"]
+
+[sub_resource type="ProceduralSkyMaterial" id="SkyMaterial"]
+sky_top_color = Color(0.3, 0.36, 0.4, 1)
+sky_horizon_color = Color(0.6, 0.63, 0.6, 1)
+[sub_resource type="Sky" id="Sky"]
+sky_material = SubResource("SkyMaterial")
+[sub_resource type="Environment" id="Environment"]
+background_mode = 2
+sky = SubResource("Sky")
+ambient_light_source = 3
+ambient_light_color = Color(0.68, 0.72, 0.74, 1)
+ambient_light_energy = 0.7
+tonemap_mode = 2
+fog_enabled = true
+fog_density = 0.006
+fog_light_color = Color(0.5, 0.55, 0.52, 1)
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.009
+
+
+[sub_resource type="BoxMesh" id="GroundMesh"]
+size = Vector3(54, 1, 126)
+[sub_resource type="BoxShape3D" id="GroundShape"]
+size = Vector3(54, 1, 126)
+
+
+[sub_resource type="BoxMesh" id="TrailMesh"]
+size = Vector3(5, 0.02, 100)
+[sub_resource type="BoxShape3D" id="TrailShape"]
+size = Vector3(5, 0.02, 100)
+
+
+[sub_resource type="BoxMesh" id="WestBoundaryMesh"]
+size = Vector3(2, 4, 126)
+[sub_resource type="BoxShape3D" id="WestBoundaryShape"]
+size = Vector3(2, 4, 126)
+
+
+[sub_resource type="BoxMesh" id="EastBoundaryMesh"]
+size = Vector3(2, 4, 126)
+[sub_resource type="BoxShape3D" id="EastBoundaryShape"]
+size = Vector3(2, 4, 126)
+
+
+[sub_resource type="BoxMesh" id="RearBoundaryMesh"]
+size = Vector3(50, 4, 2)
+[sub_resource type="BoxShape3D" id="RearBoundaryShape"]
+size = Vector3(50, 4, 2)
+
+
+[sub_resource type="BoxMesh" id="StartBoundaryMesh"]
+size = Vector3(50, 4, 2)
+[sub_resource type="BoxShape3D" id="StartBoundaryShape"]
+size = Vector3(50, 4, 2)
+
+
+[sub_resource type="BoxMesh" id="RangeBackstopMesh"]
+size = Vector3(15, 3, 1)
+[sub_resource type="BoxShape3D" id="RangeBackstopShape"]
+size = Vector3(15, 3, 1)
+
+
+[sub_resource type="BoxMesh" id="RangePartitionMesh"]
+size = Vector3(1, 2.4, 16)
+[sub_resource type="BoxShape3D" id="RangePartitionShape"]
+size = Vector3(1, 2.4, 16)
+
+
+[sub_resource type="BoxMesh" id="RoadCoverAMesh"]
+size = Vector3(2.4, 1.25, 1.5)
+[sub_resource type="BoxShape3D" id="RoadCoverAShape"]
+size = Vector3(2.4, 1.25, 1.5)
+
+
+[sub_resource type="BoxMesh" id="RoadCoverBMesh"]
+size = Vector3(2.4, 1.25, 1.5)
+[sub_resource type="BoxShape3D" id="RoadCoverBShape"]
+size = Vector3(2.4, 1.25, 1.5)
+
+
+[sub_resource type="BoxMesh" id="WestSandbagsMesh"]
+size = Vector3(4, 1.3, 1.3)
+[sub_resource type="BoxShape3D" id="WestSandbagsShape"]
+size = Vector3(4, 1.3, 1.3)
+
+
+[sub_resource type="BoxMesh" id="EastSandbagsMesh"]
+size = Vector3(4, 1.3, 1.3)
+[sub_resource type="BoxShape3D" id="EastSandbagsShape"]
+size = Vector3(4, 1.3, 1.3)
+
+
+[sub_resource type="BoxMesh" id="OuterWestMesh"]
+size = Vector3(4, 1.3, 1.3)
+[sub_resource type="BoxShape3D" id="OuterWestShape"]
+size = Vector3(4, 1.3, 1.3)
+
+
+[sub_resource type="BoxMesh" id="OuterEastMesh"]
+size = Vector3(4, 1.3, 1.3)
+[sub_resource type="BoxShape3D" id="OuterEastShape"]
+size = Vector3(4, 1.3, 1.3)
+
+
+[sub_resource type="BoxMesh" id="TrenchWestMesh"]
+size = Vector3(1.5, 1.7, 14)
+[sub_resource type="BoxShape3D" id="TrenchWestShape"]
+size = Vector3(1.5, 1.7, 14)
+
+
+[sub_resource type="BoxMesh" id="TrenchEastMesh"]
+size = Vector3(1.5, 1.7, 10)
+[sub_resource type="BoxShape3D" id="TrenchEastShape"]
+size = Vector3(1.5, 1.7, 10)
+
+
+[sub_resource type="BoxMesh" id="TraverseMesh"]
+size = Vector3(3, 1.5, 1.2)
+[sub_resource type="BoxShape3D" id="TraverseShape"]
+size = Vector3(3, 1.5, 1.2)
+
+
+[sub_resource type="BoxMesh" id="GunShieldLeftMesh"]
+size = Vector3(2, 1.2, 1)
+[sub_resource type="BoxShape3D" id="GunShieldLeftShape"]
+size = Vector3(2, 1.2, 1)
+
+
+[sub_resource type="BoxMesh" id="GunShieldRightMesh"]
+size = Vector3(2, 1.2, 1)
+[sub_resource type="BoxShape3D" id="GunShieldRightShape"]
+size = Vector3(2, 1.2, 1)
+
+
+[sub_resource type="BoxMesh" id="EntryLeftMesh"]
+size = Vector3(7.5, 3.4, 1)
+[sub_resource type="BoxShape3D" id="EntryLeftShape"]
+size = Vector3(7.5, 3.4, 1)
+
+
+[sub_resource type="BoxMesh" id="EntryRightMesh"]
+size = Vector3(7.5, 3.4, 1)
+[sub_resource type="BoxShape3D" id="EntryRightShape"]
+size = Vector3(7.5, 3.4, 1)
+
+
+[sub_resource type="BoxMesh" id="EntryLintelMesh"]
+size = Vector3(3, 0.6, 1)
+[sub_resource type="BoxShape3D" id="EntryLintelShape"]
+size = Vector3(3, 0.6, 1)
+
+
+[sub_resource type="BoxMesh" id="WestWallMesh"]
+size = Vector3(1, 3.4, 22)
+[sub_resource type="BoxShape3D" id="WestWallShape"]
+size = Vector3(1, 3.4, 22)
+
+
+[sub_resource type="BoxMesh" id="EastWallMesh"]
+size = Vector3(1, 3.4, 22)
+[sub_resource type="BoxShape3D" id="EastWallShape"]
+size = Vector3(1, 3.4, 22)
+
+
+[sub_resource type="BoxMesh" id="RoofMesh"]
+size = Vector3(19, 0.5, 22)
+[sub_resource type="BoxShape3D" id="RoofShape"]
+size = Vector3(19, 0.5, 22)
+
+
+[sub_resource type="BoxMesh" id="ExitLeftMesh"]
+size = Vector3(7.5, 3.4, 1)
+[sub_resource type="BoxShape3D" id="ExitLeftShape"]
+size = Vector3(7.5, 3.4, 1)
+
+
+[sub_resource type="BoxMesh" id="ExitRightMesh"]
+size = Vector3(7.5, 3.4, 1)
+[sub_resource type="BoxShape3D" id="ExitRightShape"]
+size = Vector3(7.5, 3.4, 1)
+
+
+[sub_resource type="BoxMesh" id="ExitLintelMesh"]
+size = Vector3(3, 0.6, 1)
+[sub_resource type="BoxShape3D" id="ExitLintelShape"]
+size = Vector3(3, 0.6, 1)
+
+
+[sub_resource type="BoxMesh" id="LeftHallFrontMesh"]
+size = Vector3(0.3, 3.4, 2.5)
+[sub_resource type="BoxShape3D" id="LeftHallFrontShape"]
+size = Vector3(0.3, 3.4, 2.5)
+
+
+[sub_resource type="BoxMesh" id="LeftHallMiddleMesh"]
+size = Vector3(0.3, 3.4, 5.5)
+[sub_resource type="BoxShape3D" id="LeftHallMiddleShape"]
+size = Vector3(0.3, 3.4, 5.5)
+
+
+[sub_resource type="BoxMesh" id="LeftHallRearMesh"]
+size = Vector3(0.3, 3.4, 4)
+[sub_resource type="BoxShape3D" id="LeftHallRearShape"]
+size = Vector3(0.3, 3.4, 4)
+
+
+[sub_resource type="BoxMesh" id="RightHallFrontMesh"]
+size = Vector3(0.3, 3.4, 2.5)
+[sub_resource type="BoxShape3D" id="RightHallFrontShape"]
+size = Vector3(0.3, 3.4, 2.5)
+
+
+[sub_resource type="BoxMesh" id="RightHallMiddleMesh"]
+size = Vector3(0.3, 3.4, 5.5)
+[sub_resource type="BoxShape3D" id="RightHallMiddleShape"]
+size = Vector3(0.3, 3.4, 5.5)
+
+
+[sub_resource type="BoxMesh" id="RightHallRearMesh"]
+size = Vector3(0.3, 3.4, 4)
+[sub_resource type="BoxShape3D" id="RightHallRearShape"]
+size = Vector3(0.3, 3.4, 4)
+
+
+[sub_resource type="BoxMesh" id="WestRoomDividerMesh"]
+size = Vector3(6.6, 3.4, 0.3)
+[sub_resource type="BoxShape3D" id="WestRoomDividerShape"]
+size = Vector3(6.6, 3.4, 0.3)
+
+
+[sub_resource type="BoxMesh" id="EastRoomDividerMesh"]
+size = Vector3(6.6, 3.4, 0.3)
+[sub_resource type="BoxShape3D" id="EastRoomDividerShape"]
+size = Vector3(6.6, 3.4, 0.3)
+
+
+[sub_resource type="BoxMesh" id="RadioDeskMesh"]
+size = Vector3(2.5, 0.85, 1.1)
+[sub_resource type="BoxShape3D" id="RadioDeskShape"]
+size = Vector3(2.5, 0.85, 1.1)
+
+
+[sub_resource type="BoxMesh" id="MapDeskMesh"]
+size = Vector3(2, 0.85, 1)
+[sub_resource type="BoxShape3D" id="MapDeskShape"]
+size = Vector3(2, 0.85, 1)
+
+
+[sub_resource type="BoxMesh" id="RadioMesh"]
+size = Vector3(0.8, 0.5, 0.5)
+[sub_resource type="BoxShape3D" id="RadioShape"]
+size = Vector3(0.8, 0.5, 0.5)
+
+
+[sub_resource type="BoxMesh" id="StorageCratesMesh"]
+size = Vector3(1.5, 1.5, 2)
+[sub_resource type="BoxShape3D" id="StorageCratesShape"]
+size = Vector3(1.5, 1.5, 2)
+
+
+[node name="CommandPostEnvironment" type="Node3D"]
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment")
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-45, -25, 0)
+light_energy = 1.2
+shadow_enabled = true
+directional_shadow_max_distance = 100.0
+[node name="Terrain" type="Node3D" parent="."]
+[node name="Forest" type="Node3D" parent="."]
+[node name="Fortifications" type="Node3D" parent="."]
+[node name="Bunker" type="Node3D" parent="."]
+
+
+[node name="Ground" type="StaticBody3D" parent="Terrain"]
+position = Vector3(0, -0.5, -27)
+[node name="Mesh" type="MeshInstance3D" parent="Terrain/Ground"]
+mesh = SubResource("GroundMesh")
+material_override = ExtResource("forest_floor")
+[node name="Collision" type="CollisionShape3D" parent="Terrain/Ground"]
+shape = SubResource("GroundShape")
+
+
+[node name="Trail" type="StaticBody3D" parent="Terrain"]
+position = Vector3(0, 0.01, -25)
+[node name="Mesh" type="MeshInstance3D" parent="Terrain/Trail"]
+mesh = SubResource("TrailMesh")
+material_override = ExtResource("mud")
+[node name="Collision" type="CollisionShape3D" parent="Terrain/Trail"]
+shape = SubResource("TrailShape")
+
+
+[node name="WestBoundary" type="StaticBody3D" parent="Terrain"]
+position = Vector3(-26, 1.8, -27)
+[node name="Mesh" type="MeshInstance3D" parent="Terrain/WestBoundary"]
+mesh = SubResource("WestBoundaryMesh")
+material_override = ExtResource("stone")
+[node name="Collision" type="CollisionShape3D" parent="Terrain/WestBoundary"]
+shape = SubResource("WestBoundaryShape")
+
+
+[node name="EastBoundary" type="StaticBody3D" parent="Terrain"]
+position = Vector3(26, 1.8, -27)
+[node name="Mesh" type="MeshInstance3D" parent="Terrain/EastBoundary"]
+mesh = SubResource("EastBoundaryMesh")
+material_override = ExtResource("stone")
+[node name="Collision" type="CollisionShape3D" parent="Terrain/EastBoundary"]
+shape = SubResource("EastBoundaryShape")
+
+
+[node name="RearBoundary" type="StaticBody3D" parent="Terrain"]
+position = Vector3(0, 1.8, -89)
+[node name="Mesh" type="MeshInstance3D" parent="Terrain/RearBoundary"]
+mesh = SubResource("RearBoundaryMesh")
+material_override = ExtResource("stone")
+[node name="Collision" type="CollisionShape3D" parent="Terrain/RearBoundary"]
+shape = SubResource("RearBoundaryShape")
+
+
+[node name="StartBoundary" type="StaticBody3D" parent="Terrain"]
+position = Vector3(0, 1.8, 35)
+[node name="Mesh" type="MeshInstance3D" parent="Terrain/StartBoundary"]
+mesh = SubResource("StartBoundaryMesh")
+material_override = ExtResource("stone")
+[node name="Collision" type="CollisionShape3D" parent="Terrain/StartBoundary"]
+shape = SubResource("StartBoundaryShape")
+
+
+[node name="RangeBackstop" type="StaticBody3D" parent="Terrain"]
+position = Vector3(-16, 1.5, -7)
+[node name="Mesh" type="MeshInstance3D" parent="Terrain/RangeBackstop"]
+mesh = SubResource("RangeBackstopMesh")
+material_override = ExtResource("stone")
+[node name="Collision" type="CollisionShape3D" parent="Terrain/RangeBackstop"]
+shape = SubResource("RangeBackstopShape")
+
+
+[node name="RangePartition" type="StaticBody3D" parent="Terrain"]
+position = Vector3(-8, 1.2, 1)
+[node name="Mesh" type="MeshInstance3D" parent="Terrain/RangePartition"]
+mesh = SubResource("RangePartitionMesh")
+material_override = ExtResource("stone")
+[node name="Collision" type="CollisionShape3D" parent="Terrain/RangePartition"]
+shape = SubResource("RangePartitionShape")
+
+
+[node name="RoadCoverA" type="StaticBody3D" parent="Terrain"]
+position = Vector3(-3, 0.625, -17)
+[node name="Mesh" type="MeshInstance3D" parent="Terrain/RoadCoverA"]
+mesh = SubResource("RoadCoverAMesh")
+material_override = ExtResource("stone")
+[node name="Collision" type="CollisionShape3D" parent="Terrain/RoadCoverA"]
+shape = SubResource("RoadCoverAShape")
+
+
+[node name="RoadCoverB" type="StaticBody3D" parent="Terrain"]
+position = Vector3(4, 0.625, -28)
+[node name="Mesh" type="MeshInstance3D" parent="Terrain/RoadCoverB"]
+mesh = SubResource("RoadCoverBMesh")
+material_override = ExtResource("stone")
+[node name="Collision" type="CollisionShape3D" parent="Terrain/RoadCoverB"]
+shape = SubResource("RoadCoverBShape")
+
+
+[node name="WestSandbags" type="StaticBody3D" parent="Fortifications"]
+position = Vector3(-4, 0.65, -40)
+[node name="Mesh" type="MeshInstance3D" parent="Fortifications/WestSandbags"]
+mesh = SubResource("WestSandbagsMesh")
+material_override = ExtResource("timber")
+[node name="Collision" type="CollisionShape3D" parent="Fortifications/WestSandbags"]
+shape = SubResource("WestSandbagsShape")
+
+
+[node name="EastSandbags" type="StaticBody3D" parent="Fortifications"]
+position = Vector3(4, 0.65, -40)
+[node name="Mesh" type="MeshInstance3D" parent="Fortifications/EastSandbags"]
+mesh = SubResource("EastSandbagsMesh")
+material_override = ExtResource("timber")
+[node name="Collision" type="CollisionShape3D" parent="Fortifications/EastSandbags"]
+shape = SubResource("EastSandbagsShape")
+
+
+[node name="OuterWest" type="StaticBody3D" parent="Fortifications"]
+position = Vector3(-9, 0.65, -45)
+[node name="Mesh" type="MeshInstance3D" parent="Fortifications/OuterWest"]
+mesh = SubResource("OuterWestMesh")
+material_override = ExtResource("timber")
+[node name="Collision" type="CollisionShape3D" parent="Fortifications/OuterWest"]
+shape = SubResource("OuterWestShape")
+
+
+[node name="OuterEast" type="StaticBody3D" parent="Fortifications"]
+position = Vector3(9, 0.65, -45)
+[node name="Mesh" type="MeshInstance3D" parent="Fortifications/OuterEast"]
+mesh = SubResource("OuterEastMesh")
+material_override = ExtResource("timber")
+[node name="Collision" type="CollisionShape3D" parent="Fortifications/OuterEast"]
+shape = SubResource("OuterEastShape")
+
+
+[node name="TrenchWest" type="StaticBody3D" parent="Fortifications"]
+position = Vector3(-4, 0.85, -49)
+[node name="Mesh" type="MeshInstance3D" parent="Fortifications/TrenchWest"]
+mesh = SubResource("TrenchWestMesh")
+material_override = ExtResource("mud")
+[node name="Collision" type="CollisionShape3D" parent="Fortifications/TrenchWest"]
+shape = SubResource("TrenchWestShape")
+
+
+[node name="TrenchEast" type="StaticBody3D" parent="Fortifications"]
+position = Vector3(4, 0.85, -47)
+[node name="Mesh" type="MeshInstance3D" parent="Fortifications/TrenchEast"]
+mesh = SubResource("TrenchEastMesh")
+material_override = ExtResource("mud")
+[node name="Collision" type="CollisionShape3D" parent="Fortifications/TrenchEast"]
+shape = SubResource("TrenchEastShape")
+
+
+[node name="Traverse" type="StaticBody3D" parent="Fortifications"]
+position = Vector3(-1.8, 0.75, -48)
+[node name="Mesh" type="MeshInstance3D" parent="Fortifications/Traverse"]
+mesh = SubResource("TraverseMesh")
+material_override = ExtResource("timber")
+[node name="Collision" type="CollisionShape3D" parent="Fortifications/Traverse"]
+shape = SubResource("TraverseShape")
+
+
+[node name="GunShieldLeft" type="StaticBody3D" parent="Fortifications"]
+position = Vector3(-1.8, 0.6, -50)
+[node name="Mesh" type="MeshInstance3D" parent="Fortifications/GunShieldLeft"]
+mesh = SubResource("GunShieldLeftMesh")
+material_override = ExtResource("stone")
+[node name="Collision" type="CollisionShape3D" parent="Fortifications/GunShieldLeft"]
+shape = SubResource("GunShieldLeftShape")
+
+
+[node name="GunShieldRight" type="StaticBody3D" parent="Fortifications"]
+position = Vector3(1.8, 0.6, -50)
+[node name="Mesh" type="MeshInstance3D" parent="Fortifications/GunShieldRight"]
+mesh = SubResource("GunShieldRightMesh")
+material_override = ExtResource("stone")
+[node name="Collision" type="CollisionShape3D" parent="Fortifications/GunShieldRight"]
+shape = SubResource("GunShieldRightShape")
+
+
+[node name="EntryLeft" type="StaticBody3D" parent="Bunker"]
+position = Vector3(-5.25, 1.7, -59)
+[node name="Mesh" type="MeshInstance3D" parent="Bunker/EntryLeft"]
+mesh = SubResource("EntryLeftMesh")
+material_override = ExtResource("stone")
+[node name="Collision" type="CollisionShape3D" parent="Bunker/EntryLeft"]
+shape = SubResource("EntryLeftShape")
+
+
+[node name="EntryRight" type="StaticBody3D" parent="Bunker"]
+position = Vector3(5.25, 1.7, -59)
+[node name="Mesh" type="MeshInstance3D" parent="Bunker/EntryRight"]
+mesh = SubResource("EntryRightMesh")
+material_override = ExtResource("stone")
+[node name="Collision" type="CollisionShape3D" parent="Bunker/EntryRight"]
+shape = SubResource("EntryRightShape")
+
+
+[node name="EntryLintel" type="StaticBody3D" parent="Bunker"]
+position = Vector3(0, 3.1, -59)
+[node name="Mesh" type="MeshInstance3D" parent="Bunker/EntryLintel"]
+mesh = SubResource("EntryLintelMesh")
+material_override = ExtResource("stone")
+[node name="Collision" type="CollisionShape3D" parent="Bunker/EntryLintel"]
+shape = SubResource("EntryLintelShape")
+
+
+[node name="WestWall" type="StaticBody3D" parent="Bunker"]
+position = Vector3(-9, 1.7, -69)
+[node name="Mesh" type="MeshInstance3D" parent="Bunker/WestWall"]
+mesh = SubResource("WestWallMesh")
+material_override = ExtResource("stone")
+[node name="Collision" type="CollisionShape3D" parent="Bunker/WestWall"]
+shape = SubResource("WestWallShape")
+
+
+[node name="EastWall" type="StaticBody3D" parent="Bunker"]
+position = Vector3(9, 1.7, -69)
+[node name="Mesh" type="MeshInstance3D" parent="Bunker/EastWall"]
+mesh = SubResource("EastWallMesh")
+material_override = ExtResource("stone")
+[node name="Collision" type="CollisionShape3D" parent="Bunker/EastWall"]
+shape = SubResource("EastWallShape")
+
+
+[node name="Roof" type="StaticBody3D" parent="Bunker"]
+position = Vector3(0, 3.65, -69)
+[node name="Mesh" type="MeshInstance3D" parent="Bunker/Roof"]
+mesh = SubResource("RoofMesh")
+material_override = ExtResource("stone")
+[node name="Collision" type="CollisionShape3D" parent="Bunker/Roof"]
+shape = SubResource("RoofShape")
+
+
+[node name="ExitLeft" type="StaticBody3D" parent="Bunker"]
+position = Vector3(-5.25, 1.7, -80)
+[node name="Mesh" type="MeshInstance3D" parent="Bunker/ExitLeft"]
+mesh = SubResource("ExitLeftMesh")
+material_override = ExtResource("stone")
+[node name="Collision" type="CollisionShape3D" parent="Bunker/ExitLeft"]
+shape = SubResource("ExitLeftShape")
+
+
+[node name="ExitRight" type="StaticBody3D" parent="Bunker"]
+position = Vector3(5.25, 1.7, -80)
+[node name="Mesh" type="MeshInstance3D" parent="Bunker/ExitRight"]
+mesh = SubResource("ExitRightMesh")
+material_override = ExtResource("stone")
+[node name="Collision" type="CollisionShape3D" parent="Bunker/ExitRight"]
+shape = SubResource("ExitRightShape")
+
+
+[node name="ExitLintel" type="StaticBody3D" parent="Bunker"]
+position = Vector3(0, 3.1, -80)
+[node name="Mesh" type="MeshInstance3D" parent="Bunker/ExitLintel"]
+mesh = SubResource("ExitLintelMesh")
+material_override = ExtResource("stone")
+[node name="Collision" type="CollisionShape3D" parent="Bunker/ExitLintel"]
+shape = SubResource("ExitLintelShape")
+
+
+[node name="LeftHallFront" type="StaticBody3D" parent="Bunker"]
+position = Vector3(-2, 1.7, -60.8)
+[node name="Mesh" type="MeshInstance3D" parent="Bunker/LeftHallFront"]
+mesh = SubResource("LeftHallFrontMesh")
+material_override = ExtResource("stone")
+[node name="Collision" type="CollisionShape3D" parent="Bunker/LeftHallFront"]
+shape = SubResource("LeftHallFrontShape")
+
+
+[node name="LeftHallMiddle" type="StaticBody3D" parent="Bunker"]
+position = Vector3(-2, 1.7, -68.5)
+[node name="Mesh" type="MeshInstance3D" parent="Bunker/LeftHallMiddle"]
+mesh = SubResource("LeftHallMiddleMesh")
+material_override = ExtResource("stone")
+[node name="Collision" type="CollisionShape3D" parent="Bunker/LeftHallMiddle"]
+shape = SubResource("LeftHallMiddleShape")
+
+
+[node name="LeftHallRear" type="StaticBody3D" parent="Bunker"]
+position = Vector3(-2, 1.7, -77.5)
+[node name="Mesh" type="MeshInstance3D" parent="Bunker/LeftHallRear"]
+mesh = SubResource("LeftHallRearMesh")
+material_override = ExtResource("stone")
+[node name="Collision" type="CollisionShape3D" parent="Bunker/LeftHallRear"]
+shape = SubResource("LeftHallRearShape")
+
+
+[node name="RightHallFront" type="StaticBody3D" parent="Bunker"]
+position = Vector3(2, 1.7, -60.8)
+[node name="Mesh" type="MeshInstance3D" parent="Bunker/RightHallFront"]
+mesh = SubResource("RightHallFrontMesh")
+material_override = ExtResource("stone")
+[node name="Collision" type="CollisionShape3D" parent="Bunker/RightHallFront"]
+shape = SubResource("RightHallFrontShape")
+
+
+[node name="RightHallMiddle" type="StaticBody3D" parent="Bunker"]
+position = Vector3(2, 1.7, -68.5)
+[node name="Mesh" type="MeshInstance3D" parent="Bunker/RightHallMiddle"]
+mesh = SubResource("RightHallMiddleMesh")
+material_override = ExtResource("stone")
+[node name="Collision" type="CollisionShape3D" parent="Bunker/RightHallMiddle"]
+shape = SubResource("RightHallMiddleShape")
+
+
+[node name="RightHallRear" type="StaticBody3D" parent="Bunker"]
+position = Vector3(2, 1.7, -77.5)
+[node name="Mesh" type="MeshInstance3D" parent="Bunker/RightHallRear"]
+mesh = SubResource("RightHallRearMesh")
+material_override = ExtResource("stone")
+[node name="Collision" type="CollisionShape3D" parent="Bunker/RightHallRear"]
+shape = SubResource("RightHallRearShape")
+
+
+[node name="WestRoomDivider" type="StaticBody3D" parent="Bunker"]
+position = Vector3(-5.3, 1.7, -68)
+[node name="Mesh" type="MeshInstance3D" parent="Bunker/WestRoomDivider"]
+mesh = SubResource("WestRoomDividerMesh")
+material_override = ExtResource("stone")
+[node name="Collision" type="CollisionShape3D" parent="Bunker/WestRoomDivider"]
+shape = SubResource("WestRoomDividerShape")
+
+
+[node name="EastRoomDivider" type="StaticBody3D" parent="Bunker"]
+position = Vector3(5.3, 1.7, -68)
+[node name="Mesh" type="MeshInstance3D" parent="Bunker/EastRoomDivider"]
+mesh = SubResource("EastRoomDividerMesh")
+material_override = ExtResource("stone")
+[node name="Collision" type="CollisionShape3D" parent="Bunker/EastRoomDivider"]
+shape = SubResource("EastRoomDividerShape")
+
+
+[node name="RadioDesk" type="StaticBody3D" parent="Bunker"]
+position = Vector3(6, 0.425, -64)
+[node name="Mesh" type="MeshInstance3D" parent="Bunker/RadioDesk"]
+mesh = SubResource("RadioDeskMesh")
+material_override = ExtResource("timber")
+[node name="Collision" type="CollisionShape3D" parent="Bunker/RadioDesk"]
+shape = SubResource("RadioDeskShape")
+
+
+[node name="MapDesk" type="StaticBody3D" parent="Bunker"]
+position = Vector3(-6, 0.425, -75)
+[node name="Mesh" type="MeshInstance3D" parent="Bunker/MapDesk"]
+mesh = SubResource("MapDeskMesh")
+material_override = ExtResource("timber")
+[node name="Collision" type="CollisionShape3D" parent="Bunker/MapDesk"]
+shape = SubResource("MapDeskShape")
+
+
+[node name="Radio" type="StaticBody3D" parent="Bunker"]
+position = Vector3(6, 1.1, -64)
+[node name="Mesh" type="MeshInstance3D" parent="Bunker/Radio"]
+mesh = SubResource("RadioMesh")
+material_override = ExtResource("stone")
+[node name="Collision" type="CollisionShape3D" parent="Bunker/Radio"]
+shape = SubResource("RadioShape")
+
+
+[node name="StorageCrates" type="StaticBody3D" parent="Bunker"]
+position = Vector3(6, 0.75, -75)
+[node name="Mesh" type="MeshInstance3D" parent="Bunker/StorageCrates"]
+mesh = SubResource("StorageCratesMesh")
+material_override = ExtResource("timber")
+[node name="Collision" type="CollisionShape3D" parent="Bunker/StorageCrates"]
+shape = SubResource("StorageCratesShape")
+
+
+[node name="ApproachSign" type="Label3D" parent="."]
+position = Vector3(0, 2.6, 12)
+billboard = 1
+font_size = 40
+pixel_size = 0.006
+text = "FOREST COMMAND POST\nFollow the trail north"
+
+
+[node name="RangeSign" type="Label3D" parent="."]
+position = Vector3(-14, 2.6, 18)
+billboard = 1
+font_size = 40
+pixel_size = 0.006
+text = "COMBAT RANGE\nSupplies replenish after 25 seconds"
+
+
+[node name="FortSign" type="Label3D" parent="."]
+position = Vector3(0, 2.6, -37)
+billboard = 1
+font_size = 40
+pixel_size = 0.006
+text = "FORTIFIED PERIMETER"
+
+
+[node name="EntrySign" type="Label3D" parent="."]
+position = Vector3(0, 2.6, -58)
+billboard = 1
+font_size = 40
+pixel_size = 0.006
+text = "COMMAND POST"
+
+
+[node name="CommsSign" type="Label3D" parent="."]
+position = Vector3(5, 2.6, -62)
+billboard = 1
+font_size = 40
+pixel_size = 0.006
+text = "COMMUNICATIONS"
+
+
+[node name="MapSign" type="Label3D" parent="."]
+position = Vector3(-5, 2.6, -72)
+billboard = 1
+font_size = 40
+pixel_size = 0.006
+text = "OPERATIONS / DOCUMENTS"
+
+
+[node name="ExitSign" type="Label3D" parent="."]
+position = Vector3(0, 2.6, -82)
+billboard = 1
+font_size = 40
+pixel_size = 0.006
+text = "REAR EXIT / EXTRACTION"
+
+
+[node name="InteriorLight1" type="OmniLight3D" parent="Bunker"]
+position = Vector3(0, 2.7, -62)
+light_color = Color(0.95, 0.79, 0.56, 1)
+light_energy = 1.8
+omni_range = 7.0
+shadow_enabled = true
+
+
+[node name="InteriorLight2" type="OmniLight3D" parent="Bunker"]
+position = Vector3(-5, 2.7, -64)
+light_color = Color(0.95, 0.79, 0.56, 1)
+light_energy = 1.8
+omni_range = 7.0
+shadow_enabled = true
+
+
+[node name="InteriorLight3" type="OmniLight3D" parent="Bunker"]
+position = Vector3(5, 2.7, -64)
+light_color = Color(0.95, 0.79, 0.56, 1)
+light_energy = 1.8
+omni_range = 7.0
+shadow_enabled = true
+
+
+[node name="InteriorLight4" type="OmniLight3D" parent="Bunker"]
+position = Vector3(0, 2.7, -72)
+light_color = Color(0.95, 0.79, 0.56, 1)
+light_energy = 1.8
+omni_range = 7.0
+shadow_enabled = true
+
+
+[node name="InteriorLight5" type="OmniLight3D" parent="Bunker"]
+position = Vector3(-5, 2.7, -74)
+light_color = Color(0.95, 0.79, 0.56, 1)
+light_energy = 1.8
+omni_range = 7.0
+shadow_enabled = true
+
+
+[node name="InteriorLight6" type="OmniLight3D" parent="Bunker"]
+position = Vector3(5, 2.7, -74)
+light_color = Color(0.95, 0.79, 0.56, 1)
+light_energy = 1.8
+omni_range = 7.0
+shadow_enabled = true
+
+
+[node name="InteriorLight7" type="OmniLight3D" parent="Bunker"]
+position = Vector3(0, 2.7, -79)
+light_color = Color(0.95, 0.79, 0.56, 1)
+light_energy = 1.8
+omni_range = 7.0
+shadow_enabled = true
+
+
+[node name="Conifer1" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-20.96, 0, 30.59)
+rotation = Vector3(0, 0.7, 0)
+
+
+[node name="Conifer2" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-23.05, 0, -14.46)
+rotation = Vector3(0, 1.4, 0)
+
+
+[node name="Conifer3" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-21.98, 0, -20.59)
+rotation = Vector3(0, 2.0999999999999996, 0)
+
+
+[node name="Conifer4" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-20.97, 0, -25.72)
+rotation = Vector3(0, 2.8, 0)
+
+
+[node name="Conifer5" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-23.06, 0, -30.19)
+rotation = Vector3(0, 3.5, 0)
+
+
+[node name="Conifer6" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-21.96, 0, -34.94)
+rotation = Vector3(0, 4.199999999999999, 0)
+
+
+[node name="Conifer7" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-20.99, 0, -40.67)
+rotation = Vector3(0, 4.8999999999999995, 0)
+
+
+[node name="Conifer8" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-23.07, 0, -47.16)
+rotation = Vector3(0, 5.6, 0)
+
+
+[node name="Conifer9" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-21.94, 0, -53.5)
+rotation = Vector3(0, 6.3, 0)
+
+
+[node name="Conifer10" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-17, 0, 29.08)
+rotation = Vector3(0, 7, 0)
+
+
+[node name="Conifer11" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-19.07, 0, -14)
+rotation = Vector3(0, 7.699999999999999, 0)
+
+
+[node name="Conifer12" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-17.92, 0, -18.57)
+rotation = Vector3(0, 8.399999999999999, 0)
+
+
+[node name="Conifer13" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-17.01, 0, -24)
+rotation = Vector3(0, 9.1, 0)
+
+
+[node name="Conifer14" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-19.08, 0, -30.35)
+rotation = Vector3(0, 9.799999999999999, 0)
+
+
+[node name="Conifer15" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-17.9, 0, -36.84)
+rotation = Vector3(0, 10.5, 0)
+
+
+[node name="Conifer16" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-17.02, 0, -42.55)
+rotation = Vector3(0, 11.2, 0)
+
+
+[node name="Conifer17" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-19.09, 0, -47.3)
+rotation = Vector3(0, 11.899999999999999, 0)
+
+
+[node name="Conifer18" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-17.88, 0, -51.77)
+rotation = Vector3(0, 12.6, 0)
+
+
+[node name="Conifer19" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-12.03, 0, 31.09)
+rotation = Vector3(0, 13.299999999999999, 0)
+
+
+[node name="Conifer20" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-14.1, 0, -13.55)
+rotation = Vector3(0, 14, 0)
+
+
+[node name="Conifer21" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-12.86, 0, -20.1)
+rotation = Vector3(0, 14.7, 0)
+
+
+[node name="Conifer22" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-12.04, 0, -26.1)
+rotation = Vector3(0, 15.399999999999999, 0)
+
+
+[node name="Conifer23" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-14.11, 0, -31.09)
+rotation = Vector3(0, 16.099999999999998, 0)
+
+
+[node name="Conifer24" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-12.84, 0, -35.53)
+rotation = Vector3(0, 16.799999999999997, 0)
+
+
+[node name="Conifer25" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-12.05, 0, -40.41)
+rotation = Vector3(0, 17.5, 0)
+
+
+[node name="Conifer26" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-14.12, 0, -46.29)
+rotation = Vector3(0, 18.2, 0)
+
+
+[node name="Conifer27" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-12.82, 0, -52.82)
+rotation = Vector3(0, 18.9, 0)
+
+
+[node name="Conifer28" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-6.07, 0, 28.94)
+rotation = Vector3(0, 19.599999999999998, 0)
+
+
+[node name="Conifer29" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-8.12, 0, 23.68)
+rotation = Vector3(0, 20.299999999999997, 0)
+
+
+[node name="Conifer30" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-6.8, 0, 19.17)
+rotation = Vector3(0, 21, 0)
+
+
+[node name="Conifer31" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-6.08, 0, 14.51)
+rotation = Vector3(0, 21.7, 0)
+
+
+[node name="Conifer32" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-8.13, 0, 8.92)
+rotation = Vector3(0, 22.4, 0)
+
+
+[node name="Conifer33" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-6.78, 0, 2.49)
+rotation = Vector3(0, 23.099999999999998, 0)
+
+
+[node name="Conifer34" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-6.09, 0, -3.93)
+rotation = Vector3(0, 23.799999999999997, 0)
+
+
+[node name="Conifer35" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-8.14, 0, -9.49)
+rotation = Vector3(0, 24.5, 0)
+
+
+[node name="Conifer36" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-6.76, 0, -14.14)
+rotation = Vector3(0, 25.2, 0)
+
+
+[node name="Conifer37" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-6.11, 0, -18.66)
+rotation = Vector3(0, 25.9, 0)
+
+
+[node name="Conifer38" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-8.14, 0, -23.95)
+rotation = Vector3(0, 26.599999999999998, 0)
+
+
+[node name="Conifer39" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(-6.74, 0, -30.21)
+rotation = Vector3(0, 27.299999999999997, 0)
+
+
+[node name="Conifer40" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(7.88, 0, 29.27)
+rotation = Vector3(0, 28, 0)
+
+
+[node name="Conifer41" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(5.85, 0, 23.41)
+rotation = Vector3(0, 28.7, 0)
+
+
+[node name="Conifer42" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(7.28, 0, 18.56)
+rotation = Vector3(0, 29.4, 0)
+
+
+[node name="Conifer43" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(7.87, 0, 14.11)
+rotation = Vector3(0, 30.099999999999998, 0)
+
+
+[node name="Conifer44" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(5.85, 0, 9.1)
+rotation = Vector3(0, 30.799999999999997, 0)
+
+
+[node name="Conifer45" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(7.3, 0, 3.08)
+rotation = Vector3(0, 31.499999999999996, 0)
+
+
+[node name="Conifer46" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(7.85, 0, -3.48)
+rotation = Vector3(0, 32.199999999999996, 0)
+
+
+[node name="Conifer47" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(5.84, 0, -9.59)
+rotation = Vector3(0, 32.9, 0)
+
+
+[node name="Conifer48" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(7.32, 0, -14.7)
+rotation = Vector3(0, 33.599999999999994, 0)
+
+
+[node name="Conifer49" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(7.84, 0, -19.17)
+rotation = Vector3(0, 34.3, 0)
+
+
+[node name="Conifer50" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(5.84, 0, -23.94)
+rotation = Vector3(0, 35, 0)
+
+
+[node name="Conifer51" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(7.34, 0, -29.68)
+rotation = Vector3(0, 35.699999999999996, 0)
+
+
+[node name="Conifer52" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(12.82, 0, 29.82)
+rotation = Vector3(0, 36.4, 0)
+
+
+[node name="Conifer53" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(10.83, 0, 23.49)
+rotation = Vector3(0, 37.099999999999994, 0)
+
+
+[node name="Conifer54" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(12.36, 0, 18.09)
+rotation = Vector3(0, 37.8, 0)
+
+
+[node name="Conifer55" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(12.81, 0, 13.52)
+rotation = Vector3(0, 38.5, 0)
+
+
+[node name="Conifer56" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(10.83, 0, 8.94)
+rotation = Vector3(0, 39.199999999999996, 0)
+
+
+[node name="Conifer57" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(12.38, 0, 3.49)
+rotation = Vector3(0, 39.9, 0)
+
+
+[node name="Conifer58" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(12.79, 0, -2.87)
+rotation = Vector3(0, 40.599999999999994, 0)
+
+
+[node name="Conifer59" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(10.82, 0, -9.35)
+rotation = Vector3(0, 41.3, 0)
+
+
+[node name="Conifer60" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(12.4, 0, -15.05)
+rotation = Vector3(0, 42, 0)
+
+
+[node name="Conifer61" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(12.78, 0, -19.78)
+rotation = Vector3(0, 42.699999999999996, 0)
+
+
+[node name="Conifer62" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(10.82, 0, -24.26)
+rotation = Vector3(0, 43.4, 0)
+
+
+[node name="Conifer63" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(12.41, 0, -29.42)
+rotation = Vector3(0, 44.099999999999994, 0)
+
+
+[node name="Conifer64" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(12.76, 0, -35.57)
+rotation = Vector3(0, 44.8, 0)
+
+
+[node name="Conifer65" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(10.82, 0, -42.12)
+rotation = Vector3(0, 45.5, 0)
+
+
+[node name="Conifer66" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(12.43, 0, -48.1)
+rotation = Vector3(0, 46.199999999999996, 0)
+
+
+[node name="Conifer67" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(12.75, 0, -53.07)
+rotation = Vector3(0, 46.9, 0)
+
+
+[node name="Conifer68" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(15.81, 0, 30.48)
+rotation = Vector3(0, 47.599999999999994, 0)
+
+
+[node name="Conifer69" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(17.45, 0, 25.59)
+rotation = Vector3(0, 48.3, 0)
+
+
+[node name="Conifer70" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(17.73, 0, 19.7)
+rotation = Vector3(0, 49, 0)
+
+
+[node name="Conifer71" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(15.81, 0, 13.16)
+rotation = Vector3(0, 49.699999999999996, 0)
+
+
+[node name="Conifer72" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(17.47, 0, 6.94)
+rotation = Vector3(0, 50.4, 0)
+
+
+[node name="Conifer73" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(17.71, 0, 1.69)
+rotation = Vector3(0, 51.099999999999994, 0)
+
+
+[node name="Conifer74" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(15.81, 0, -2.81)
+rotation = Vector3(0, 51.8, 0)
+
+
+[node name="Conifer75" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(17.49, 0, -7.49)
+rotation = Vector3(0, 52.5, 0)
+
+
+[node name="Conifer76" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(17.7, 0, -13.09)
+rotation = Vector3(0, 53.199999999999996, 0)
+
+
+[node name="Conifer77" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(15.81, 0, -19.53)
+rotation = Vector3(0, 53.9, 0)
+
+
+[node name="Conifer78" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(17.51, 0, -25.94)
+rotation = Vector3(0, 54.599999999999994, 0)
+
+
+[node name="Conifer79" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(17.68, 0, -31.49)
+rotation = Vector3(0, 55.3, 0)
+
+
+[node name="Conifer80" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(15.8, 0, -36.12)
+rotation = Vector3(0, 56, 0)
+
+
+[node name="Conifer81" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(17.53, 0, -40.65)
+rotation = Vector3(0, 56.699999999999996, 0)
+
+
+[node name="Conifer82" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(17.67, 0, -45.96)
+rotation = Vector3(0, 57.4, 0)
+
+
+[node name="Conifer83" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(15.8, 0, -52.23)
+rotation = Vector3(0, 58.099999999999994, 0)
+
+
+[node name="Conifer84" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(22.54, 0, 29.25)
+rotation = Vector3(0, 58.8, 0)
+
+
+[node name="Conifer85" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(22.65, 0, 23.42)
+rotation = Vector3(0, 59.49999999999999, 0)
+
+
+[node name="Conifer86" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(20.8, 0, 18.58)
+rotation = Vector3(0, 60.199999999999996, 0)
+
+
+[node name="Conifer87" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(22.56, 0, 14.13)
+rotation = Vector3(0, 60.9, 0)
+
+
+[node name="Conifer88" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(22.63, 0, 9.1)
+rotation = Vector3(0, 61.599999999999994, 0)
+
+
+[node name="Conifer89" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(20.8, 0, 3.06)
+rotation = Vector3(0, 62.3, 0)
+
+
+[node name="Conifer90" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(22.58, 0, -3.49)
+rotation = Vector3(0, 62.99999999999999, 0)
+
+
+[node name="Conifer91" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(22.61, 0, -9.59)
+rotation = Vector3(0, 63.699999999999996, 0)
+
+
+[node name="Conifer92" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(20.8, 0, -14.69)
+rotation = Vector3(0, 64.39999999999999, 0)
+
+
+[node name="Conifer93" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(22.6, 0, -19.15)
+rotation = Vector3(0, 65.1, 0)
+
+
+[node name="Conifer94" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(22.6, 0, -23.93)
+rotation = Vector3(0, 65.8, 0)
+
+
+[node name="Conifer95" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(20.8, 0, -29.7)
+rotation = Vector3(0, 66.5, 0)
+
+
+[node name="Conifer96" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(22.61, 0, -36.2)
+rotation = Vector3(0, 67.19999999999999, 0)
+
+
+[node name="Conifer97" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(22.58, 0, -42.52)
+rotation = Vector3(0, 67.89999999999999, 0)
+
+
+[node name="Conifer98" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(20.8, 0, -47.9)
+rotation = Vector3(0, 68.6, 0)
+
+
+[node name="Conifer99" parent="Forest" instance=ExtResource("tree")]
+position = Vector3(22.63, 0, -52.46)
+rotation = Vector3(0, 69.3, 0)

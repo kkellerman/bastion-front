@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/gameplay/first_person_player.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/components/mouse_look.gd" id="2_look"]
@@ -6,6 +6,8 @@
 [ext_resource type="Script" path="res://scripts/components/health_component.gd" id="4_health"]
 [ext_resource type="Script" path="res://scripts/components/damage_receiver.gd" id="5_receiver"]
 [ext_resource type="PackedScene" path="res://scenes/ui/player_vitals.tscn" id="6_vitals"]
+[ext_resource type="Script" path="res://scripts/gameplay/player_interaction.gd" id="7_interaction"]
+[ext_resource type="Script" path="res://scripts/gameplay/footsteps.gd" id="8_steps"]
 
 [sub_resource type="CapsuleShape3D" id="Capsule_body"]
 resource_local_to_scene = true
@@ -63,6 +65,15 @@ script = ExtResource("4_health")
 script = ExtResource("5_receiver")
 body = NodePath("..")
 health = NodePath("../HealthComponent")
+
+[node name="PlayerInteraction" type="Node" parent="." node_paths=PackedStringArray("player", "camera")]
+script = ExtResource("7_interaction")
+player = NodePath("..")
+camera = NodePath("../Head/Camera3D")
+
+[node name="Footsteps" type="Node" parent="." node_paths=PackedStringArray("player")]
+script = ExtResource("8_steps")
+player = NodePath("..")
 
 [node name="PlayerVitals" parent="." node_paths=PackedStringArray("player", "health") instance=ExtResource("6_vitals")]
 player = NodePath("..")

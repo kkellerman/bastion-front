@@ -24,7 +24,7 @@ func fire(data: WeaponData, camera: Node3D, muzzle: Node3D, shooter: CollisionOb
 		return
 	var receiver: DamageReceiver = DamageReceiver.from_body(hit["collider"])
 	if receiver != null:
-		receiver.take_damage(data.damage)
+		receiver.take_damage(data.damage, shooter)
 	impact.emit(hit["position"], hit["normal"])
 
 

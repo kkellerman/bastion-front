@@ -1,251 +1,187 @@
 # Bastion Front
 
-Requested Milestone 3: an infantry, pistol and movement sandbox for Godot **4.7.x**, using typed
-GDScript, Forward+ and Vulkan. `wolf_like_godot_starter.md` remains the authoritative
-design specification. The primitive forest is a blockout for the future German
-forest approach, not the final visual target.
+A playable WWII combat and first-mission blockout for **Godot 4.7.x**, typed
+GDScript, Forward+ / Vulkan. `wolf_like_godot_starter.md` remains authoritative.
+This pass follows the explicitly expanded combat/mission scope; the specification's
+milestone numbering is unchanged. All assets are placeholders.
 
-This milestone follows the user's explicit infantry request. The specification
-labels basic AI as Milestone 4 and the faction framework as Milestone 3; that
-numbering has not been edited, and faction gameplay has not been implemented.
+## Run and controls
 
-## Run
-
-Open `project.godot` in Godot 4.7.x and press **F6** with `scenes/main.tscn` open,
-or press **F5** from any scene. No editor configuration or plugins are required.
-From this directory:
-
-```powershell
-godot --path .
-```
-
-The configured main scene is `res://scenes/main.tscn`. It composes the reusable
-player and the outdoor sandbox; neither component depends on a mission manager.
-
-## Controls
+Open `project.godot` and press **F5**, or run `godot --path .` from this directory.
+The default scene is `res://scenes/missions/forest_command_post.tscn`.
+The original `scenes/main.tscn` remains the regression sandbox (open it and use F6).
+No plugins, dependencies or asset downloads are required.
 
 | Input | Action |
 | --- | --- |
-| W / A / S / D | Forward / left / backward / right (physical key positions) |
-| Mouse | Look; pitch limited to 85 degrees up/down |
+| WASD / Mouse | Move / look |
 | Hold Shift | Sprint |
-| Space | Jump when grounded and standing |
-| Hold Ctrl | Crouch; release to stand when there is room |
-| Esc | Release mouse and disable movement input |
-| Left click | Fire one shot, or recapture the released mouse without firing |
-| Hold right click | Aim with centered sights, narrower FOV and reduced spread |
-| R | Reload |
-| Enter, after player death | Restart the sandbox with full health and ammo |
+| Space | Jump while standing and grounded |
+| Hold Ctrl | Crouch; standing requires overhead clearance |
+| Left click / hold | Fire; pistols/launchers need separate clicks; automatic guns repeat |
+| Hold right click | Aim, narrow FOV and reduce firearm spread |
+| R | Reload carried magazine or mounted belt |
+| 1 / 2 / 3 / 4 | Select loadout slot |
+| Mouse wheel | Cycle carried weapons |
+| G | Throw faction grenade |
+| E | Use aimed-at object within 2.8 m; mount/dismount gun |
+| F1 / F2 | Restart as Allied / German while in staging |
+| Enter | Restart after death or mission completion |
+| Esc | Release mouse; click recaptures without firing |
+| Alt+F4 / window close | Quit |
 
-Losing application focus also releases the mouse. Gravity continues while the
-mouse is released. Click inside the game to resume. Use the window close button
-or Alt+F4 to quit. There is no pause menu.
-Releasing the mouse does not pause the enemy or protect the player from damage.
+Focus loss also releases the mouse. Released mouse disables movement input but
+**does not pause combat**. Mount while standing and not reloading. Mounted aiming
+is limited to 55 degrees yaw and 25 degrees pitch either side. Switching and
+grenades are disabled while mounted.
 
-## Infantry test
+## Loadouts, ammunition and supplies
 
-One German infantry placeholder patrols roughly **32 metres ahead of spawn, just
-right of the track**. Walk past the target board on its right and approach the
-infantry. A small label shows its current state and health; player health appears
-at the bottom left. Existing movement and pistol controls are unchanged.
+| Faction | Slot 1 | Slot 2 | Slot 3 | Slot 4 | G |
+| --- | --- | --- | --- | --- | --- |
+| Allied | M1911 | Thompson | Bazooka | unused | Mk2 fragmentation grenade |
+| German | Walther P38 | MP40 | StG 44 | Panzerfaust | Stick grenade |
 
-The enemy has **100 health** and takes four M1911 hits to kill. Its placeholder SMG
-deals **8 damage per hit**, fires at a deliberately slow **90 RPM** for testing,
-and uses the shared ammo/reload system (30 loaded, 90 reserve, 2.2-second reload).
-The player has 100 health. On death, movement and firing stop; press Enter to
-restart. Enemy corpses remain as non-colliding placeholders until restart.
+| Weapon | Magazine / initial reserve | Reload seconds |
+| --- | --- | --- |
+| M1911 | 7 / 105 shared .45 ACP | 1.8 |
+| Thompson | 30 / 105 shared .45 ACP | 2.2 |
+| P38 | 8 / 128 shared 9 mm | 1.8 |
+| MP40 | 32 / 128 shared 9 mm | 2.4 |
+| StG 44 | 30 / 120 | 2.6 |
+| Bazooka | 1 / 4 | 3.0 |
+| Panzerfaust | 1 / 3 | 4.0 |
+| Fixed M1919 .30 cal | 100 / 500 | 4.0 |
+| Fixed MG42 | 200 / 600 | 5.0 |
 
-| State | Behavior |
-| --- | --- |
-| Idle | Wait one second before continuing the patrol; idle indefinitely without points. |
-| Patrol | Follow configured world-space points using NavigationAgent3D. |
-| Alert | React for 0.65 seconds, face the last sighting, or briefly turn if hit without a sighting. |
-| Chase | Navigate toward the last known position, refreshing it only while the player is visible. |
-| Attack | Stop within 12 m and fire only with current visual contact; reload when empty. |
-| Hurt | Stop movement and attack for 0.3 seconds, then return through alert. |
-| Death | Disable AI, weapon processing and collision; lay the primitive body on its side. |
+Shared reserves initialize once per ammo type using the largest configured reserve
+in the loadout. Magazines remain individual across switching. The original sandbox
+still starts the standalone M1911 at 7 / 35. Reload transfers only missing rounds
+at completion, retaining partial-magazine ammunition. Firing/switching cannot
+bypass reload. Empty handheld weapons need R; emplacements also reload when fired
+empty. Mounted reserves are separate and finite. These are prototype tuning values.
 
-Vision checks a **24 m range**, **100-degree cone**, and an eye-to-player-head
-collision ray. Crouching lowers the player's aim/detection point. Trees, the target
-board and other solid geometry block sight and shots. After losing sight, the
-enemy stops firing immediately, follows the remembered point for up to **4 seconds**,
-then returns to idle/patrol. Hidden player movement never refreshes that point.
-Damage alone causes a hurt/reaction state, not knowledge of the shooter's position.
+Both grenades start at three, bounce and detonate after three seconds; throwing has
+a 0.8-second cooldown and is blocked during reload. Launchers fire physical
+projectiles with gravity and contact detonation. Explosions use distance falloff,
+solid-cover occlusion and self-damage. Firearms retain camera and barrel-obstruction
+hitscan checks. Player and infantry have 100 HP with uniform body damage.
 
-To test, approach while the enemy faces you and watch Alert -> Chase -> Attack.
-Break sight behind a solid obstacle to verify memory expiry. Shoot the torso with
-the M1911 to see Hurt and then Death. For a fresh enemy after killing it, restart
-the game; there is no enemy respawn system.
+Walk over labeled supplies: health restores up to 40 HP, ammunition adds 40 per
+carried firearm ammo type and two launcher rounds, grenades add three (cap eight).
+Ammo caps are resource-derived. Unneeded supplies remain; collected crates respawn
+after 25 seconds. Range targets reset three seconds after destruction.
 
-## Infantry files and navigation
+## First mission flow
 
-- `scenes/characters/infantry.tscn`: reusable actor, collision, health, navigation,
-  eyes, muzzle, placeholder gun, composed behavior and state/health label.
-- `scripts/ai/infantry_brain.gd`: state transitions and last-seen memory.
-- `scripts/ai/infantry_vision.gd`: range, field of view and line of sight.
-- `scripts/ai/infantry_motor.gd`: navigation-path movement, turning and gravity.
-- `scripts/ai/infantry_combat.gd`: shared WeaponBase/HitscanShot use and muzzle flash.
-- `scripts/ai/infantry_status.gd`: prototype state/health readout.
-- `assets/characters/german/placeholder_infantry.tscn`: primitive humanoid visuals.
-- `resources/weapons/infantry_smg.tres`: prototype enemy weapon tuning/metadata.
-- `resources/missions/forest_navigation.tres`: committed navigation mesh, loaded by
-  the NavigationRegion3D in `scenes/main.tscn`; no startup bake or manual setup.
-- `scenes/ui/player_vitals.tscn` and `scripts/gameplay/player_vitals.gd`: player
-  health, death and Enter-to-restart handling, composed into the player scene.
-- `tests/infantry_smoke.gd`: integrated navigation, vision, combat, memory and death tests.
-- `tests/bake_navigation.gd`: rebuilds navigation from current static world collision.
+1. Start in the primitive conifer forest beside a dirt trail. The range on the left
+   has two targets, an M1919 and an MG42. Supplies and faction stations are beside/
+   behind spawn. F1/F2 or E at stations restart with the chosen faction.
+2. Follow the trail through two patrol encounters. Solid trunks and road obstacles
+   block sight and provide space to flank.
+3. Approach the fortified position and trench lane. A gunner-controlled MG42 covers
+   the central approach. Clear or flank it, then capture it with E.
+4. Enter the bunker through the central gap. Connected radio, operations and storage
+   rooms contain guards and additional supplies.
+5. Press E at the operations documents in the left rear room, then reach the marked
+   rear exit. Extraction is locked until documents are taken. Completion stops
+   combat and offers Enter-to-restart; death uses the same restart key.
 
-Integration modified `scenes/main.tscn`, `scenes/player/player.tscn`,
-`scenes/interactables/test_target.tscn`, `scripts/components/damage_receiver.gd`,
-`scripts/weapons/hitscan_shot.gd` and `project.godot`, plus this README and changelog.
-New scripts have `.gd.uid` sidecars. Movement and mouse-look scripts are unchanged.
+Seven infantry actors include the gunner. Allied play uses German opponents;
+German testing assigns Allied relationships and weapons to the same placeholder
+actors. This is one test mission, not two authored campaigns. The defensive MG42
+remains a capturable German emplacement in either testing configuration.
 
-The damage receiver is now a Node component with explicit collision-body and
-health references. It registers on that body so hitscan can resolve both static
-targets and CharacterBody3D actors without faction or scene-name branches.
-Shots test World, Player and Infantry collision layers while excluding the shooter.
-The infantry target and target aim point are assigned by the level. Later Allied
-variants can reuse the scripts and swap visual/weapon configuration; there is no
-hard-coded German behavior or duplicated faction AI.
+## Enemy behavior
 
-After changing static level geometry, rebuild the mesh with:
+The reusable actor retains idle, patrol, alert, chase, attack, hurt and death.
+NavigationAgent3D follows baked paths. Vision retains 24 m range, a 100-degree cone
+and head-directed occlusion. Hidden movement does not refresh sight memory; four
+seconds without renewed information returns enemies to idle/patrol.
 
-```powershell
-godot --headless --path . --script res://tests/bake_navigation.gd
-```
+Mission infantry vary speed, reaction delay and weapons. German opponents cycle
+P38, MP40 and StG 44; Allied variants use M1911 and Thompson. They stop within 12 m,
+fire 2-4-round bursts with 0.7-1.3-second rests and reload. Mission damage is reduced
+to eight per hit. The gunner uses 24 m and four-round bursts with one-second rests.
+Attacks require current sight. Hurt interrupts attacks for 0.3 seconds and flinches
+the mesh; death disables combat and collision.
 
-The bake includes solid terrain, trunks, test obstacles and the target board. It
-excludes actor bodies and visual-only foliage. It uses 0.4 m agent clearance,
-1.8 m height, a 0.2 m maximum climb and 35-degree walkable slopes. Patrol points
-are world-space positions configured on the enemy instance in the main scene.
+Hostile gunshots within 28 m and explosions/mounted fire within 45 m can alert
+enemies. Hearing records an approximate sound position, never a live hidden-player
+position. It is radius-based, passes through walls and cannot authorize firing
+without vision. The original sandbox retains its previous AI timing.
 
-## Pistol and target
+## Architecture and asset hooks
 
-The first Allied pistol is an **M1911 placeholder**. It starts with **7 rounds in
-the magazine and 35 in reserve**. Each click fires one shot; holding the trigger
-does not repeat. The rate limit is 300 rounds/minute (at least 0.2 seconds between
-shots). Empty fire does not consume reserve or automatically reload.
-
-Press **R** to reload in **1.8 seconds**. Firing is blocked during reload. Only the
-missing rounds transfer from reserve when the timer completes, so partial reloads
-retain ammunition. With insufficient reserve, the magazine fills only as far as
-available rounds allow. A full magazine or empty reserve prevents reloading.
-Reloading continues while the mouse is released. There is no chamber/+1 model.
-
-The board straight ahead of spawn has **100 health** and displays its remaining
-health. Each hit deals **25 damage**: four hits destroy it. It automatically resets
-after **3 seconds**. Shots stop at solid cover, including obstructions between the
-camera and offset barrel, and have an 80 m maximum range. The HUD shows magazine /
-reserve and reload/empty status. Restart the game to replenish the finite ammo.
-These are prototype tuning values, not researched weapon-performance claims.
-
-## Weapon architecture
-
-- `scripts/weapons/weapon_data.gd` and `resources/weapons/m1911.tres`: shared
-  configuration for identity, faction metadata, damage, rate, trigger mode, ammo,
-  reload, recoil, spread, range and presentation references. Runtime state never
-  mutates the Resource. Projectile/world-model/audio fields are reserved and unset.
-- `scripts/weapons/weapon_base.gd`: per-instance magazine, reserve, cooldown and
-  reload state. Emits signals and does not depend on player input or faction.
-- `scripts/weapons/hitscan_shot.gd`: camera aim plus barrel obstruction raycasts;
-  delegates damage to a `DamageReceiver` and emits impacts.
-- `scripts/components/{health_component,damage_receiver}.gd`: reusable damage
-  components. The receiver references health explicitly; no target-name checks.
-- `scripts/weapons/player_weapon.gd` and `scenes/weapons/player_weapon.tscn`: compose
-  input, weapon state, shot behavior, viewmodel and HUD. The rig is attached under
-  the player camera in `scenes/player/player.tscn`. Movement scripts are unchanged.
-- `scripts/weapons/weapon_viewmodel.gd` and
-  `assets/weapons/allied/m1911_viewmodel.tscn`: primitive first-person pistol,
-  muzzle marker/flash/light, visual recoil, aim/reload poses and optional audio.
-- `scripts/weapons/weapon_hud.gd` and `scenes/ui/weapon_hud.tscn`: crosshair, control
-  hint and signal-driven ammo/reload display.
-- `scripts/gameplay/test_target.gd` and `scenes/interactables/test_target.tscn`:
-  health readout and timed target reset, instanced in `scenes/main.tscn`.
-- `tests/weapon_smoke.gd`: ammo, reload, damage, obstruction, input and rendering
-  regression checks. New scripts have Godot-generated `.gd.uid` sidecars.
-
-To add another hitscan weapon later, create another `WeaponData` resource and a
-compatible `WeaponViewModel` scene, then assign the data on the rig's `WeaponBase`.
-The generic input component also supports a data-selected automatic trigger.
-Only the M1911 is supplied; there is no inventory or weapon switching yet.
-Projectile launchers must receive a separate projectile shot component in their
-milestone; the current rig explicitly rejects projectile configuration instead of
-silently firing a hitscan approximation. No faction gameplay has been introduced.
-
-## Scene and file inventory
-
-- `project.godot`: title, main scene, input mappings, physics layers, gravity,
-  resolution and renderer configuration.
-- `scenes/main.tscn`: launch scene; instances `ForestSandbox`, `Player`, `TestTarget`,
-  `GermanInfantry` and a navigation region.
-- `scenes/player/player.tscn`: `CharacterBody3D`, capsule collider, head/camera,
-  2.5 m interaction ray, standing-clearance shape cast, mouse-look component and weapon rig.
-- `scenes/missions/forest_sandbox.tscn`: ground, dirt track, solid perimeter,
-  two jump blocks, 15-degree ramp and landing, low crouch passage, trees, sky,
-  sunlight and fog. All environment geometry is editable in Godot; no runtime
-  generation script is required.
-- `scripts/gameplay/first_person_player.gd`: movement, sprint, crouch, jumping,
-  gravity, ground handling and overhead clearance.
-- `scripts/components/mouse_look.gd`: yaw/pitch and mouse capture/focus handling.
-- `assets/environments/germany/placeholder_conifer.tscn`: reusable primitive
-  conifer with solid trunk and visual-only canopy.
-- `assets/materials/{bark,forest_floor,mud,needles,stone,timber}.tres`: six shared,
-  rough, muted placeholder materials.
-- `tests/movement_smoke.gd`: executable scene, input and physics checks.
-- Script `.gd.uid` sidecars: Godot-generated stable resource identifiers; retain
-  these in version control.
-- `README.md` and `CHANGELOG.md`: usage, scope, validation and milestone notes.
-
-Empty `.gitkeep` files preserve the specification's future directory layout:
-`assets/characters/{allied,german}`,
-`assets/environments/{france,low_countries,military,generic_europe}`,
-`assets/{props,textures}`, `assets/weapons/{allied,german}`,
-`assets/audio/{weapons,ambience,voice_allied,voice_german}`,
-`scenes/{characters,weapons,mounted_weapons,pickups,interactables,ui}`,
-`scripts/{ai,weapons,factions,systems}`,
-`resources/{factions,weapons,characters,missions,items}`, `shaders`, and
-`localization`. Reserved folders retain their placeholders; weapon and damage
-folders now contain the implemented prototype files described above.
-
-The existing specification and `.gitignore` were not modified. Generated imports,
-caches, logs and validation captures live under the already ignored `.godot/`.
+- `resources/factions/{allied,german}.tres` / `FactionData`: loadouts, grenade,
+  hostility, language and future uniform/voice references, independent of meshes.
+- `resources/weapons/*.tres` / `WeaponData`: identity, damage, fire mode/rate, ammo,
+  reload, recoil/spread, projectile settings and presentation references.
+  `WeaponBase` owns instance timers/magazines; `WeaponInventory` and `AmmoPool`
+  handle selection/shared reserves. No behavior script per weapon or nationality.
+- `HitscanShot`, `ProjectileLauncher`, `ExplosiveProjectile`, `MountedWeapon`:
+  reusable delivery mechanisms. `HealthComponent` / `DamageReceiver` handle health
+  and faction filtering. Player input stays in `player_weapon.gd`; existing
+  movement and mouse-look scripts are unchanged.
+- `scripts/gameplay/{player_interaction,supply_pickup,footsteps}.gd`: composed
+  interaction, supplies and movement sound. `InteractionPoint` provides stations.
+- `scripts/systems/combat_audio.gd`: bounded spatial playback, pitch variation and
+  separate AI noise events. `resources/audio/prototype_palette.tres` accepts
+  gunshot, reload, dry-fire, impact, explosion, footstep and mounted streams. Empty
+  slots synthesize short original sounds. Weapon resources override shot/reload/dry.
+- `assets/weapons/{allied,german}/*_viewmodel.tscn`: replaceable primitive models
+  sharing flash/light, visual recoil and aim/reload poses. Retain the WeaponViewModel
+  interface and Muzzle/Flash/Light nodes when replacing art. Add final hand/weapon
+  animation inside these visual scenes. `world_model_scene` remains a reserved
+  resource hook, not an equipped-world-model pipeline.
+- Retained final asset directories: `assets/characters/{allied,german}`,
+  `assets/environments/`, `assets/props`, `assets/textures`, and
+  `assets/audio/{weapons,ambience,voice_allied,voice_german}`.
+- `scenes/missions/forest_command_post.tscn`: mission composition and encounters.
+  `command_post_environment.tscn`: editable static forest/fortification/interior.
+  `resources/missions/forest_command_post.tres` / `MissionData`: mission text;
+  `combat_mission.gd`: coordinator. `PrototypeSession` retains faction on restart.
+- `scenes/weapons/*_projectile.tscn`, `scenes/mounted_weapons/*.tscn`,
+  `scenes/pickups/*.tscn`: configured reusable instances.
+- `resources/missions/command_post_navigation.tres`: committed 1,216-polygon bake.
+  Retain `.gd.uid` sidecars; generated caches/captures remain ignored in `.godot/`.
 
 ## Validation
 
+Validated with Godot **4.7.2**, including Vulkan Forward+ display runs. Run windowed
+suites sequentially, keeping their window focused for injected input checks:
+
 ```powershell
 godot --headless --path . --editor --import --quit
-godot --headless --path . --quit-after 120
+godot --path . --quit-after 180
 godot --path . --script res://tests/movement_smoke.gd
-godot --headless --path . --script res://tests/weapon_smoke.gd
 godot --path . --script res://tests/weapon_smoke.gd
 godot --headless --path . --script res://tests/infantry_smoke.gd
-godot --path . --script res://tests/infantry_smoke.gd
+godot --headless --path . --script res://tests/combat_prototype_smoke.gd
+godot --headless --path . --script res://tests/defensive_mg_smoke.gd
+godot --path . --script res://tests/mission_flow_smoke.gd
 ```
 
-The full smoke test requires a display because headless Godot cannot capture the
-mouse. Keep its window focused while it runs. It exercises spawning, input-map
-presence, walking, normalized diagonal movement, sprinting, grounded jumping,
-airborne jump rejection, landing, crouch clearance, slope ascent/descent, boundary
-collision, the interaction ray, look limits, mouse release/recapture and focus
-loss. It prints a failure count and saves a rendered frame to
-`.godot/validation/sandbox.png`. A headless test run checks spawning and input maps
-and explicitly skips display-dependent checks.
+Original suites cover movement, collision/crouch, capture, pistol ammo/reloads/
+obstruction, infantry navigation/vision/memory/combat/death and restart. New combat
+tests cover all carried weapons, explosives, cover/falloff/self-damage, shared
+reserves, supplies, mounts, factions, hearing and extraction. The defensive MG
+suite verifies live attacks, capture and mounted player death. Mission-flow tests
+inject controls and physically walk the route, mount a gun, collect documents,
+exit and restart. They remove enemies to isolate route/input; combat is tested
+separately. Display runs save screenshots under `.godot/validation/`.
 
-The weapon suite checks rate limiting, independent ammo state, empty firing,
-partial and insufficient-reserve reloads, repeat-reload rejection, reload timing,
-hitscan damage/range, target destruction/reset and camera/barrel cover blocking.
-With a display it also injects actual mouse/key events to check recapture without
-firing, semi-automatic hold behavior, aiming and R reload. It saves
-`weapon_aim.png` and `weapon_sandbox.png` in `.godot/validation/`. Run windowed
-suites one at a time, keeping the test window focused.
+After static collision edits, rebuild navigation:
 
-The infantry suite verifies patrol and a path around the solid target board,
-FOV/range/occlusion, alert/chase/attack, incoming player damage, last-seen memory,
-stopping fire without sight, hurt/death, collision shutdown and player restart.
-The windowed run also saves `infantry_combat.png` under `.godot/validation/`.
+```powershell
+godot --headless --path . --script res://tests/bake_navigation.gd -- --mission
+# Original sandbox:
+godot --headless --path . --script res://tests/bake_navigation.gd
+```
 
-For a restricted shell that cannot write the normal Godot user cache, set these
-process-local paths before running the commands:
+Bakes use world collision, 0.4 m clearance, 1.8 m height, 0.2 m climb and 35-degree
+slopes. Solid trunks are included; visual canopies and actors are excluded.
+For shells unable to write the normal Godot cache, use process-local paths:
 
 ```powershell
 $env:APPDATA = Join-Path $PWD '.godot\validation\roaming'
@@ -253,37 +189,24 @@ $env:LOCALAPPDATA = Join-Path $PWD '.godot\validation\local'
 New-Item -ItemType Directory -Force $env:APPDATA, $env:LOCALAPPDATA | Out-Null
 ```
 
-Development validation used Godot 4.7.2 and a Vulkan Forward+ window on an AMD
-Radeon 860M. The restricted environment emits `Failed to read the root certificate
-store` at engine startup; this OS certificate access error does not originate in
-the game and did not prevent local importing, rendering or physics tests.
+The restricted validation environment emits `Failed to read the root certificate
+store` at startup. This existing OS diagnostic does not prevent local importing,
+rendering, physics or gameplay.
 
-## Limitations and next milestone
+## Limitations and next phase
 
-- Placeholder flat terrain, primitive trees and test fixtures only. Dense foliage,
-  realistic assets, terrain detailing and final cinematic lighting remain future
-  art work. No third-party assets or dependencies are included.
-- No automatic stair stepping, crouch transition animation, footsteps or gamepad
-  support. Walkable slopes use native floor snapping; jump onto vertical ledges.
-- The interaction ray is only the specification's Milestone 1 scaffold; there are
-  no interactables or interaction bindings yet.
-- Automated checks do not replace a human movement-feel and mouse-sensitivity
-  pass. Tune the exposed movement values in the Player scene as needed.
-- The player still carries only the M1911. The enemy SMG is a simple world-space
-  placeholder, not a finished/equippable MP40. Factions, campaigns and objectives
-  remain deferred.
-- Weapon art, sights, muzzle flash, reload motion and impacts are placeholders.
-  Recoil is visual viewmodel kick; there is no camera kick or ballistic recoil model.
-  Aiming uses simplified sights and reduced spread; there are no hand animations,
-  shell ejection, persistent bullet decals or weapon sounds yet.
-- The first-person mesh uses the normal world camera and may visually clip very
-  close to walls; obstruction tests still block damage through cover.
-- No ammo pickups, switching, inventory, projectiles or explosives. Later weapon
-  types can reuse data and ammo state but need their milestone-specific components.
-- Infantry uses a single head-directed visibility sample, fixed patrol points and
-  short sight memory. There is no hearing, squad AI, cover selection, search pattern,
-  melee, grenade use, animation rig, dialogue or final uniform/equipment art.
-- Navigation handles the baked static world only; moving-obstacle avoidance,
-  off-mesh links and navigation rebuilding during gameplay are not implemented.
-- Player/enemy health uses one collider with uniform damage; there are no body-part
-  multipliers, armor or ragdolls. Enemy ammo is finite and there is no resupply.
+- Primitive geometry, uniforms, weapon silhouettes, effects, sounds and motion.
+  Infantry share a visual and generic held gun. German mode is a loadout test.
+- No hands, skeletal reloads, shell ejection, persistent decals, ragdolls, body-part
+  damage or camera recoil. Viewmodels can visually clip walls; obstruction still
+  blocks damage. Panzerfaust reload represents readying the next disposable unit.
+- Radial grenade damage, no fragment simulation/cooking, armor/vehicle simulation,
+  penetration or NPC explosives. Mounted ammo and enemy ammunition are finite.
+- No acoustic occlusion, squad/cover tactics, advanced search, dynamic navigation
+  rebakes or moving-obstacle avoidance.
+- One flat-terrain mission; no checkpoints, saving, menus, campaign progression or
+  gamepad support. Automated tests do not replace human difficulty/feel/audio tuning.
+
+Next phase: **visual fidelity, licensed sound assets, animation and level polish**.
+Prioritize terrain/foliage, readable fortifications, cinematic lighting, rigged
+faction equipment/hands, spatial ambience, weapon mixes and encounter pacing.

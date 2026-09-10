@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=4 format=3]
+[ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="script"]
+[ext_resource type="PackedScene" path="res://assets/weapons/german/panzerfaust_viewmodel.tscn" id="view"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/rocket_projectile.tscn" id="projectile"]
+
+[resource]
+script = ExtResource("script")
+weapon_id = &"panzerfaust"
+display_name = "Panzerfaust"
+faction = &"german"
+weapon_class = &"launcher"
+damage = 250.0
+rate_of_fire = 20.0
+automatic = false
+magazine_capacity = 1
+starting_reserve = 3
+reserve_ammo_type = &"panzerfaust"
+reload_time = 4
+spread = 0
+recoil = 6.0
+viewmodel_scene = ExtResource("view")
+hitscan_or_projectile = 1
+projectile_scene = ExtResource("projectile")
+projectile_speed = 26.0
+projectile_gravity = 0.35
+fuse_time = 8.0
+explode_on_contact = true
+blast_radius = 5.0

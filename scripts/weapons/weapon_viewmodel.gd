@@ -30,13 +30,10 @@ func _process(delta: float) -> void:
 func play_shot(data: WeaponData) -> void:
 	_flash_remaining = 0.045
 	_kick = minf(_kick + data.recoil, 12.0)
-	_play_audio(data.muzzle_audio)
 
 
 func set_reloading(active: bool, data: WeaponData) -> void:
 	reloading = active
-	if active:
-		_play_audio(data.reload_audio)
 
 
 func _play_audio(stream: AudioStream) -> void:
