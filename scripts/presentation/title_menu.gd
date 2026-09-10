@@ -7,6 +7,7 @@ var soundscape: Node3D
 
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	get_node("/root/PlayerSettings").apply.call_deferred()
 	camera.look_at(Vector3(-1, 2.0, -59))
 	soundscape = Soundscape.new()
 	soundscape.listener = camera
@@ -34,7 +35,7 @@ func _ready() -> void:
 	var title: Label = _label(layout, "BASTION\nFRONT", Vector2(58, 107), 80, Color(0.86, 0.83, 0.72))
 	title.add_theme_font_override("font", font)
 	title.add_theme_constant_override("line_spacing", -16)
-	_label(layout, "FOREST COMMAND POST", Vector2(65, 307), 20, Color(0.67, 0.66, 0.55))
+	_label(layout, "FOREST COMMAND POST  /  F10 SETTINGS", Vector2(65, 307), 17, Color(0.67, 0.66, 0.55))
 	var line: ColorRect = ColorRect.new()
 	layout.add_child(line)
 	line.position = Vector2(65, 350)
@@ -82,11 +83,12 @@ func _select(index: int) -> void:
 	if _starting: return
 	match index:
 		0, 1:
+			get_node("/root/PrototypeSession").checkpoint.clear()
 			_starting = true
 			get_node("/root/PrototypeSession").faction_id = &"allied" if index == 0 else &"german"
 			get_tree().change_scene_to_file("res://scenes/missions/forest_command_post.tscn")
 		2:
 			panel.text = "FIELD MANUAL\n\nWASD move · Mouse look · Shift sprint · Ctrl crouch\nSpace jump · LMB fire · RMB aim · R reload\n1–4 / wheel switch · G grenade · E interact / mount\nEsc release mouse · Enter restart after death\n\nRecover the operations documents. Reach the rear exit."
 		3:
-			panel.text = "ASSET CREDITS\n\nCC0 PBR materials: Poly Haven\nForest Ground 04 · Bark Brown 02\nConcrete Wall 003 · Rock Boulder Dry\n\nOriginal meshes, map and designed audio: Bastion Front\nFull source and license records: ASSET_ATTRIBUTION.md"
+			panel.text = "ASSET CREDITS\n\nCC0 PBR materials: Poly Haven\nCC0 soldier base: nisu / OpenGameArt\n\nOriginal equipment, rig, map and effects: Bastion Front\nVoice recordings remain unfilled / silent\nFull source and license records: ASSET_ATTRIBUTION.md"
 		4: soundscape.quit_game()

@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="FactionData" format=3]
 
-[ext_resource type="PackedScene" path="res://assets/characters/german/infantry_field_uniform.tscn" id="3_dwnvw"]
-[ext_resource type="Resource" path="res://resources/characters/german_voice.tres" id="4_hywqm"]
+[ext_resource type="PackedScene" path="res://assets/characters/german/infantry_rigged.tscn" id="3_dwnvw"]
+[ext_resource type="Resource" path="res://resources/characters/german_voice.tres" id="4_dwnvw"]
 [ext_resource type="Resource" path="res://resources/weapons/mp40.tres" id="mp40"]
 [ext_resource type="Resource" path="res://resources/weapons/p38.tres" id="p38"]
 [ext_resource type="Resource" path="res://resources/weapons/panzerfaust.tres" id="panzerfaust"]
@@ -19,4 +19,5 @@ weapons = Array[ExtResource("weapon_script")]([ExtResource("p38"), ExtResource("
 grenade = ExtResource("stick_grenade")
 hostile_ids = Array[StringName]([&"allied"])
 uniform_scene = ExtResource("3_dwnvw")
-voice_set = ExtResource("4_hywqm")
+voice_set = ExtResource("4_dwnvw")
+sleeve_color = Color(0.22, 0.265, 0.225, 1)

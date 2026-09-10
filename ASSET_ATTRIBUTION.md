@@ -2,6 +2,18 @@
 
 ## External assets included
 
+The character iteration additionally includes **Rigged Lowpoly WW2 Soldier** by
+**nisu**, CC0 1.0, verified on the author's OpenGameArt entry on 2026-09-10:
+https://opengameart.org/content/rigged-lowpoly-ww2-soldier
+Download: https://opengameart.org/sites/default/files/lowpolysoldier.zip
+License: https://creativecommons.org/publicdomain/zero/1.0/
+Original FBX and texture: `assets/characters/source/LowpolySoldier/`.
+`tools/retarget_soldier.gd` converts the weighted rest geometry into the shared
+17-bone rig, combines/normalizes weights and poses arms for weapon carrying.
+Faction materials recolor clothing; original project helmets, gaiters and equipment
+differentiate the configurations. This is an adapted low-detail donor uniform,
+not a claim of museum-accurate Allied tailoring or final photorealistic characters.
+
 Downloaded 2026-09-10 from Poly Haven's official asset CDN. All four texture sets
 are **CC0 1.0 Universal**, permitting commercial use, modification and redistribution.
 License verified at https://polyhaven.com/license and each linked asset page.
@@ -39,8 +51,9 @@ Download URL pattern:
 - Native system fonts are requested by name for the menu; no font files are bundled.
   Godot's default font is the fallback.
 
-No third-party character/weapon models, music, recorded dialogue, proprietary game
-assets, commercial-film assets or other downloaded assets were incorporated.
+No third-party weapon models, music, recorded dialogue, proprietary game assets or
+commercial-film assets were incorporated. The CC0 character above is the only
+additional external asset in the character iteration.
 
 ## Recording and final-art requirements
 
@@ -50,12 +63,18 @@ MP40, StG 44, M1919 and MG42 reports; launcher launches; mechanisms and weapon-s
 reloads; dirt/wood/concrete/metal impacts and footsteps; grenade/rocket explosions;
 forest wind/birds/insects; distant artillery/gunfire; bunker ventilation/electrics.
 
-`resources/characters/german_voice.tres` separates seven German subtitle categories
-from an empty recording dictionary. Spotting, taking-fire, reloading, moving and
-lost-sight are connected to existing events; grenade-warning and casualty are
-prepared categories for later context wiring. No gibberish or synthesized German
-speech is played. Obtain authentic licensed/native-speaker recordings and a fluent
-review of context/timing before production.
+`resources/characters/{allied,german}_voice.tres` each contain eight combat event
+categories plus a radio briefing, subtitle keys, fallback text, timing and a separate
+empty recording dictionary. All categories have gameplay routes and share actor,
+category and global scheduling. Missing recordings are silent. No gibberish or
+synthesized German speech is played. Obtain authentic licensed/native-speaker
+recordings and a fluent review of context/timing before production. Recordings can
+be assigned directly to the matching event key without changing gameplay code.
+
+Original additions: shared rig/animation library and faction equipment builder,
+first-person hand geometry, overcast cloud shader, uniform shaders, impact masks,
+smoke/particles and lower-detail tree meshes. No external sky or voice asset was
+downloaded. The original synthesis assets remain sound effects only.
 
 Final mesh needs: scanned/authored foliage with production LODs; sculpted terrain;
 beveled and accurately textured weapons with hands; rigged faction uniforms/faces;

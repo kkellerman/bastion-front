@@ -29,6 +29,7 @@ func _ready() -> void:
 	add_child(birds)
 	birds.position = Vector3(15, 8, 0)
 	birds.stream = load("res://assets/audio/designed/birds.res")
+	birds.bus = &"Effects"
 	birds.volume_db = -21
 	birds.max_distance = 40
 	birds.play()
@@ -56,6 +57,7 @@ func _process(delta: float) -> void:
 	if _distant_time <= 0:
 		_distant_time = randf_range(10, 19)
 		var audio: AudioStreamPlayer3D = AudioStreamPlayer3D.new()
+		audio.bus = &"Effects"
 		add_child(audio)
 		audio.global_position = listener.global_position + Vector3(30, 8, -45)
 		audio.stream = load("res://assets/audio/designed/" + ("distant_artillery" if randf() < 0.6 else "distant_fire") + ".res")
@@ -67,6 +69,7 @@ func _process(delta: float) -> void:
 
 func _loop(cue: String, volume: float) -> AudioStreamPlayer:
 	var player: AudioStreamPlayer = AudioStreamPlayer.new()
+	player.bus = &"Effects"
 	add_child(player)
 	player.stream = load("res://assets/audio/designed/" + cue + ".res")
 	player.volume_db = volume

@@ -1,10 +1,14 @@
-[gd_resource type="Resource" script_class="FactionData" load_steps=7 format=3]
-[ext_resource type="Script" path="res://scripts/factions/faction_data.gd" id="script"]
-[ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="weapon_script"]
-[ext_resource type="Resource" path="res://resources/weapons/m1911.tres" id="m1911"]
-[ext_resource type="Resource" path="res://resources/weapons/thompson.tres" id="thompson"]
+[gd_resource type="Resource" script_class="FactionData" format=3]
+
+[ext_resource type="PackedScene" path="res://assets/characters/allied/infantry_rigged.tscn" id="3_0glu5"]
+[ext_resource type="Resource" path="res://resources/characters/allied_voice.tres" id="4_h18ia"]
 [ext_resource type="Resource" path="res://resources/weapons/bazooka.tres" id="bazooka"]
+[ext_resource type="Resource" path="res://resources/weapons/m1911.tres" id="m1911"]
 [ext_resource type="Resource" path="res://resources/weapons/mk2.tres" id="mk2"]
+[ext_resource type="Script" path="res://scripts/factions/faction_data.gd" id="script"]
+[ext_resource type="Resource" path="res://resources/weapons/thompson.tres" id="thompson"]
+[ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="weapon_script"]
+
 [resource]
 script = ExtResource("script")
 faction_id = &"allied"
@@ -13,3 +17,5 @@ spoken_language = &"en"
 weapons = Array[ExtResource("weapon_script")]([ExtResource("m1911"), ExtResource("thompson"), ExtResource("bazooka")])
 grenade = ExtResource("mk2")
 hostile_ids = Array[StringName]([&"german"])
+uniform_scene = ExtResource("3_0glu5")
+voice_set = ExtResource("4_h18ia")

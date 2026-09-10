@@ -1,0 +1,40 @@
+[gd_resource type="Resource" script_class="InfantryVoiceSet" format=3]
+
+[ext_resource type="Script" path="res://scripts/presentation/infantry_voice_set.gd" id="1_ins2a"]
+
+[resource]
+script = ExtResource("1_ins2a")
+language = &"en"
+subtitles = Dictionary[StringName, String]({
+&"briefing": "Command to patrol: follow the forest track. Take the command post, recover the documents, then leave by the rear exit. The eastern supply track offers another approach.",
+&"casualty": "Man down!",
+&"death": "I'm hit!",
+&"grenade_warning": "Grenade! Get down!",
+&"lost_sight": "Lost sight of him. Search the area.",
+&"moving": "Moving up. Watch the treeline.",
+&"reloading": "Reloading!",
+&"spotting": "Contact ahead!",
+&"taking_fire": "Taking fire!"
+})
+subtitle_keys = Dictionary[StringName, StringName]({
+&"briefing": &"ALLIED_BRIEFING",
+&"casualty": &"ALLIED_CASUALTY",
+&"death": &"ALLIED_DEATH",
+&"grenade_warning": &"ALLIED_GRENADE_WARNING",
+&"lost_sight": &"ALLIED_LOST_SIGHT",
+&"moving": &"ALLIED_MOVING",
+&"reloading": &"ALLIED_RELOADING",
+&"spotting": &"ALLIED_SPOTTING",
+&"taking_fire": &"ALLIED_TAKING_FIRE"
+})
+durations = Dictionary[StringName, float]({
+&"briefing": 11.0,
+&"casualty": 3.0,
+&"death": 3.0,
+&"grenade_warning": 3.0,
+&"lost_sight": 3.0,
+&"moving": 3.0,
+&"reloading": 3.0,
+&"spotting": 3.0,
+&"taking_fire": 3.0
+})

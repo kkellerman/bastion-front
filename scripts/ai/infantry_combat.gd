@@ -31,6 +31,8 @@ func attack(aim_point: Vector3) -> void:
 		return
 	if eye.global_position.distance_squared_to(aim_point) < 0.001:
 		return
+	var hit: Dictionary = actor.get_world_3d().direct_space_state.intersect_ray(PhysicsRayQueryParameters3D.create(muzzle.global_position, aim_point, 7, [actor.get_rid()]))
+	if not hit.is_empty() and (not FactionData.hostile(actor, hit.collider) or DamageReceiver.from_body(hit.collider) == null): return
 	eye.look_at(aim_point, Vector3.UP)
 	if weapon.magazine == 0:
 		if weapon.try_reload():

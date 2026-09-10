@@ -8,11 +8,12 @@ func _initialize() -> void:
 	DirAccess.make_dir_recursive_absolute(folder)
 	for variant: int in range(3):
 		_tree(variant)
+		_tree(variant, true)
 	_ground_plants()
 	print("Built original forest meshes")
 	quit()
 
-func _tree(variant: int) -> void:
+func _tree(variant: int, low: bool = false) -> void:
 	var wood: SurfaceTool = W.surface()
 	var leaves: SurfaceTool = W.surface()
 	var height: float = 13.0 + variant
@@ -22,8 +23,9 @@ func _tree(variant: int) -> void:
 	for root_index: int in range(7):
 		var angle: float = root_index * TAU / 7
 		W.tube(wood, Vector3(0, 0.2, 0), Vector3(cos(angle), 0.015, sin(angle)) * 1.1, 0.11, 0.018)
-	for branch: int in range(55):
-		var fraction: float = float(branch) / 55.0
+	var branches: int = 28 if low else 65
+	for branch: int in range(branches):
+		var fraction: float = float(branch) / branches
 		var angle: float = branch * 2.39996 + rng.randf_range(-0.3, 0.3)
 		var y: float = 2.8 + fraction * (height - 3.0)
 		var length: float = (1.0 - fraction) * rng.randf_range(2.1, 3.6) + 0.2
@@ -35,18 +37,21 @@ func _tree(variant: int) -> void:
 		var base: Vector3 = Vector3(0.1, y, 0)
 		var end: Vector3 = base + direction * length
 		W.tube(wood, base, end, 0.045 * (1.0 - fraction) + 0.008, 0.006)
-		for twig: int in range(12):
-			var along: float = float(twig + 1) / 13.0
+		var twigs: int = 6 if low else 12
+		for twig: int in range(twigs):
+			var along: float = float(twig + 1) / (twigs + 1)
 			var center: Vector3 = base.lerp(end, along)
 			var side: Vector3 = Vector3(-direction.z, 0.1, direction.x) * (1.0 if twig % 2 == 0 else -1.0)
 			var twig_end: Vector3 = center + (side + direction * 0.35) * (1.0 - along * 0.6) * 0.65
-			for needle: int in range(8):
-				var point: Vector3 = center.lerp(twig_end, float(needle) / 8)
+			var needles: int = 4 if low else 8
+			for needle: int in range(needles):
+				var point: Vector3 = center.lerp(twig_end, float(needle) / needles)
 				var lateral: Vector3 = Vector3(-side.z, 0.15, side.x) * (1.0 if needle % 2 == 0 else -1.0)
 				var color: Color = Color(0.035, 0.065, 0.025).lerp(Color(0.13, 0.19, 0.075), rng.randf())
-				W.leaf(leaves, point, point + (lateral + side * 0.4) * (0.22 if variant < 2 else 0.26), 0.035 if variant < 2 else 0.09, color)
-	_save(wood, "tree_%d_wood" % variant, load("res://assets/materials/presentation/bark.tres"))
-	_save(leaves, "tree_%d_foliage" % variant, _foliage())
+				W.leaf(leaves, point, point + (lateral + side * 0.4) * (0.36 if variant < 2 else 0.30), (0.07 if variant < 2 else 0.11) * (1.65 if low else 1.0), color)
+	var suffix: String = "_lod" if low else ""
+	_save(wood, "tree_%d_wood%s" % [variant, suffix], load("res://assets/materials/presentation/bark.tres"))
+	_save(leaves, "tree_%d_foliage%s" % [variant, suffix], _foliage())
 
 func _ground_plants() -> void:
 	var fern: SurfaceTool = W.surface()

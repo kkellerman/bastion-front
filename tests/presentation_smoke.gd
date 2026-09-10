@@ -39,7 +39,7 @@ func _run() -> void:
 	_check(env.get_node("Environment").environment.ssao_enabled, "Presentation enables ambient occlusion")
 	_check(env.get_node("Terrain/Ground/Mesh").material_override is ShaderMaterial, "Forest ground has layered PBR material")
 	var voice_set: InfantryVoiceSet = load("res://resources/characters/german_voice.tres") as InfantryVoiceSet
-	_check(voice_set.subtitles.size() == 7 and voice_set.recordings.is_empty(), "German dialogue categories retain separate unfilled recording slots")
+	_check(voice_set.subtitles.size() == 9 and voice_set.recordings.is_empty(), "German dialogue categories retain separate unfilled recording slots")
 	_check(AudioServer.get_bus_index("Bunker") >= 0, "Bunker reverb bus is available")
 	for cue: String in ["impact_dirt", "impact_wood", "impact_concrete", "impact_metal", "footstep_dirt", "footstep_concrete", "wind", "bunker"]:
 		_check(ResourceLoader.exists("res://assets/audio/designed/" + cue + ".res"), "Audio asset: " + cue)

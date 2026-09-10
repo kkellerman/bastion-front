@@ -9,6 +9,8 @@ extends Resource
 @export var hostile_ids: Array[StringName] = []
 @export var uniform_scene: PackedScene
 @export var voice_set: Resource
+@export var sleeve_color: Color = Color(0.38, 0.36, 0.25)
+@export var visual_variants: Array[PackedScene] = []
 
 
 static func hostile(first: Object, second: Object) -> bool:

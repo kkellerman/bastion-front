@@ -1,6 +1,7 @@
 extends Node
 
 signal noise(position: Vector3, radius: float, source: CollisionObject3D)
+signal bullet_passed(start: Vector3, end: Vector3, source: CollisionObject3D)
 var palette: AudioPalette = preload("res://resources/audio/prototype_palette.tres")
 var _fallbacks: Dictionary[StringName, AudioStream] = {}
 var _voices: int = 0
@@ -53,7 +54,7 @@ func play(cue: StringName, position: Vector3, source: CollisionObject3D = null, 
 	voice.add_to_group(&"combat_audio_voices")
 	voice.global_position = position
 	voice.stream = stream
-	voice.bus = &"Bunker" if interior_bounds.has_point(position) else &"Master"
+	voice.bus = &"Bunker" if interior_bounds.has_point(position) else &"Effects"
 	voice.volume_db = -18.0 if str(cue).begins_with("footstep") else -10.0
 	voice.max_distance = 65.0
 	voice.pitch_scale = randf_range(0.94, 1.06)

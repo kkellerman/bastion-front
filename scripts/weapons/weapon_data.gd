@@ -1,5 +1,6 @@
 class_name WeaponData
 extends Resource
+@export var support_hand_position: Vector3 = Vector3(-0.035, -0.085, 0.07)
 ## Shared configuration only. Magazine, reserve and timers belong to WeaponBase.
 
 enum ShotType { HITSCAN, PROJECTILE }

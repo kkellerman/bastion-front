@@ -27,16 +27,25 @@ func _materials_and_light() -> void:
 			body.get_node("Mesh").visible = false
 	$Terrain/Trail/Mesh.visible = false
 	$Terrain/Ground/Mesh.material_override = load("res://assets/materials/presentation/forest_surface.tres")
+	preload("res://scripts/presentation/forest_relief.gd").install($Terrain/Ground)
 	for body: Node in $Bunker.get_children():
 		if body is StaticBody3D:
 			body.set_meta(&"surface", &"concrete")
 			body.get_node("Mesh").material_override = concrete
 	var env: Environment = $Environment.environment.duplicate() as Environment
 	$Environment.environment = env
+	var sky: Sky = Sky.new()
+	var sky_material: ShaderMaterial = ShaderMaterial.new()
+	sky_material.shader = load("res://shaders/overcast_sky.gdshader")
+	sky.sky_material = sky_material
+	sky.radiance_size = Sky.RADIANCE_SIZE_128
+	env.sky = sky
+	env.background_mode = Environment.BG_SKY
+	env.fog_sky_affect = 0.35
 	env.ambient_light_energy = 0.45
 	env.ambient_light_color = Color(0.63, 0.69, 0.74)
 	env.tonemap_mode = Environment.TONE_MAPPER_ACES
-	env.tonemap_exposure = 1.05
+	env.tonemap_exposure = 0.95
 	env.ssao_enabled = true
 	env.ssao_radius = 1.1
 	env.ssao_intensity = 1.4
@@ -52,7 +61,7 @@ func _materials_and_light() -> void:
 	env.adjustment_contrast = 1.04
 	$Sun.rotation_degrees = Vector3(-32, -32, 0)
 	$Sun.light_color = Color(1.0, 0.95, 0.87)
-	$Sun.light_energy = 1.7
+	$Sun.light_energy = 1.25
 	$Sun.directional_shadow_max_distance = 65.0
 	$Sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
 	$Sun.light_angular_distance = 1.2
@@ -61,6 +70,14 @@ func _materials_and_light() -> void:
 func _trees() -> void:
 	var index: int = 0
 	for tree: Node3D in $Forest.get_children():
+		# Move the complete tree, including its existing collider, off the old grid.
+		if not tree.has_meta(&"clustered"):
+			tree.position.x += rng.randf_range(-1.25, 1.25)
+			tree.position.z += rng.randf_range(-1.5, 1.5)
+			if absf(tree.position.x) < 3.6: tree.position.x = signf(tree.position.x) * 3.6
+			if tree.position.x > 10 and tree.position.x < 14: tree.position.x = 15.0
+			tree.scale *= rng.randf_range(0.88, 1.1)
+			tree.set_meta(&"clustered", true)
 		tree.get_node("Trunk/Mesh").visible = false
 		tree.get_node("LowerCanopy").visible = false
 		tree.get_node("UpperCanopy").visible = false
@@ -71,7 +88,15 @@ func _trees() -> void:
 			part.mesh = load("res://assets/environments/germany/forest/tree_%d_%s.res" % [variant, part_name])
 			tree.add_child(part)
 			part.rotation.y = index * 1.7
-			part.visibility_range_end = 80.0
+			part.visibility_range_end = 34.0
+			var distant: MeshInstance3D = MeshInstance3D.new()
+			distant.mesh = load("res://assets/environments/germany/forest/tree_%d_%s_lod.res" % [variant, part_name])
+			tree.add_child(distant)
+			distant.rotation.y = part.rotation.y
+			distant.visibility_range_begin = 34.0
+			distant.visibility_range_end = 85.0
+			distant.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			part.lod_bias = 0.65
 			if part_name == "foliage":
 				part.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		index += 1

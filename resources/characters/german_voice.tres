@@ -1,6 +1,39 @@
-[gd_resource type="Resource" script_class="InfantryVoiceSet" load_steps=2 format=3]
-[ext_resource type="Script" path="res://scripts/presentation/infantry_voice_set.gd" id="script"]
+[gd_resource type="Resource" script_class="InfantryVoiceSet" format=3]
+
+[ext_resource type="Script" path="res://scripts/presentation/infantry_voice_set.gd" id="1_jxsqi"]
+
 [resource]
-script = ExtResource("script")
-language = &"de"
-subtitles = Dictionary[StringName, String]({&"spotting": "Feind gesichtet!", &"taking_fire": "Wir werden beschossen!", &"reloading": "Ich lade nach!", &"grenade_warning": "Granate! In Deckung!", &"moving": "Ich rücke vor.", &"lost_sight": "Sichtkontakt verloren.", &"casualty": "Mann ausgefallen!"})
+script = ExtResource("1_jxsqi")
+subtitles = Dictionary[StringName, String]({
+&"briefing": "Führung an Streife: Folgt dem Waldweg. Sichert den Gefechtsstand und die Unterlagen. Rückzug durch den hinteren Ausgang. Der Versorgungsweg im Osten bietet einen zweiten Zugang.",
+&"casualty": "Mann ausgefallen!",
+&"death": "Ich bin getroffen!",
+&"grenade_warning": "Granate! In Deckung!",
+&"lost_sight": "Sichtkontakt verloren. Sucht die Umgebung ab!",
+&"moving": "Ich rücke vor. Waldrand beobachten!",
+&"reloading": "Ich lade nach!",
+&"spotting": "Feind gesichtet!",
+&"taking_fire": "Wir werden beschossen!"
+})
+subtitle_keys = Dictionary[StringName, StringName]({
+&"briefing": &"GERMAN_BRIEFING",
+&"casualty": &"GERMAN_CASUALTY",
+&"death": &"GERMAN_DEATH",
+&"grenade_warning": &"GERMAN_GRENADE_WARNING",
+&"lost_sight": &"GERMAN_LOST_SIGHT",
+&"moving": &"GERMAN_MOVING",
+&"reloading": &"GERMAN_RELOADING",
+&"spotting": &"GERMAN_SPOTTING",
+&"taking_fire": &"GERMAN_TAKING_FIRE"
+})
+durations = Dictionary[StringName, float]({
+&"briefing": 11.0,
+&"casualty": 3.0,
+&"death": 3.0,
+&"grenade_warning": 3.0,
+&"lost_sight": 3.0,
+&"moving": 3.0,
+&"reloading": 3.0,
+&"spotting": 3.0,
+&"taking_fire": 3.0
+})

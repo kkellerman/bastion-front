@@ -20,6 +20,7 @@ func fire(data: WeaponData, camera: Node3D, muzzle: Node3D, shooter: CollisionOb
 		hit = _trace(camera, shooter, muzzle.global_position, end + direction * 0.01)
 	if hit.is_empty():
 		hit = aim_hit
+	get_node("/root/CombatAudio").bullet_passed.emit(muzzle.global_position, hit.get("position", end), shooter)
 	if hit.is_empty():
 		return
 	var receiver: DamageReceiver = DamageReceiver.from_body(hit["collider"])
@@ -27,6 +28,7 @@ func fire(data: WeaponData, camera: Node3D, muzzle: Node3D, shooter: CollisionOb
 		receiver.take_damage(data.damage, shooter)
 	impact.emit(hit["position"], hit["normal"])
 	var surface: StringName = hit["collider"].get_meta(&"surface", &"dirt")
+	CombatEffects.burst(shooter as Node3D, hit["position"], hit["normal"], &"flesh" if receiver != null else surface)
 	get_node("/root/CombatAudio").play(StringName("impact_" + str(surface)), hit["position"])
 
 

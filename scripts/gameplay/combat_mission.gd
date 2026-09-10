@@ -36,6 +36,11 @@ func _ready() -> void:
 	for point: Node in $Interactions.get_children():
 		point.activated.connect(_interact)
 	$Extraction.body_entered.connect(_extract)
+	var checkpoints: Node = load("res://scripts/gameplay/mission_checkpoint.gd").new()
+	checkpoints.name = "Checkpoints"
+	add_child(checkpoints)
+	var encounters: Node = load("res://scripts/gameplay/encounter_staging.gd").new()
+	add_child(encounters)
 	_update_status()
 
 
@@ -46,6 +51,7 @@ func _process(_delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if complete and event.is_action_pressed("restart"):
+		get_node("/root/PrototypeSession").checkpoint.clear()
 		get_tree().reload_current_scene()
 	if player.position.z >= 10.0 and player.get_node("HealthComponent").current_health > 0.0:
 		if event.is_action_pressed("allied_loadout"):
@@ -55,6 +61,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _select_faction(id: StringName) -> void:
+	get_node("/root/PrototypeSession").checkpoint.clear()
 	get_node("/root/PrototypeSession").faction_id = id
 	get_tree().reload_current_scene()
 
@@ -89,6 +96,6 @@ func _extract(body: Node3D) -> void:
 
 func _update_status() -> void:
 	var grenade: WeaponData = rig.inventory.faction.grenade
-	status.text = "%s | %s | Grenades: %d\n%s" % [data.title, rig.inventory.faction.display_name, rig.inventory.pool.get_amount(grenade.reserve_ammo_type), data.extraction_text if objective_done else data.objective_text]
+	status.text = "%s  ·  G %d" % ["REACH REAR EXIT" if objective_done else "RECOVER OPERATIONS DOCUMENTS", rig.inventory.pool.get_amount(grenade.reserve_ammo_type)]
 	if player.position.z >= 10.0:
-		status.text += "\nStaging: F1 Allied / F2 German (restart) | Range to your left"
+		status.text += "\nF1 / F2 faction  ·  F10 settings  ·  Range left"

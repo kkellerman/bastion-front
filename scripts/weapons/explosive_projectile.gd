@@ -43,6 +43,7 @@ func detonate() -> void:
 		if obstruction.is_empty() or obstruction["collider"] == receiver.body:
 			receiver.take_damage(data.damage * (1.0 - distance / data.blast_radius), source)
 	get_node("/root/CombatAudio").play(&"explosion", global_position, source)
+	CombatEffects.burst(self, global_position, Vector3.UP, &"dirt", true)
 	var burst: MeshInstance3D = MeshInstance3D.new()
 	var sphere: SphereMesh = SphereMesh.new()
 	sphere.radius = 0.3
@@ -55,7 +56,7 @@ func detonate() -> void:
 	get_tree().current_scene.add_child(burst)
 	burst.global_position = global_position
 	var tween: Tween = burst.create_tween()
-	tween.tween_property(burst, "scale", Vector3.ONE * data.blast_radius * 2.0, 0.22)
+	tween.tween_property(burst, "scale", Vector3.ONE * 2.0, 0.12)
 	tween.parallel().tween_property(burst, "transparency", 1.0, 0.3)
 	tween.tween_callback(burst.queue_free)
 	queue_free()

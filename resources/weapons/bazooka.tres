@@ -9,6 +9,7 @@
 
 [resource]
 script = ExtResource("script")
+support_hand_position = Vector3(-0.025, -0.05, -0.24)
 weapon_id = &"bazooka"
 display_name = "Bazooka"
 faction = &"allied"

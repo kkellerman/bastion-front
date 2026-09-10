@@ -18,6 +18,7 @@ var _memory_remaining: float = 0.0
 var _state_time: float = 0.0
 var _patrol_index: int = 0
 var _previous_health: float = 100.0
+var tactics: Node
 
 @onready var vision: InfantryVision = $Vision
 @onready var motor: InfantryMotor = $Motor
@@ -49,6 +50,7 @@ func _physics_process(delta: float) -> void:
 		return
 	if sees_target and (state == State.IDLE or state == State.PATROL):
 		_set_state(State.ALERT)
+	if tactics != null and tactics.tick(delta): return
 	match state:
 		State.IDLE:
 			motor.stop(delta)
@@ -122,3 +124,9 @@ func _hear_noise(point: Vector3, radius: float, source: CollisionObject3D) -> vo
 	_memory_remaining = memory_duration
 	if state != State.HURT:
 		_set_state(State.ALERT)
+
+func receive_alert(point: Vector3) -> void:
+	if state == State.DEATH or sees_target: return
+	last_known_position = point
+	_memory_remaining = memory_duration
+	if state in [State.IDLE, State.PATROL]: _set_state(State.ALERT)

@@ -6,13 +6,47 @@ This pass follows the explicitly expanded combat/mission scope; the specificatio
 milestone numbering is unchanged. The visual pass combines CC0 photographic PBR
 materials with original interim environment, equipment and sound assets.
 
-## Visual and audio pass
+## Character, voice, forest and combat fidelity
+
+Both factions now use skinned character scenes sharing 17 named bones, nine
+AnimationPlayer clips, an AnimationTree state-machine hook and a right-hand weapon
+socket. A CC0 soldier body by nisu is retargeted into this rig; faction helmets,
+webbing, gaiters, colors and equipment remain separate. These are low-detail
+development models, not final photorealistic characters. Every carried weapon has
+first-person sleeves, hands and a resource-defined support-hand position.
+
+English and German voice sets each provide eight combat categories and a radio
+briefing. Spotting, damage, reload, advance, lost sight, nearby explosives, casualty
+and death feed a scene-owned dialogue scheduler. Actor cooldown is 5 seconds,
+actor/category cooldown 16 seconds, shared/category cooldown 10 seconds, and the
+global channel reserves the line duration plus 0.4 seconds. Casualty calls can wait
+up to 8 seconds. Text keys, fallback subtitles, timings and recordings are separate.
+**Recording slots are empty: dialogue is subtitled but silent.** No fake speech is
+generated. Assigned recordings use spatial Dialogue/DialogueInterior buses.
+
+An authored overcast sky, denser tree crowns, deterministic placement variation,
+near/far tree meshes (34 m transition, 85 m cull), moss variation and shallow
+collision-matched forest relief improve the exterior. Road/range/bunker/flank track
+heights are preserved. Navigation was rebuilt to 1,446 polygons. Impact debris,
+bounded decals, smoke, explosion dust and subtle directional near-miss feedback
+supplement existing flash/recoil. Reduced-motion settings disable suppression roll.
+
+F10 opens a paused options panel in the menu or mission: FOV 60–110, mouse
+sensitivity, master/effects/dialogue volume, subtitles, reduced motion and two
+graphics tiers. Options persist in `user://settings.cfg`. Escape still only releases
+the mouse. Checkpoints before the bunker and after documents retain position,
+health (minimum 50), carried magazines/reserves, selected slot, objective and defeated
+enemies across death/Enter. They are session-only; faction changes/new games and
+completion/restart clear them. Live enemies and supplies reset on reload.
+
+## Environment and audio foundation
 
 The mission now uses branched conifer and broadleaf meshes, textured trunks/roots,
 wind-responsive foliage, ferns, grass, shrubs, leaf litter, scattered rocks, fallen
 logs and raised rock banks. The forest floor blends an irregular muddy trail and
 wheel ruts. Understory uses small MultiMesh groups with 45 m visibility ranges;
-trees render to 80 m. Fine foliage does not cast expensive individual shadows.
+trees render to 85 m with a separate distant mesh tier. Fine foliage does not cast
+expensive individual shadows.
 
 The fortifications have individual sandbags, timber revetments, camouflage strips,
 barbed wire and contextual German signs. Weathered concrete and lower-wall paint
@@ -23,8 +57,8 @@ collision and is included in the navigation bake. Most trim uses existing collis
 
 Weapons have new beveled geometry, barrels, sights, grips, mechanisms and equipment
 details. Shared muzzle flashes use a soft additive shader; recoil includes small
-translation/roll feedback. German infantry use a field-uniform mannequin with
-helmet, boots, webbing and gear; held models follow the equipped firearm.
+translation/roll feedback. Both factions use the shared rig, modular equipment and
+held firearm socket; damage and navigation remain independent of visual geometry.
 
 Forward+ uses ACES tone mapping, restrained desaturation, SSAO, low-intensity SSIL,
 volumetric haze, 65 m directional shadows, 2x MSAA plus FXAA, warm interior lights
@@ -33,10 +67,8 @@ and sky-based material reflections. Settings are tuned rather than maximized.
 Audio now uses distinct original layered firearm reports, mechanisms/reload cues,
 surface-specific impacts/footsteps, explosions, wind, birds, distant combat and
 bunker hum. A reverb bus and ambience crossfade distinguish bunker/exterior space.
-These are authored synthesis placeholders, not authentic recordings. German text
-and future recordings are separate in `resources/characters/german_voice.tres`.
-Five categories connect to existing state/reload events; grenade-warning and
-casualty categories are prepared hooks. No fake German speech is generated.
+These are authored synthesis placeholders, not authentic recordings. Speech uses
+the separate silent-until-recorded voice sets described above.
 
 See [ASSET_ATTRIBUTION.md](ASSET_ATTRIBUTION.md) for all sources/licenses and the
 remaining recording/model requirements. Original asset builders live in `tools/`;
@@ -71,7 +103,8 @@ No plugins, dependencies or asset downloads are required.
 | G | Throw faction grenade |
 | E | Use aimed-at object within 2.8 m; mount/dismount gun |
 | F1 / F2 | Restart as Allied / German while in staging |
-| Enter | Restart after death or mission completion |
+| F10 | Open/close paused settings; saves options on close |
+| Enter | Resume latest checkpoint after death; fresh restart after completion |
 | Esc | Release mouse; click recaptures without firing |
 | Alt+F4 / window close | Quit |
 
@@ -125,15 +158,17 @@ after 25 seconds. Range targets reset three seconds after destruction.
 2. Follow the trail through two patrol encounters. Solid trunks and road obstacles
    block sight and provide space to flank.
 3. Approach the fortified position and trench lane. A gunner-controlled MG42 covers
-   the central approach. Clear or flank it, then capture it with E.
+   the central approach. Clear or flank it, then capture it with E. The east supply
+   track around x=12 provides ammo/health and an approach outside the central gun arc.
 4. Enter the bunker through the central gap. Connected radio, operations and storage
-   rooms contain guards and additional supplies.
+   rooms contain guards and additional supplies. A checkpoint activates on the
+   approach immediately before the entrance.
 5. Press E at the operations documents in the left rear room, then reach the marked
    rear exit. Extraction is locked until documents are taken. Completion stops
-   combat and offers Enter-to-restart; death uses the same restart key.
+   combat and offers Enter-to-restart. Taking documents records the second checkpoint.
 
 Seven infantry actors include the gunner. Allied play uses German opponents;
-German testing assigns Allied relationships and weapons to the same placeholder
+German testing assigns Allied relationships, visuals, voice set and weapons to the same
 actors. This is one test mission, not two authored campaigns. The defensive MG42
 remains a capturable German emplacement in either testing configuration.
 
@@ -142,7 +177,8 @@ remains a capturable German emplacement in either testing configuration.
 The reusable actor retains idle, patrol, alert, chase, attack, hurt and death.
 NavigationAgent3D follows baked paths. Vision retains 24 m range, a 100-degree cone
 and head-directed occlusion. Hidden movement does not refresh sight memory; four
-seconds without renewed information returns enemies to idle/patrol.
+seconds without renewed information ends direct pursuit. Mission infantry then
+search around the remembered point for at most five seconds before returning idle.
 
 Mission infantry vary speed, reaction delay and weapons. German opponents cycle
 P38, MP40 and StG 44; Allied variants use M1911 and Thompson. They stop within 12 m,
@@ -156,10 +192,18 @@ enemies. Hearing records an approximate sound position, never a live hidden-play
 position. It is radius-based, passes through walls and cannot authorize firing
 without vision. The original sandbox retains its previous AI timing.
 
+The optional `InfantryTactics` component shares observed positions with nearby
+same-faction actors every 2.5 seconds. Every two seconds it evaluates six authored
+cover points, requiring actual low-height occlusion and unoccupied space. Odd-role
+actors can make short lateral advances while an ally visibly engages; other actors
+hold sight-gated bursts. Search picks bounded offsets from the last report. Motor
+repaths remain throttled to 0.25 seconds. Muzzle obstruction/friendly checks prevent
+shooting into allies. This is small encounter coordination, not a full squad planner.
+
 ## Architecture and asset hooks
 
 - `resources/factions/{allied,german}.tres` / `FactionData`: loadouts, grenade,
-  hostility, language and future uniform/voice references, independent of meshes.
+  hostility, language, uniform/optional variants, sleeve color and voice references.
 - `resources/weapons/*.tres` / `WeaponData`: identity, damage, fire mode/rate, ammo,
   reload, recoil/spread, projectile settings and presentation references.
   `WeaponBase` owns instance timers/magazines; `WeaponInventory` and `AmmoPool`
@@ -177,7 +221,8 @@ without vision. The original sandbox retains its previous AI timing.
 - `assets/weapons/{allied,german}/*_viewmodel.tscn`: replaceable primitive models
   sharing flash/light, visual recoil and aim/reload poses. Retain the WeaponViewModel
   interface and Muzzle/Flash/Light nodes when replacing art. Add final hand/weapon
-  animation inside these visual scenes. `world_model_scene` remains a reserved
+  animation inside these visual scenes. `support_hand_position` tunes shared hands.
+  `world_model_scene` remains a reserved
   resource hook, not an equipped-world-model pipeline.
 - Retained final asset directories: `assets/characters/{allied,german}`,
   `assets/environments/`, `assets/props`, `assets/textures`, and
@@ -185,10 +230,18 @@ without vision. The original sandbox retains its previous AI timing.
 - `scenes/missions/forest_command_post.tscn`: mission composition and encounters.
   `command_post_environment.tscn`: editable static forest/fortification/interior.
   `resources/missions/forest_command_post.tres` / `MissionData`: mission text;
-  `combat_mission.gd`: coordinator. `PrototypeSession` retains faction on restart.
+  `combat_mission.gd`: coordinator. `PrototypeSession` retains faction/checkpoint.
+- `scripts/presentation/{character_animation,viewmodel_arms,dialogue_director,
+  infantry_voice,combat_effects,suppression_feedback}.gd`: presentation components.
+  Replace `FactionData.uniform_scene` with a compatible imported GLB; preserve
+  `Skeleton3D/WeaponSocket`, `AnimationPlayer` clip names and `AnimationTree` hook.
+  Replace audio by assigning streams in `resources/characters/*_voice.tres`.
+- `tools/build_characters.gd` and `tools/retarget_soldier.gd` author the rigged
+  faction scenes. `tools/configure_fidelity.gd` authors voice defaults/hand poses;
+  rerunning it intentionally restores defaults, so preserve custom recordings first.
 - `scenes/weapons/*_projectile.tscn`, `scenes/mounted_weapons/*.tscn`,
   `scenes/pickups/*.tscn`: configured reusable instances.
-- `resources/missions/command_post_navigation.tres`: committed 1,236-polygon bake.
+- `resources/missions/command_post_navigation.tres`: committed 1,446-polygon bake.
   Retain `.gd.uid` sidecars; generated caches/captures remain ignored in `.godot/`.
 
 ## Validation
@@ -206,7 +259,9 @@ godot --headless --path . --script res://tests/combat_prototype_smoke.gd
 godot --headless --path . --script res://tests/defensive_mg_smoke.gd
 godot --path . --script res://tests/mission_flow_smoke.gd
 godot --path . --script res://tests/presentation_smoke.gd
+godot --headless --path . --script res://tests/fidelity_smoke.gd
 godot --path . --script res://tests/presentation_capture.gd
+godot --path . --script res://tests/character_capture.gd
 ```
 
 Original suites cover movement, collision/crouch, capture, pistol ammo/reloads/
@@ -227,12 +282,15 @@ On the development Radeon 860M at 1280x720 with VSync, the original four sampled
 views measured 60 FPS. After the pass, the forest measured approximately 52-59 FPS
 and the bunker/radio/operations views approximately 60 FPS. These are warm static
 viewpoint samples, not minimum combat frame rates or a cross-hardware guarantee.
-The final forest view submits about 1.9 million primitives across rendering passes;
-the initial unoptimized foliage pass exceeded 14 million and was reduced.
+The preceding pass submitted about 1.93 million forest primitives across rendering
+passes. The current iteration's samples are recorded in `docs/FIDELITY_VALIDATION.md`.
+The fidelity suite adds actual animation/skin checks, voice cooldowns, cover/search,
+flank connectivity, options integration and death/Enter checkpoint restoration.
 
 Retained screenshots: [title](docs/screenshots/title_menu.png),
 [forest](docs/screenshots/forest.png), [bunker](docs/screenshots/bunker.png),
-[operations room](docs/screenshots/operations.png).
+[operations room](docs/screenshots/operations.png), [combat](docs/screenshots/combat.png),
+[faction characters](docs/screenshots/characters.png).
 
 After static collision edits, rebuild navigation:
 
@@ -258,23 +316,25 @@ rendering, physics or gameplay.
 
 ## Limitations and next phase
 
-- The transformation is an interim art pass, not finished photorealism. Procedural
-  trees, terrain banks, props, equipment and the unrigged German mannequin need
-  professional modeling/animation and production LODs. Allied models remain the
-  earlier placeholder. German mode remains a loadout test.
-- No hands, skeletal reloads, shell ejection, persistent decals, ragdolls, body-part
-  damage or camera recoil. Viewmodels can visually clip walls; obstruction still
-  blocks damage. Panzerfaust reload represents readying the next disposable unit.
+- This is an interim art pass, not finished photorealism. Characters use a low-poly
+  donor body, approximate faction equipment and short authored animation clips.
+  Faces, finger contact, uniform tailoring and skinning at extreme poses still need
+  production art/animation. First-person hands use posed geometry, without finger IK
+  or detachable magazine choreography. German mode remains a loadout test.
+- No shell ejection, ragdolls or body-part damage. Decals expire after 12 seconds
+  and are capped at 40; impact bursts at 24 and smoke puffs at 12. Viewmodels can
+  visually clip walls; obstruction still blocks damage. Panzerfaust reload represents
+  readying the next disposable unit.
 - Radial grenade damage, no fragment simulation/cooking, armor/vehicle simulation,
   penetration or NPC explosives. Mounted ammo and enemy ammunition are finite.
 - Authored synthetic effects await licensed recordings and a human audio-mix pass.
   There is source-position reverb and ambience blending, but no acoustic occlusion.
-  No squad/cover tactics, advanced search, dynamic navigation
-  rebakes or moving-obstacle avoidance.
-- Playable routes retain the original floor heights; apparent terrain relief is
-  ground shading, roots, debris and perimeter banks, not sculpted terrain traversal.
-  No checkpoints, saving, campaign progression or
-  gamepad support. Automated tests do not replace human difficulty/feel/audio tuning.
+  Dialogue/briefings are silent pending licensed English/German recordings.
+  No dynamic navigation rebakes, elaborate cover peeking or moving-obstacle avoidance.
+- Tree tiers can visibly transition; no baked impostors. Ground relief is shallow;
+  final sculpted terrain and natural leaf/needle textures remain needed. Checkpoints
+  do not survive application exit. No campaign progression or gamepad support.
+  Automated tests do not replace human difficulty/feel/audio tuning.
 
 Next phase: **visual fidelity, licensed sound assets, animation and level polish**.
 Prioritize terrain/foliage, readable fortifications, cinematic lighting, rigged

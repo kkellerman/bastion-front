@@ -3,12 +3,17 @@ const Voice = preload("res://scripts/presentation/infantry_voice.gd")
 const P = preload("res://scripts/presentation/dressing_parts.gd")
 var subtitle: Label
 var _remaining: float = 0.0
+var dialogue: Node
 
 func _ready() -> void:
 	_install.call_deferred()
 
 func _install() -> void:
 	var mission: Node = get_parent()
+	dialogue = load("res://scripts/presentation/dialogue_director.gd").new()
+	dialogue.name = "DialogueDirector"
+	add_child(dialogue)
+	dialogue.line_started.connect(_timed_subtitle)
 	var canvas: CanvasLayer = CanvasLayer.new()
 	add_child(canvas)
 	subtitle = Label.new()
@@ -16,6 +21,7 @@ func _install() -> void:
 	subtitle.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
 	subtitle.position = Vector2(-320, -170)
 	subtitle.size = Vector2(640, 40)
+	subtitle.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	subtitle.add_theme_constant_override("outline_size", 5)
 	subtitle.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -30,19 +36,28 @@ func _install() -> void:
 		if faction.uniform_scene != null:
 			var old: Node3D = enemy.get_node("Visuals") as Node3D
 			old.visible = false
-			var model: Node3D = faction.uniform_scene.instantiate() as Node3D
+			var visual: PackedScene = faction.uniform_scene if faction.visual_variants.is_empty() else faction.visual_variants[enemy.get_index() % faction.visual_variants.size()]
+			var model: Node3D = visual.instantiate() as Node3D
 			old.add_child(model)
 			for child: Node3D in old.get_children():
 				child.visible = child == model
 			old.visible = true
+			var animator: Node = load("res://scripts/presentation/character_animation.gd").new()
+			animator.actor = enemy
+			animator.model = model
+			enemy.add_child(animator)
+			held.reparent(model.get_node("Skeleton3D/WeaponSocket"), false)
+			held.position = Vector3(0, 0.07, -0.06)
 		if faction.voice_set != null:
 			var voice: Node3D = Voice.new()
 			voice.voice_set = faction.voice_set
+			voice.name = "CombatVoice"
+			voice.director = dialogue
 			enemy.add_child(voice)
 			enemy.state_changed.connect(voice.state_changed)
 			enemy.combat.weapon.reload_changed.connect(func(active: bool) -> void:
 				if active: voice.say(&"reloading"))
-			voice.subtitle_requested.connect(_subtitle)
+			enemy.health.died.connect(_casualty.bind(enemy))
 	for mount: String in ["RangeM1919", "RangeMG42", "DefensiveMG"]:
 		mission.get_node(mount + "/Label").visible = false
 		mission.get_node(mount).set_meta(&"surface", &"metal")
@@ -58,6 +73,29 @@ func _install() -> void:
 	for supply: Node3D in mission.get_node("Supplies").get_children():
 		for child: Node in supply.get_children():
 			if child is MeshInstance3D: child.material_override = load("res://assets/materials/presentation/bark.tres")
+	var radio: Node3D = Voice.new()
+	radio.voice_set = mission.rig.inventory.faction.voice_set
+	radio.name = "PlayerVoice"
+	radio.director = dialogue
+	mission.player.add_child(radio)
+	for weapon: WeaponBase in mission.rig.inventory.weapons:
+		weapon.reload_changed.connect(func(active: bool) -> void:
+			if active: radio.say(&"reloading"))
+	mission.player.get_node("HealthComponent").health_changed.connect(func(current: float, _maximum: float) -> void:
+		if current < _maximum: radio.say(&"taking_fire"))
+	mission.player.get_node("HealthComponent").died.connect(func() -> void: radio.say(&"death"))
+	if get_node("/root/PrototypeSession").checkpoint.is_empty(): dialogue.request(radio, &"briefing", true)
+	get_node("/root/PlayerSettings").apply()
+
+func _casualty(fallen: InfantryBrain) -> void:
+	for enemy: InfantryBrain in get_parent().get_node("Enemies").get_children():
+		if enemy != fallen and enemy.health.current_health > 0 and enemy.global_position.distance_to(fallen.global_position) < 14:
+			var voice: Node = enemy.get_node_or_null("CombatVoice")
+			if voice != null: voice.queue_line(&"casualty")
+
+func _timed_subtitle(words: String, duration: float) -> void:
+	_subtitle(words)
+	_remaining = duration
 
 func _subtitle(words: String) -> void:
 	subtitle.text = words
@@ -65,4 +103,5 @@ func _subtitle(words: String) -> void:
 
 func _process(delta: float) -> void:
 	_remaining = maxf(0, _remaining - delta)
+	if subtitle != null: subtitle.visible = get_node("/root/PlayerSettings").values.subtitles
 	if subtitle != null and _remaining <= 0: subtitle.text = ""

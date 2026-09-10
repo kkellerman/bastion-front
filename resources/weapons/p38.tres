@@ -8,6 +8,7 @@
 
 [resource]
 script = ExtResource("script")
+support_hand_position = Vector3(-0.034, -0.085, 0.07)
 weapon_id = &"p38"
 display_name = "P38"
 faction = &"german"

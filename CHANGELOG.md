@@ -1,5 +1,29 @@
 # Changelog
 
+## Character, Voice, Forest and Combat Fidelity - 2026-09-10
+
+- Added shared 17-bone Allied/German character rigs, nine animation clips,
+  AnimationTree hooks, modular helmets/equipment and held-weapon sockets. Retargeted
+  nisu's CC0 soldier body; retained source/license records and original faction gear.
+- Added faction sleeves/hands to all seven viewmodels with resource-defined support
+  poses, draw/reload motion and reduced-motion support. Assets remain interim.
+- Added English/German combat and briefing resources, localization keys, durations,
+  spatial/reverberant recording playback, subtitles and actor/category/global limits.
+  All eight combat events are routed; recording slots remain explicitly silent.
+- Added overcast cloud sky, denser varied tree crowns, actual distant mesh tiers,
+  randomized collidable trees, moss and shallow collision-matched terrain relief.
+  Rebuilt mission navigation to 1,446 polygons.
+- Added bounded impact debris/decals, muzzle smoke, explosion dust, directional
+  near-miss response and rigged hurt/death presentation.
+- Added opt-in encounter coordination: shared reports, bounded searches, real-cover
+  evaluation, short supported flanks and friendly muzzle obstruction checks. Sight
+  still gates every attack; original sandbox timing and controller remain intact.
+- Added east supply/flank route, compact objective UI, before-bunker/document
+  checkpoints and F10 persistent accessibility/audio/graphics options.
+- Added fidelity regression and character/combat captures; reran existing import,
+  movement, weapons, infantry, combat, mounted-gun, mission and presentation suites.
+  Performance samples and commands: docs/FIDELITY_VALIDATION.md.
+
 ## Forest / Command Post Visual and Audio Pass - 2026-09-10
 
 - Added a live BASTION FRONT title menu, Allied/German test starts, controls and
