@@ -25,6 +25,7 @@ enum ShotType { HITSCAN, PROJECTILE }
 @export var viewmodel_scene: PackedScene
 @export var world_model_scene: PackedScene
 @export var muzzle_audio: AudioStream
+@export var muzzle_flash_size: Vector2 = Vector2(0.09, 0.13)
 @export var reload_audio: AudioStream
 @export var dry_audio: AudioStream
 @export var projectile_speed: float = 30.0

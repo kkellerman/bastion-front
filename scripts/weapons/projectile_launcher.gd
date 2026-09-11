@@ -3,6 +3,7 @@ extends RefCounted
 
 
 static func launch(data: WeaponData, origin: Node3D, shooter: CollisionObject3D) -> ExplosiveProjectile:
+	if not is_instance_valid(shooter) or not shooter.get_node("/root/CombatAudio").can_emit(shooter): return null
 	var projectile: ExplosiveProjectile = data.projectile_scene.instantiate() as ExplosiveProjectile
 	projectile.data = data
 	projectile.source = shooter

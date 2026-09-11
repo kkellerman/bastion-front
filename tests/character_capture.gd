@@ -4,6 +4,7 @@ func _initialize() -> void:
 	_run.call_deferred()
 
 func _run() -> void:
+	root.get_node("PlayerSettings").values.graphics_preset = 3
 	var mission: Node3D = load("res://scenes/missions/forest_command_post.tscn").instantiate()
 	root.add_child(mission)
 	current_scene = mission
@@ -51,7 +52,10 @@ func _run() -> void:
 	var target: InfantryBrain = mission.get_node("Enemies/ForestPatrol")
 	target.position = Vector3(0, 0, -20)
 	target.rotation.y = PI
-	for i: int in range(45): await process_frame
+	target.process_mode = Node.PROCESS_MODE_INHERIT
+	target.set_physics_process(true)
+	for i: int in range(120): await physics_frame
+	print("Combat capture: player health ",mission.player.get_node("HealthComponent").current_health,"; enemy state ",target.state)
 	mission.rig.weapon.try_fire()
 	await process_frame
 	await RenderingServer.frame_post_draw

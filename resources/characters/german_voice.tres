@@ -4,6 +4,7 @@
 
 [resource]
 script = ExtResource("1_jxsqi")
+recording_directory = "res://assets/audio/voice_german"
 subtitles = Dictionary[StringName, String]({
 &"briefing": "Führung an Streife: Folgt dem Waldweg. Sichert den Gefechtsstand und die Unterlagen. Rückzug durch den hinteren Ausgang. Der Versorgungsweg im Osten bietet einen zweiten Zugang.",
 &"casualty": "Mann ausgefallen!",

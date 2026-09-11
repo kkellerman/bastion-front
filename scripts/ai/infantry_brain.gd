@@ -85,7 +85,7 @@ func _physics_process(delta: float) -> void:
 
 
 func _set_state(next: State) -> void:
-	if next == state:
+	if next == state or state == State.DEATH:
 		return
 	state = next
 	_state_time = 0.0
@@ -95,9 +95,7 @@ func _set_state(next: State) -> void:
 func _on_health_changed(current: float, _maximum: float) -> void:
 	if current > 0.0 and current < _previous_health and state != State.DEATH:
 		_set_state(State.HURT)
-		var flinch: Tween = create_tween()
-		flinch.tween_property($Visuals, "rotation:x", 0.12, 0.06)
-		flinch.tween_property($Visuals, "rotation:x", 0.0, 0.18)
+		# Rigged presentation owns flinch; competing root tweens used to undo death poses.
 	_previous_health = current
 
 
@@ -115,6 +113,7 @@ func _die() -> void:
 
 
 func _hear_noise(point: Vector3, radius: float, source: CollisionObject3D) -> void:
+	if not get_node("/root/CombatAudio").can_emit(self): return
 	if not hearing_enabled or state == State.DEATH or source == self or not FactionData.hostile(self, source):
 		return
 	if global_position.distance_to(point) > radius or sees_target:
@@ -126,6 +125,7 @@ func _hear_noise(point: Vector3, radius: float, source: CollisionObject3D) -> vo
 		_set_state(State.ALERT)
 
 func receive_alert(point: Vector3) -> void:
+	if not get_node("/root/CombatAudio").can_emit(self): return
 	if state == State.DEATH or sees_target: return
 	last_known_position = point
 	_memory_remaining = memory_duration

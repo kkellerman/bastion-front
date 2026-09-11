@@ -1,5 +1,72 @@
 # Changelog
 
+## Quiet Footsteps and Mounted Aiming - 2026-09-10
+
+- Replaced sharp footstep transients with soft heel/scuff envelopes on dirt, wood,
+  concrete and metal. Lowered playback from -18 to -30 dB, shortened range to 12 m,
+  and filtered harsh high frequencies. Generic steps reuse the softened dirt cue.
+- Added right-mouse aiming to M1919/MG42 emplacements: closer sight-aligned camera,
+  56-degree aim FOV, aimed spread and smooth release. Dismount/death restore the
+  camera and clear held input; mouse traverse and firing arcs remain intact.
+- Added native input/audio regression for all three placements, firing while aimed,
+  release/dismount cleanup, footstep waveform energy and soft attack envelopes.
+
+## Combat Feedback, Soundscape and Death Polish - 2026-09-10
+
+- Closed disabled-parent dialogue and direct scheduler/hitscan callback bypasses;
+  cancelled queued casualty lines and active subtitles when their actor retires.
+  Actual death no longer starts a new line. Existing audio tails may finish.
+- Added shared actor-owned layered muzzle flash/light/smoke/sparks, aligned infantry
+  effects to held weapon sockets, and immediate invalid-actor flash cleanup.
+- Replaced the expanding explosion sphere with bounded procedural fire, dust,
+  lingering smoke, surface-colored debris, pressure dust, light and scorch marks.
+  Kept projectile collision, damage falloff, cover and self-damage logic intact.
+- Added distance-driven layered leg motion and aiming while retaining body clips;
+  removed competing root flinch tweens. Added downed camera/weapon cleanup on death.
+- Added rate-limited health-driven flesh/gear cues, NPC puffs and a subtle player
+  damage vignette using original sound design; no gore or arcade hit markers.
+- Fixed wind loop joins through overlap-add; added persistent staggered forest beds,
+  positional radio static/hum/signals and independent ambience/comms/artillery gains.
+  Artillery varies off-map location/pitch/timing and fades indoors. Scene, death and
+  completion cleanup retire environmental playback. Existing settings are preserved.
+- Added combat-feedback lifecycle regression and an all-seven-killed physical
+  command-post walk, plus scripted rendered evidence. Updated old AI tests to enable
+  actors when deliberately exercising live hearing/dialogue interfaces.
+
+
+## Soldier Audio Investigation - 2026-09-10
+
+- Confirmed neither faction has installed speech recordings; dialogue volume does
+  not fix missing assets. See docs/VOICE_RECORDING_MANIFEST.md for recording hooks.
+- Fixed infantry collision masks so living soldiers cannot occupy one another's
+  bodies, obscuring the source of gunfire. Dead soldiers still release collision.
+- Added an opt-in F9 mission audit showing soldier names through cover, positions,
+  states, camera/cover relationship, recent combat sound sources, output device,
+  bus levels and the separate off-map artillery setting. Disabled by default.
+- Added infantry_separation_smoke.gd for converging actors, corpse clearance and
+  the audit overlay. Mission checks found all seven soldiers above ground and
+  outside static walls; patrols can legitimately follow and fire from behind.
+
+## Targeted Audio, Graphics and Asset Polish - 2026-09-10
+
+- Removed listener-following ambient rifle fire; optional low-pass off-map artillery
+  is independently configurable and off by default. Guarded infantry/mounted attacks
+  and audio/noise emission against dead/disabled sources; retained natural tails.
+- Made missing English/German recordings explicit; added labeled non-speech audio
+  diagnostics, automatic recording paths, actor-following spatial playback, priority
+  death interruption and a production recording manifest. No speech is fabricated.
+- Fixed settings/subtitle anchors that placed controls off-screen; added viewport
+  containment checks and a fixed, visible settings return button.
+- Added conservative hardware-aware Auto and persistent Low/Medium/High settings:
+  resolution scale, shadows, fog, SSAO/SSIL, AA, vegetation, SSR and mip bias.
+- Replaced solid tree leaves with an original needle atlas and branch cards; revised
+  terrain, ground response, sandbags, camouflage, concrete edges, weapon furniture,
+  sleeves/hands, heads, uniform surfaces and clouds. Batched static dressing.
+- Rebuilt navigation with finer detail sampling to remove overlapping edges;
+  added native audio/voice/graphics regression coverage and comparative captures.
+- Exact voice status, remaining interim assets, measurements and validation:
+  docs/POLISH_VALIDATION.md and docs/VOICE_RECORDING_MANIFEST.md.
+
 ## Character, Voice, Forest and Combat Fidelity - 2026-09-10
 
 - Added shared 17-bone Allied/German character rigs, nine animation clips,

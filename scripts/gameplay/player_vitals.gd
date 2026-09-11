@@ -29,4 +29,15 @@ func _on_death() -> void:
 	player.velocity = Vector3.ZERO
 	player.get_node("MouseLook").set_process_unhandled_input(false)
 	player.get_node("Head/Camera3D/WeaponRig").process_mode = Node.PROCESS_MODE_DISABLED
+	rig._clear_input()
+	rig.viewmodel.hide()
+	rig.viewmodel.muzzle_effect.stop()
+	var camera: Camera3D = player.get_node("Head/Camera3D")
+	var reduced: bool = get_node("/root/PlayerSettings").values.reduced_motion
+	var head: Node3D = player.get_node("Head")
+	# Move the head rather than the body: collider and checkpoint position stay stable.
+	var tween: Tween = create_tween().set_parallel()
+	tween.tween_property(head, "position:y", 0.28, 0.35 if reduced else 0.85).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(head, "rotation:x", -0.12 if reduced else -0.35, 0.65)
+	tween.tween_property(camera, "rotation:z", 0.0 if reduced else 0.16, 0.7)
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE

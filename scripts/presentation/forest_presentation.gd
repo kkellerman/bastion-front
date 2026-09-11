@@ -16,6 +16,7 @@ func _ready() -> void:
 	_trees()
 	_undergrowth()
 	Interior.dress(self, art)
+	P.batch_static(art)
 
 func _materials_and_light() -> void:
 	var soil: Material = load("res://assets/materials/presentation/soil.tres")
@@ -32,6 +33,8 @@ func _materials_and_light() -> void:
 		if body is StaticBody3D:
 			body.set_meta(&"surface", &"concrete")
 			body.get_node("Mesh").material_override = concrete
+			if body.get_node("Mesh").mesh is BoxMesh:
+				body.get_node("Mesh").mesh = preload("res://scripts/presentation/crafted_mesh.gd").chipped_box(body.get_node("Mesh").mesh)
 	var env: Environment = $Environment.environment.duplicate() as Environment
 	$Environment.environment = env
 	var sky: Sky = Sky.new()
@@ -76,6 +79,7 @@ func _trees() -> void:
 			tree.position.z += rng.randf_range(-1.5, 1.5)
 			if absf(tree.position.x) < 3.6: tree.position.x = signf(tree.position.x) * 3.6
 			if tree.position.x > 10 and tree.position.x < 14: tree.position.x = 15.0
+			tree.position.y = preload("res://scripts/presentation/forest_relief.gd").height_at(tree.position)
 			tree.scale *= rng.randf_range(0.88, 1.1)
 			tree.set_meta(&"clustered", true)
 		tree.get_node("Trunk/Mesh").visible = false
@@ -95,6 +99,7 @@ func _trees() -> void:
 			distant.rotation.y = part.rotation.y
 			distant.visibility_range_begin = 34.0
 			distant.visibility_range_end = 85.0
+			distant.add_to_group(&"quality_tree_far")
 			distant.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			part.lod_bias = 0.65
 			if part_name == "foliage":
@@ -109,6 +114,7 @@ func _trees() -> void:
 	for x: int in range(-24, 26, 4):
 		var stone: MeshInstance3D = P.shape(art, Vector3(x, 0.3, 35), rock, null)
 		stone.scale = Vector3(6, 5, 6)
+		stone.rotation.y = rng.randf_range(-PI, PI)
 
 func _undergrowth() -> void:
 	for chunk_z: int in range(-5, 4):
@@ -122,6 +128,7 @@ func _undergrowth() -> void:
 					if point.z < -36 and absf(point.x) < 11:
 						continue
 					var scale_factor: float = rng.randf_range(0.6, 1.4) if kind != "rock" else rng.randf_range(0.12, 0.55)
+					point.y += preload("res://scripts/presentation/forest_relief.gd").height_at(point)
 					transforms.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * scale_factor), point))
 				var batch: MultiMeshInstance3D = MultiMeshInstance3D.new()
 				batch.multimesh = MultiMesh.new()
@@ -131,9 +138,11 @@ func _undergrowth() -> void:
 				for i: int in range(transforms.size()):
 					batch.multimesh.set_instance_transform(i, transforms[i])
 				art.add_child(batch)
+				if kind != "rock": batch.add_to_group(&"quality_vegetation")
 				batch.visibility_range_end = 45.0 if kind != "rock" else 65.0
 				batch.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	# Fallen timber and roots stay beyond the clear combat lanes.
 	for i: int in range(24):
 		var point: Vector3 = Vector3(rng.randf_range(11, 22) * (-1 if i % 2 == 0 else 1), 0.18, rng.randf_range(-50, 30))
+		point.y += preload("res://scripts/presentation/forest_relief.gd").height_at(point)
 		P.rod(art, point, point + Vector3(rng.randf_range(1, 3), 0.05, 1.2), 0.18, load("res://assets/materials/presentation/bark.tres"))

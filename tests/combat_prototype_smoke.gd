@@ -133,8 +133,12 @@ func _run() -> void:
 	enemy.get_node("DamageReceiver").take_damage(25.0, player)
 	_check(enemy.health.current_health == enemy_hp - 25.0, "Hostile damage is applied")
 	enemy.sees_target = false
+	enemy.process_mode = Node.PROCESS_MODE_INHERIT
+	enemy.set_physics_process(true)
 	root.get_node("CombatAudio").noise.emit(enemy.position + Vector3(5, 0, 0), 28.0, player)
 	_check(enemy.state == InfantryBrain.State.HURT and enemy.last_known_position.distance_to(enemy.position + Vector3(5, 0, 0)) < 2.0, "Hearing records a nearby sound without cancelling hurt")
+	enemy.set_physics_process(false)
+	enemy.process_mode = Node.PROCESS_MODE_DISABLED
 	main._extract(player)
 	_check(not main.complete, "Extraction is locked until documents are recovered")
 	player.position = Vector3(-5, 0.05, -72.5)

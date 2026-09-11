@@ -10,6 +10,7 @@ func _ready() -> void:
 	get_node("/root/PlayerSettings").apply.call_deferred()
 	camera.look_at(Vector3(-1, 2.0, -59))
 	soundscape = Soundscape.new()
+	soundscape.name = "Soundscape"
 	soundscape.listener = camera
 	add_child(soundscape)
 	var canvas: CanvasLayer = CanvasLayer.new()
@@ -67,6 +68,7 @@ func _ready() -> void:
 	panel = _label(layout, "", Vector2(540, 405), 18, Color(0.9, 0.88, 0.79))
 	panel.size = Vector2(650, 240)
 	panel.add_theme_constant_override("outline_size", 5)
+	_label(layout, get_node("/root/PlayerSettings").recommendation_text(), Vector2(540, 655), 15, Color(0.72, 0.74, 0.68))
 	_label(layout, "A FICTIONAL OPERATION  ·  VISUAL DEVELOPMENT BUILD", Vector2(64, 670), 13, Color(0.52, 0.55, 0.49))
 
 func _label(parent: Control, words: String, point: Vector2, size: int, color: Color) -> Label:

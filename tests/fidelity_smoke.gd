@@ -47,6 +47,8 @@ func _run() -> void:
 	var enemy: InfantryBrain = mission.get_node("Enemies/ForestPatrol")
 	var voice: Node3D = enemy.get_node("CombatVoice")
 	var director: Node = mission.get_node("Presentation/DialogueDirector")
+	# Voice events require a live, enabled actor. Other actors remain frozen.
+	enemy.set_physics_process(true)
 	mission.player.position = enemy.position + Vector3(0, 0, 4)
 	director.remaining = 0
 	director.categories.clear()
@@ -66,6 +68,7 @@ func _run() -> void:
 	enemy.receive_alert(remembered)
 	_check(enemy.state == InfantryBrain.State.ALERT and enemy.last_known_position == remembered, "Shared alert stores reported point")
 	var ally: InfantryBrain = mission.get_node("Enemies/RoadGuard")
+	ally.set_physics_process(true)
 	ally.position = enemy.position + Vector3(2, 0, 0)
 	ally.sees_target = false
 	ally._set_state(InfantryBrain.State.IDLE)
@@ -73,6 +76,7 @@ func _run() -> void:
 	enemy.tactics._broadcast = 0
 	enemy.tactics.tick(0.1)
 	_check(ally.last_known_position == remembered and ally.state == InfantryBrain.State.ALERT, "Visible contact broadcasts a position to nearby friendly infantry")
+	ally.set_physics_process(false)
 	enemy.sees_target = false
 	mission.player.position = Vector3(22, 0, 20)
 	enemy._set_state(InfantryBrain.State.CHASE)
@@ -92,6 +96,7 @@ func _run() -> void:
 	wall.add_child(collision)
 	mission.add_child(wall)
 	wall.position = Vector3(0, 0.6, 4)
+	enemy.set_physics_process(false)
 	var cover: Marker3D = Marker3D.new()
 	mission.add_child(cover)
 	cover.position = Vector3(0, 0, 5)

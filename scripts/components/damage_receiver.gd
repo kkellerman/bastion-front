@@ -11,6 +11,12 @@ func _ready() -> void:
 	assert(body != null and health != null, "DamageReceiver requires a body and health")
 	body.set_meta(&"damage_receiver", self)
 	add_to_group(&"damage_receivers")
+	if body is CharacterBody3D:
+		var feedback: Node = load("res://scripts/presentation/damage_feedback.gd").new()
+		feedback.name = "DamageFeedback"
+		feedback.actor = body
+		feedback.health = health
+		add_child(feedback)
 
 
 static func from_body(collider: Object) -> DamageReceiver:

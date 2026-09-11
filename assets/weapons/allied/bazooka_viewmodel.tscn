@@ -1,8 +1,6 @@
 [gd_scene format=4]
 
-[ext_resource type="Texture2D" path="res://assets/textures/polyhaven/bark_brown_02/bark_brown_02_diff_1k.jpg" id="2_1akm0"]
-[ext_resource type="Texture2D" path="res://assets/textures/polyhaven/bark_brown_02/bark_brown_02_nor_gl_1k.jpg" id="3_ekcg5"]
-[ext_resource type="Texture2D" path="res://assets/textures/polyhaven/bark_brown_02/bark_brown_02_rough_1k.jpg" id="4_iwou5"]
+[ext_resource type="Shader" path="res://shaders/worn_surface.gdshader" id="2_dh6yv"]
 [ext_resource type="Script" path="res://scripts/weapons/weapon_viewmodel.gd" id="script"]
 
 [sub_resource type="StandardMaterial3D" id="Glow"]
@@ -13,41 +11,38 @@ albedo_color = Color(1, 0.7, 0.2, 1)
 radius = 0.04
 height = 0.1
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1akm0"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_om1h5"]
 albedo_color = Color(0.19, 0.21, 0.12, 1)
 metallic = 0.3
 roughness = 0.6
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_ekcg5"]
+[sub_resource type="CylinderMesh" id="CylinderMesh_1akm0"]
 top_radius = 0.055
 bottom_radius = 0.055
 height = 0.88
 radial_segments = 8
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r7wsp"]
-albedo_color = Color(0.02, 0.024, 0.026, 1)
-metallic = 0.3
-roughness = 0.6
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jb7vq"]
+render_priority = 0
+shader = ExtResource("2_dh6yv")
+shader_parameter/base_color = Color(0.024, 0.028, 0.027, 1)
+shader_parameter/metal = 0.25
+shader_parameter/wood = false
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_iwou5"]
+[sub_resource type="CylinderMesh" id="CylinderMesh_ekcg5"]
 top_radius = 0.04565
 bottom_radius = 0.04565
 height = 0.003000021
 radial_segments = 8
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fr2xv"]
-albedo_color = Color(0.5, 0.28, 0.13, 1)
-albedo_texture = ExtResource("2_1akm0")
-roughness_texture = ExtResource("4_iwou5")
-normal_enabled = true
-normal_scale = 0.8
-normal_texture = ExtResource("3_ekcg5")
-uv1_scale = Vector3(8, 2, 8)
-uv1_triplanar = true
-uv1_world_triplanar = true
-texture_filter = 4
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_l6xfs"]
+render_priority = 0
+shader = ExtResource("2_dh6yv")
+shader_parameter/base_color = Color(0.25, 0.12, 0.055, 1)
+shader_parameter/metal = 0.0
+shader_parameter/wood = true
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_4pehp"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_iwou5"]
 _surfaces = [{
 "aabb": AABB(-0.0175, -0.065, -0.025, 0.035, 0.13, 0.05),
 "attribute_data": PackedByteArray("AAAAAAAAAACrqio/AAAAADmO4z0AAAAAchxHPwAAAAA5jmM+AAAAADmOYz8AAAAAq6qqPgAAAAAAAIA/AAAAAAAAAACrqio+q6oqP6uqKj45juM9q6oqPnIcRz+rqio+OY5jPquqKj45jmM/q6oqPquqqj6rqio+AACAP6uqKj4AAAAAq6qqPquqKj+rqqo+OY7jPauqqj5yHEc/q6qqPjmOYz6rqqo+OY5jP6uqqj6rqqo+q6qqPgAAgD+rqqo+AAAAAAAAAD+rqio/AAAAPzmO4z0AAAA/chxHPwAAAD85jmM+AAAAPzmOYz8AAAA/q6qqPgAAAD8AAIA/AAAAP6uqqj4AAAAAAAAAAAAAAD85juM+AAAAADmO4z0AAAA/5DgOPwAAAAA5jmM+AAAAP6uqKj8AAAAAq6qqPgAAAD+rqqo+q6oqPgAAAACrqio/OY7jPquqKj45juM9q6oqP+Q4Dj+rqio+OY5jPquqKj+rqio/q6oqPquqqj6rqio/q6qqPquqqj4AAAAAVlVVPzmO4z6rqqo+OY7jPVZVVT/kOA4/q6qqPjmOYz5WVVU/q6oqP6uqqj6rqqo+VlVVP6uqqj4AAAA/AAAAAAAAgD85juM+AAAAPzmO4z0AAIA/5DgOPwAAAD85jmM+AACAP6uqKj8AAAA/q6qqPgAAgD+rqqo+AAAAP6uqKj8AAAA/OY7jPgAAAD9yHEc/AAAAP+Q4Dj8AAAA/OY5jPwAAAD+rqio/AAAAPwAAgD8AAAA/q6qqPquqKj+rqio/q6oqPzmO4z6rqio/chxHP6uqKj/kOA4/q6oqPzmOYz+rqio/q6oqP6uqKj8AAIA/q6oqP6uqqj5WVVU/q6oqP1ZVVT85juM+VlVVP3IcRz9WVVU/5DgOP1ZVVT85jmM/VlVVP6uqKj9WVVU/AACAP1ZVVT+rqqo+AACAP6uqKj8AAIA/OY7jPgAAgD9yHEc/AACAP+Q4Dj8AAIA/OY5jPwAAgD+rqio/AACAPwAAgD8AAIA/"),
@@ -60,12 +55,14 @@ _surfaces = [{
 "vertex_data": PackedByteArray("ctGAvAp8gT0WQr48ctGAPAp8gT0WQr68jCW/u8SZgj38uMI8jCW/O8SZgj38uMK8jCW/O8SZgj38uMI8jCW/u8SZgj38uMK8ctGAPAp8gT0WQr48ctGAvAp8gT0WQr68WEiFvEt+sTz8uMI8WEiFPEt+sTz8uMK8jCW/u0t+sTzNzMw8jCW/O0t+sTzNzMy8jCW/O0t+sTzNzMw8jCW/u0t+sTzNzMy8WEiFPEt+sTz8uMI8WEiFvEt+sTz8uMK8WEiFvEp+sbz8uMI8WEiFPEp+sbz8uMK8jCW/u0p+sbzNzMw8jCW/O0p+sbzNzMy8jCW/O0p+sbzNzMw8jCW/u0p+sbzNzMy8WEiFPEp+sbz8uMI8WEiFvEp+sbz8uMK8ctGAvAp8gb0WQr48ctGAPAp8gb0WQr68jCW/u8SZgr38uMI8jCW/O8SZgr38uMK8jCW/O8SZgr38uMI8jCW/u8SZgr38uMK8ctGAPAp8gb0WQr48ctGAvAp8gb0WQr68ctGAPAp8gT0WQr48ctGAvAp8gT0WQr68WEiFPMSZgj2JiAg8WEiFvMSZgj2JiAi8WEiFPMSZgj2IiAi8WEiFvMSZgj2IiAg8ctGAPAp8gT0WQr68ctGAvAp8gT0WQr48WEiFPEt+sTz8uMI8WEiFvEt+sTz8uMK8KVyPPEt+sTyJiAg8KVyPvEt+sTyJiAi8KVyPPEt+sTyIiAi8KVyPvEt+sTyIiAg8WEiFPEt+sTz8uMK8WEiFvEt+sTz8uMI8WEiFPEp+sbz8uMI8WEiFvEp+sbz8uMK8KVyPPEp+sbyJiAg8KVyPvEp+sbyJiAi8KVyPPEp+sbyIiAi8KVyPvEp+sbyIiAg8WEiFPEp+sbz8uMK8WEiFvEp+sbz8uMI8ctGAPAp8gb0WQr48ctGAvAp8gb0WQr68WEiFPMSZgr2JiAg8WEiFvMSZgr2JiAi8WEiFPMSZgr2IiAi8WEiFvMSZgr2IiAg8ctGAPAp8gb0WQr68ctGAvAp8gb0WQr48ctGAPAp8gT0WQr48ctGAvAp8gb0WQr48jCW/O8SZgj38uMI8jCW/u8SZgr38uMI8jCW/u8SZgj38uMI8jCW/O8SZgr38uMI8ctGAvAp8gT0WQr48ctGAPAp8gb0WQr48WEiFPMSZgj2JiAg8WEiFvMSZgr2JiAg8jCW/O7gehT2JiAg8jCW/u7gehb2JiAg8jCW/u7gehT2JiAg8jCW/O7gehb2JiAg8WEiFvMSZgj2JiAg8WEiFPMSZgr2JiAg8WEiFPMSZgj2IiAi8WEiFvMSZgr2IiAi8jCW/O7gehT2IiAi8jCW/u7gehb2IiAi8jCW/u7gehT2IiAi8jCW/O7gehb2IiAi8WEiFvMSZgj2IiAi8WEiFPMSZgr2IiAi8ctGAPAp8gT0WQr68ctGAvAp8gb0WQr68jCW/O8SZgj38uMK8jCW/u8SZgr38uMK8jCW/u8SZgj38uMK8jCW/O8SZgr38uMK8ctGAvAp8gT0WQr68ctGAPAp8gb0WQr68VFWqqv///79U1VTVAAD/v/9//7////+//7///wAA/7//f/+/////v/+///8AAP+/qqqqqv///7+qKlTVAAD/v/8//3////+/////vwAA/7//f/9/////v/////8AAP+//3//f////7//////AAD/v/+//3////+/AAD/vwAA/7//P/9/////v////78AAP+//3//f////7//////AAD/v/9//3////+//////wAA/7//v/9/////vwAA/78AAP+/VFVUVf///79U1aoqAAD/v/9//z////+//78AAAAA/7//f/8/////v/+/AAAAAP+/qqpUVf///7+qKqoqAAD/v6qqqqr/////qipU1f9//7//v/+///////8//7//f/+//7//v///////P/+//3//v1TVVNX/////VFWqqv9//7//v/9//////wAA/7//f/+/////f/////8AAP9//3//v////3//////AAD/f/9//7////+///////8//3//f/+//7//f/////8AAP+//3//v////3//////AAD/f/9//7////9//////wAA/3//f/+/////v///////P/9//3//v6qqVFX/////qiqqKv9//7//v/8///////8//z//f/+//7//P///////P/8//3//v1TVqir/////VFVUVf9//7+qqqqqAAD/v1RVVFX///+//3//vwAA/7//f/8/////v/9//78AAP+//3//P////79UVaqqAAD/v6qqVFX///+//7//vwAA/7//P/8/////v/9///8AAP+//38AAP///7//f///AAD/v/9/AAD///+//z//vwAA/7//v/8/////v/+//78AAP+//z//P////7//f///AAD/v/9/AAD///+//3///wAA/7//fwAA////v/8//78AAP+//7//P////79U1VTVAAD/v6oqqir///+//7///wAA/7//vwAA////v/+///8AAP+//78AAP///7+qKlTVAAD/v1TVqir///+/")
 }]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_emle8"]
-albedo_color = Color(0.13, 0.15, 0.16, 1)
-metallic = 0.85
-roughness = 0.6
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ewknt"]
+render_priority = 0
+shader = ExtResource("2_dh6yv")
+shader_parameter/base_color = Color(0.105, 0.12, 0.13, 1)
+shader_parameter/metal = 0.8
+shader_parameter/wood = false
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_vplda"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_4pehp"]
 _surfaces = [{
 "aabb": AABB(-0.003, -0.065, -0.009, 0.006, 0.13, 0.018),
 "attribute_data": PackedByteArray("AAAAAAAAAACrqio/AAAAADmO4z0AAAAAchxHPwAAAAA5jmM+AAAAADmOYz8AAAAAq6qqPgAAAAAAAIA/AAAAAAAAAACrqio+q6oqP6uqKj45juM9q6oqPnIcRz+rqio+OY5jPquqKj45jmM/q6oqPquqqj6rqio+AACAP6uqKj4AAAAAq6qqPquqKj+rqqo+OY7jPauqqj5yHEc/q6qqPjmOYz6rqqo+OY5jP6uqqj6rqqo+q6qqPgAAgD+rqqo+AAAAAAAAAD+rqio/AAAAPzmO4z0AAAA/chxHPwAAAD85jmM+AAAAPzmOYz8AAAA/q6qqPgAAAD8AAIA/AAAAP6uqqj4AAAAAAAAAAAAAAD85juM+AAAAADmO4z0AAAA/5DgOPwAAAAA5jmM+AAAAP6uqKj8AAAAAq6qqPgAAAD+rqqo+q6oqPgAAAACrqio/OY7jPquqKj45juM9q6oqP+Q4Dj+rqio+OY5jPquqKj+rqio/q6oqPquqqj6rqio/q6qqPquqqj4AAAAAVlVVPzmO4z6rqqo+OY7jPVZVVT/kOA4/q6qqPjmOYz5WVVU/q6oqP6uqqj6rqqo+VlVVP6uqqj4AAAA/AAAAAAAAgD85juM+AAAAPzmO4z0AAIA/5DgOPwAAAD85jmM+AACAP6uqKj8AAAA/q6qqPgAAgD+rqqo+AAAAP6uqKj8AAAA/OY7jPgAAAD9yHEc/AAAAP+Q4Dj8AAAA/OY5jPwAAAD+rqio/AAAAPwAAgD8AAAA/q6qqPquqKj+rqio/q6oqPzmO4z6rqio/chxHP6uqKj/kOA4/q6oqPzmOYz+rqio/q6oqP6uqKj8AAIA/q6oqP6uqqj5WVVU/q6oqP1ZVVT85juM+VlVVP3IcRz9WVVU/5DgOP1ZVVT85jmM/VlVVP6uqKj9WVVU/AACAP1ZVVT+rqqo+AACAP6uqKj8AAIA/OY7jPgAAgD9yHEc/AACAP+Q4Dj8AAIA/OY5jPwAAgD+rqio/AACAPwAAgD8AAIA/"),
@@ -98,32 +95,32 @@ omni_range = 2.0
 
 [node name="Audio" type="AudioStreamPlayer" parent="." unique_id=771040081]
 
-[node name="WeaponMesh" type="Node3D" parent="." unique_id=24659510]
+[node name="WeaponMesh" type="Node3D" parent="." unique_id=1168542622]
 
-[node name="@MeshInstance3D@140" type="MeshInstance3D" parent="WeaponMesh" unique_id=1189221965]
+[node name="@MeshInstance3D@144" type="MeshInstance3D" parent="WeaponMesh" unique_id=151326287]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -0.03999999)
-material_override = SubResource("StandardMaterial3D_1akm0")
+material_override = SubResource("StandardMaterial3D_om1h5")
+cast_shadow = 0
+visibility_range_end = 65.0
+mesh = SubResource("CylinderMesh_1akm0")
+
+[node name="@MeshInstance3D@145" type="MeshInstance3D" parent="WeaponMesh" unique_id=517660584]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0, -0.4815)
+material_override = SubResource("ShaderMaterial_jb7vq")
 cast_shadow = 0
 visibility_range_end = 65.0
 mesh = SubResource("CylinderMesh_ekcg5")
 
-[node name="@MeshInstance3D@141" type="MeshInstance3D" parent="WeaponMesh" unique_id=1171459148]
-transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0, -0.4815)
-material_override = SubResource("StandardMaterial3D_r7wsp")
+[node name="@MeshInstance3D@146" type="MeshInstance3D" parent="WeaponMesh" unique_id=457827779]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.11, 0.03)
+material_override = SubResource("ShaderMaterial_l6xfs")
 cast_shadow = 0
 visibility_range_end = 65.0
-mesh = SubResource("CylinderMesh_iwou5")
+mesh = SubResource("ArrayMesh_iwou5")
 
-[node name="@MeshInstance3D@142" type="MeshInstance3D" parent="WeaponMesh" unique_id=777048006]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.11, 0.03)
-material_override = SubResource("StandardMaterial3D_fr2xv")
+[node name="@MeshInstance3D@147" type="MeshInstance3D" parent="WeaponMesh" unique_id=1201107624]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.04, 0.08, 0)
+material_override = SubResource("ShaderMaterial_ewknt")
 cast_shadow = 0
 visibility_range_end = 65.0
 mesh = SubResource("ArrayMesh_4pehp")
-
-[node name="@MeshInstance3D@143" type="MeshInstance3D" parent="WeaponMesh" unique_id=809555667]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.04, 0.08, 0)
-material_override = SubResource("StandardMaterial3D_emle8")
-cast_shadow = 0
-visibility_range_end = 65.0
-mesh = SubResource("ArrayMesh_vplda")

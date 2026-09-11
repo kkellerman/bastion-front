@@ -9,6 +9,36 @@ static func material(color: Color, metallic: float = 0.0) -> StandardMaterial3D:
 	mat.roughness = 0.6 if metallic > 0 else 0.88
 	return mat
 
+static func worn(color: Color, metallic: float = 0.0, wood: bool = false) -> ShaderMaterial:
+	var mat: ShaderMaterial = ShaderMaterial.new()
+	mat.shader = load("res://shaders/worn_surface.gdshader")
+	mat.set_shader_parameter("base_color", color)
+	mat.set_shader_parameter("metal", metallic)
+	mat.set_shader_parameter("wood", wood)
+	return mat
+
+static func batch_static(parent: Node3D) -> void:
+	# Consolidate stationary dressing by material; collision/light/sign nodes stay independent.
+	var batches: Dictionary = {}
+	for node: Node in parent.get_children():
+		if not node is MeshInstance3D or node.mesh == null: continue
+		for surface: int in range(node.mesh.get_surface_count()):
+			var mat: Material = node.material_override if node.material_override != null else node.mesh.surface_get_material(surface)
+			if not batches.has(mat):
+				var st: SurfaceTool = SurfaceTool.new()
+				st.begin(Mesh.PRIMITIVE_TRIANGLES)
+				st.set_material(mat)
+				batches[mat] = st
+			batches[mat].append_from(node.mesh,surface,node.transform)
+		parent.remove_child(node)
+		node.free()
+	for mat: Material in batches:
+		var st: SurfaceTool = batches[mat]
+		st.index()
+		var merged: MeshInstance3D = shape(parent,Vector3.ZERO,st.commit(),null)
+		# Spanning meshes use normal frustum culling, not distance from a single origin.
+		merged.visibility_range_end = 0
+
 static func box(parent: Node3D, point: Vector3, size: Vector3, mat: Material) -> MeshInstance3D:
 	var mesh: BoxMesh = BoxMesh.new()
 	mesh.size = size

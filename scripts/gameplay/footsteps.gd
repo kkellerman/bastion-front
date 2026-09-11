@@ -4,6 +4,7 @@ var _distance: float = 0.0
 
 
 func _physics_process(delta: float) -> void:
+	if not get_node("/root/CombatAudio").can_emit(player): return
 	if player.is_on_floor():
 		_distance += Vector2(player.velocity.x, player.velocity.z).length() * delta
 		if _distance >= 1.8:

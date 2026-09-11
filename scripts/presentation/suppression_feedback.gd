@@ -11,6 +11,7 @@ func _ready() -> void:
 	get_node("/root/CombatAudio").bullet_passed.connect(_bullet)
 
 func _bullet(start: Vector3, end: Vector3, source: CollisionObject3D) -> void:
+	if player.get_node("HealthComponent").current_health <= 0: return
 	if source == player or not FactionData.hostile(player, source) or _cooldown > 0: return
 	var closest: Vector3 = Geometry3D.get_closest_point_to_segment(camera.global_position, start, end)
 	if closest.distance_to(camera.global_position) > 1.6: return
@@ -20,6 +21,7 @@ func _bullet(start: Vector3, end: Vector3, source: CollisionObject3D) -> void:
 	get_node("/root/CombatAudio").play(&"impact_metal", closest)
 
 func _process(delta: float) -> void:
+	if player.get_node("HealthComponent").current_health <= 0: return
 	pressure = maxf(0, pressure - delta * 2.5)
 	_cooldown -= delta
 	var reduced: bool = get_node("/root/PlayerSettings").values.reduced_motion

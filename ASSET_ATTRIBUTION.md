@@ -34,6 +34,24 @@ Download URL pattern:
 
 ## Original project assets
 
+The combat-feedback iteration adds no external assets. New authored sound cues
+(`canopy`, `gust`, `radio_bed`, `radio_signal`, `hit_flesh`, `hit_gear`) and revised
+explosion/loop PCM are produced by `tools/build_audio_assets.gd`. Radio signals are
+nonverbal oscillator/noise effects, not fabricated German radio speech. Seamless
+loop joins are overlap-added offline. Procedural cloud and damage-vignette shaders,
+particle effects and distance-driven leg posing are original project work.
+These remain sound-design/animation placeholders pending authentic licensed
+recordings, production animation and human mixing review.
+
+The targeted polish pass adds **no external downloads**. Original new assets:
+`assets/textures/spruce_branch.png` (deterministically drawn needle/twig atlas,
+`tools/build_needle_atlas.gd`), revised tree meshes/cards, crafted sandbag/limb/concrete
+meshes, worn wood/metal shaders, anatomically shaped interim heads and face shader,
+cloud-layer revisions and non-speech two-note dialogue diagnostics. None are scans,
+sampled speech or extracted game assets. The original diagnostic tone is opt-in;
+the game still contains no English/German speech recordings. Exact production needs
+and import paths: `docs/VOICE_RECORDING_MANIFEST.md`.
+
 - Branched conifer/deciduous meshes, roots, ferns, grasses and irregular rocks:
   `tools/build_forest_assets.gd`, baked into `assets/environments/germany/forest/`.
   Their assigned bark/rock materials use the CC0 maps credited above.

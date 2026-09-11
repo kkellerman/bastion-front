@@ -13,6 +13,7 @@ weapon_id = &"mp40"
 display_name = "MP40"
 faction = &"german"
 weapon_class = &"smg"
+muzzle_flash_size = Vector2(0.12, 0.2)
 damage = 20.0
 rate_of_fire = 500.0
 automatic = true

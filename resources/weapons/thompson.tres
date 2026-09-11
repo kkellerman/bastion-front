@@ -13,6 +13,7 @@ weapon_id = &"thompson"
 display_name = "Thompson"
 faction = &"allied"
 weapon_class = &"smg"
+muzzle_flash_size = Vector2(0.12, 0.2)
 damage = 22.0
 rate_of_fire = 600.0
 automatic = true

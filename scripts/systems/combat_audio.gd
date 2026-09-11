@@ -2,6 +2,7 @@ extends Node
 
 signal noise(position: Vector3, radius: float, source: CollisionObject3D)
 signal bullet_passed(start: Vector3, end: Vector3, source: CollisionObject3D)
+signal cue_started(cue: StringName, source: CollisionObject3D)
 var palette: AudioPalette = preload("res://resources/audio/prototype_palette.tres")
 var _fallbacks: Dictionary[StringName, AudioStream] = {}
 var _voices: int = 0
@@ -28,6 +29,12 @@ func _exit_tree() -> void:
 
 
 func play(cue: StringName, position: Vector3, source: CollisionObject3D = null, override_stream: AudioStream = null) -> void:
+	if str(cue).begins_with("footstep") and not can_emit(source): return
+	# Validate before both hearing and playback. Explosions already in flight remain valid.
+	if cue in [&"gunshot", &"mounted", &"reload", &"dry"] and not can_emit(source):
+		return
+	if cue == &"gunshot" and source is InfantryBrain and not source.combat.enabled: return
+	cue_started.emit(cue, source)
 	if cue in [&"gunshot", &"mounted", &"explosion"]:
 		noise.emit(position, 45.0 if cue != &"gunshot" else 28.0, source)
 	# Dummy has no audible output. Keep simulation noise, without allocating PCM
@@ -37,6 +44,7 @@ func play(cue: StringName, position: Vector3, source: CollisionObject3D = null, 
 	if _voices >= 24:
 		return
 	var stream: AudioStream = override_stream
+	if stream == null and cue == &"footstep": stream = load("res://assets/audio/designed/footstep_dirt.res")
 	var designed: String = "res://assets/audio/designed/" + str(cue) + ".res"
 	if stream == null and ResourceLoader.exists(designed):
 		stream = load(designed) as AudioStream
@@ -52,11 +60,24 @@ func play(cue: StringName, position: Vector3, source: CollisionObject3D = null, 
 	if scene == null: scene = self
 	scene.add_child(voice)
 	voice.add_to_group(&"combat_audio_voices")
+	voice.set_meta(&"cue", cue)
+	voice.set_meta(&"source_id", source.get_instance_id() if is_instance_valid(source) else 0)
 	voice.global_position = position
 	voice.stream = stream
 	voice.bus = &"Bunker" if interior_bounds.has_point(position) else &"Effects"
-	voice.volume_db = -18.0 if str(cue).begins_with("footstep") else -10.0
+	voice.volume_db = -10.0
 	voice.max_distance = 65.0
+	if str(cue).begins_with("footstep"):
+		voice.volume_db = -26.0
+		voice.max_distance = 12.0
+		voice.attenuation_filter_cutoff_hz = 1600.0
+	if cue == &"explosion":
+		voice.max_distance = 140
+		voice.unit_size = 9
+	if cue in [&"hit_flesh", &"hit_gear"]:
+		voice.volume_db = -15
+		voice.max_distance = 24
+		voice.unit_size = 4
 	voice.pitch_scale = randf_range(0.94, 1.06)
 	_voices += 1
 	voice.tree_exiting.connect(func() -> void:
@@ -65,6 +86,14 @@ func play(cue: StringName, position: Vector3, source: CollisionObject3D = null, 
 		voice.stream = null)
 	voice.finished.connect(voice.queue_free)
 	voice.play()
+
+func can_emit(source: CollisionObject3D) -> bool:
+	if not is_instance_valid(source) or not source.is_inside_tree() or not source.can_process(): return false
+	var health: HealthComponent = source.get_node_or_null("HealthComponent") as HealthComponent
+	if health != null and health.current_health <= 0: return false
+	# Mounted players deliberately suspend their movement physics; infantry never fires suspended.
+	if source is InfantryBrain and not source.is_physics_processing(): return false
+	return true
 
 func stop_all() -> void:
 	for voice: AudioStreamPlayer3D in get_tree().get_nodes_in_group(&"combat_audio_voices"):

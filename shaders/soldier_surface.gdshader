@@ -14,6 +14,8 @@ void fragment() {
 	else if (leather) base = vec3(0.027,0.023,0.019);
 	if (!skin && local.y < 0.3 && local.y > 0.12 && short_gaiters) base = gaiter_color.rgb;
 	float weave = sin(UV.x*1100.0)*sin(UV.y*1100.0);
-	ALBEDO = base*(0.94 + weave*0.04);
+	float mottling=sin(local.x*71.0+sin(local.y*29.0))*sin(local.z*53.0+local.y*43.0);
+	float dirt=(1.0-smoothstep(0.12,0.5,local.y))*0.3;
+	ALBEDO = base*(0.90 + weave*0.025+mottling*0.055)*(1.0-dirt);
 	ROUGHNESS = skin ? 0.67 : 0.88;
 }

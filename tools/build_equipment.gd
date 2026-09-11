@@ -5,11 +5,9 @@ var wood: Material
 var black: Material
 
 func _initialize() -> void:
-	steel = P.material(Color(0.13, 0.15, 0.16), 0.85)
-	wood = load("res://assets/materials/presentation/bark.tres").duplicate()
-	wood.albedo_color = Color(0.5, 0.28, 0.13)
-	wood.uv1_scale = Vector3(8, 2, 8)
-	black = P.material(Color(0.02, 0.024, 0.026), 0.3)
+	steel = P.worn(Color(0.105, 0.12, 0.13), 0.8)
+	wood = P.worn(Color(0.25, 0.12, 0.055), 0.0, true)
+	black = P.worn(Color(0.024, 0.028, 0.027), 0.25)
 	for id: String in ["m1911", "p38", "thompson", "mp40", "stg44", "bazooka", "panzerfaust"]:
 		var data: WeaponData = load("res://resources/weapons/" + id + ".tres") as WeaponData
 		var scene: Node3D = data.viewmodel_scene.instantiate() as Node3D
@@ -41,12 +39,11 @@ func _initialize() -> void:
 			child.free()
 		_machine_gun(gun, id)
 		_save(scene, path)
-	_soldier()
 	print("Built original equipment presentation")
 	quit()
 
 func _pistol(root: Node3D, id: String) -> void:
-	P.box(root, Vector3(0, 0, 0), Vector3(0.038, 0.046, 0.22), steel)
+	P.box(root, Vector3(0, 0, 0.025 if id == "p38" else 0), Vector3(0.033, 0.034, 0.155 if id == "p38" else 0.215), steel)
 	P.box(root, Vector3(0, -0.028, 0.018), Vector3(0.034, 0.018, 0.19), steel)
 	P.box(root, Vector3(0, -0.079, 0.069), Vector3(0.036, 0.102, 0.054), black).rotation.x = -0.2
 	for side: float in [-1, 1]:
@@ -73,7 +70,12 @@ func _long_gun(root: Node3D, id: String) -> void:
 	P.rod(root, Vector3(0, 0, -0.405), Vector3(0, 0, -0.402), 0.008, black)
 	P.box(root, Vector3(0, -0.09, 0.07), Vector3(0.04, 0.13, 0.05), wood if id == "thompson" else black).rotation.x = -0.2
 	_guard(root, Vector3(0, -0.055, 0.015), Vector3(0.8, 1.1, 1.2))
-	P.box(root, Vector3(0, -0.15, -0.10), Vector3(0.032, 0.22, 0.055), steel).rotation.x = -0.15 if id == "stg44" else 0.0
+	if id == "stg44":
+		for section: int in range(5):
+			var t: float = float(section) / 4.0
+			P.box(root, Vector3(0,-0.065-section*0.039,-0.10-t*t*0.055), Vector3(0.026,0.049,0.061),steel).rotation.x = -t*0.4
+	else:
+		P.box(root, Vector3(0, -0.15, -0.10), Vector3(0.026, 0.22, 0.044), steel)
 	for side: float in [-1, 1]:
 		for rib: int in range(3):
 			P.box(root, Vector3(side * 0.017, -0.14, -0.118 + rib * 0.016), Vector3(0.003, 0.18, 0.003), black)

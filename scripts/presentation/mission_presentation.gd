@@ -4,6 +4,7 @@ const P = preload("res://scripts/presentation/dressing_parts.gd")
 var subtitle: Label
 var _remaining: float = 0.0
 var dialogue: Node
+var _player_health: float = 100.0
 
 func _ready() -> void:
 	_install.call_deferred()
@@ -14,13 +15,17 @@ func _install() -> void:
 	dialogue.name = "DialogueDirector"
 	add_child(dialogue)
 	dialogue.line_started.connect(_timed_subtitle)
+	dialogue.line_cleared.connect(func() -> void:
+		if subtitle != null: subtitle.text = "")
 	var canvas: CanvasLayer = CanvasLayer.new()
 	add_child(canvas)
 	subtitle = Label.new()
 	canvas.add_child(subtitle)
 	subtitle.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
-	subtitle.position = Vector2(-320, -170)
-	subtitle.size = Vector2(640, 40)
+	subtitle.offset_left = -320
+	subtitle.offset_right = 320
+	subtitle.offset_top = -170
+	subtitle.offset_bottom = -85
 	subtitle.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	subtitle.add_theme_constant_override("outline_size", 5)
@@ -30,6 +35,7 @@ func _install() -> void:
 		var faction: FactionData = enemy.get_meta(&"faction") as FactionData
 		var preview: Node3D = enemy.combat.weapon.data.viewmodel_scene.instantiate() as Node3D
 		var held: Node3D = preview.get_node("WeaponMesh").duplicate() as Node3D
+		var muzzle_transform: Transform3D = preview.get_node("Muzzle").transform
 		preview.free()
 		enemy.get_node("Eyes/Gun").mesh = null
 		enemy.get_node("Eyes/Gun").add_child(held)
@@ -48,6 +54,8 @@ func _install() -> void:
 			enemy.add_child(animator)
 			held.reparent(model.get_node("Skeleton3D/WeaponSocket"), false)
 			held.position = Vector3(0, 0.07, -0.06)
+			enemy.combat.muzzle.reparent(held, false)
+			enemy.combat.muzzle.transform = muzzle_transform
 		if faction.voice_set != null:
 			var voice: Node3D = Voice.new()
 			voice.voice_set = faction.voice_set
@@ -81,11 +89,16 @@ func _install() -> void:
 	for weapon: WeaponBase in mission.rig.inventory.weapons:
 		weapon.reload_changed.connect(func(active: bool) -> void:
 			if active: radio.say(&"reloading"))
+	_player_health = mission.player.get_node("HealthComponent").current_health
 	mission.player.get_node("HealthComponent").health_changed.connect(func(current: float, _maximum: float) -> void:
-		if current < _maximum: radio.say(&"taking_fire"))
+		if current > 0 and current < _player_health: radio.say(&"taking_fire")
+		_player_health = current)
 	mission.player.get_node("HealthComponent").died.connect(func() -> void: radio.say(&"death"))
 	if get_node("/root/PrototypeSession").checkpoint.is_empty(): dialogue.request(radio, &"briefing", true)
 	get_node("/root/PlayerSettings").apply()
+	var audio_debug: CanvasLayer = load("res://scripts/presentation/audio_source_debug.gd").new()
+	audio_debug.name = "AudioSourceDebug"
+	add_child(audio_debug)
 
 func _casualty(fallen: InfantryBrain) -> void:
 	for enemy: InfantryBrain in get_parent().get_node("Enemies").get_children():

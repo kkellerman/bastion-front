@@ -70,11 +70,13 @@ func _physics_process(delta: float) -> void:
 	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 		_clear_input()
 	if mounted != null:
+		_aiming = _aim_held and not mounted.weapon.is_reloading
+		camera.fov = lerpf(camera.fov, minf(56.0, _base_fov) if _aiming else _base_fov, 1.0 - exp(-15.0 * delta))
 		if _reload_pending:
 			if mounted.weapon.try_reload():
 				get_node("/root/CombatAudio").play(&"reload", camera.global_position, shooter)
 		if _fire_held:
-			mounted.fire(camera, shooter)
+			mounted.fire(camera, shooter, _aiming)
 		_fire_pending = false
 		_reload_pending = false
 		return
@@ -110,6 +112,7 @@ func _clear_input() -> void:
 
 
 func _on_shot() -> void:
+	if not can_process() or not get_node("/root/CombatAudio").can_emit(shooter): return
 	if weapon.data.hitscan_or_projectile == WeaponData.ShotType.HITSCAN:
 		hitscan.fire(weapon.data, camera, viewmodel.muzzle, shooter, _aiming)
 	else:
@@ -145,6 +148,7 @@ func _equip(next: WeaponBase) -> void:
 
 
 func throw_grenade() -> bool:
+	if not get_node("/root/CombatAudio").can_emit(shooter): return false
 	if inventory.faction == null or _grenade_cooldown > 0.0 or weapon.is_reloading or mounted != null:
 		return false
 	var data: WeaponData = inventory.faction.grenade

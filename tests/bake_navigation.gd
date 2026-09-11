@@ -18,6 +18,11 @@ func _bake() -> void:
 	mesh.agent_max_slope = 35.0
 	mesh.cell_size = 0.2
 	mesh.cell_height = 0.1
+	if mission:
+		# Sparse detail sampling produced overlapping shared edges on the hummocks.
+		# Sample at 10 cm (cell_size * 0.5), with shorter contour edges.
+		mesh.detail_sample_distance = 0.5
+		mesh.edge_max_length = 3.0
 	mesh.geometry_parsed_geometry_type = NavigationMesh.PARSED_GEOMETRY_STATIC_COLLIDERS
 	mesh.geometry_collision_mask = 1
 	var source: NavigationMeshSourceGeometryData3D = NavigationMeshSourceGeometryData3D.new()

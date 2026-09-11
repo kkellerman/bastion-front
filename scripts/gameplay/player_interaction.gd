@@ -30,7 +30,7 @@ func _physics_process(_delta: float) -> void:
 		return
 	var rig: Node3D = player.get_meta(&"weapon_rig") as Node3D
 	if rig.mounted != null:
-		label.text = "E: dismount  /  R: reload belt"
+		label.text = "Mouse: traverse  /  RMB: aim  /  LMB: fire  /  R: reload  /  E: dismount"
 		if _pending:
 			rig.mounted.dismount()
 	else:

@@ -2,10 +2,11 @@ extends RefCounted
 const P = preload("res://scripts/presentation/dressing_parts.gd")
 
 static func dress(level: Node3D, art: Node3D) -> void:
-	var wood: Material = load("res://assets/materials/presentation/bark.tres").duplicate()
-	wood.albedo_color = Color(0.35, 0.3, 0.2)
+	var wood: Material = P.worn(Color(0.27, 0.22, 0.145), 0.0, true)
 	var iron: Material = P.material(Color(0.075, 0.085, 0.077), 0.65)
-	var canvas: Material = P.material(Color(0.31, 0.3, 0.22))
+	var canvas: ShaderMaterial = ShaderMaterial.new()
+	canvas.shader = load("res://shaders/uniform_fabric.gdshader")
+	canvas.set_shader_parameter("cloth_color", Color(0.32, 0.29, 0.20))
 	for body: Node3D in level.get_node("Fortifications").get_children():
 		body.set_meta(&"surface", &"dirt")
 		var size: Vector3 = body.get_node("Mesh").mesh.size
@@ -16,14 +17,13 @@ static func dress(level: Node3D, art: Node3D) -> void:
 					P.box(art, body.position + Vector3(side * size.x * 0.5, 0, -size.z * 0.5 + z * 0.35), Vector3(0.08, size.y, 0.3), wood)
 		else:
 			body.get_node("Mesh").visible = false
-			var bag: SphereMesh = SphereMesh.new()
-			bag.radial_segments = 12
-			bag.rings = 6
+			var bag: ArrayMesh = preload("res://scripts/presentation/crafted_mesh.gd").sack()
 			for row: int in range(4):
 				for column: int in range(int(size.x / 0.55)):
 					var point: Vector3 = body.position + Vector3(-size.x * 0.5 + 0.3 + column * 0.55 + (row % 2) * 0.12, -size.y * 0.5 + 0.16 + row * 0.3, 0)
 					var sack: MeshInstance3D = P.shape(art, point, bag, canvas)
-					sack.scale = Vector3(0.68, 0.32, size.z * 0.8)
+					sack.scale = Vector3(0.60, 0.30, size.z * 0.91)
+					sack.rotation = Vector3(sin(column * 3.7 + row) * 0.035, sin(column * 7.1 + row) * 0.065, cos(column * 4.3 + row) * 0.025)
 	for node: Node in level.get_children():
 		if node is Label3D:
 			node.visible = false
@@ -41,11 +41,21 @@ static func dress(level: Node3D, art: Node3D) -> void:
 					P.rod(art, Vector3(x, strand, -54), Vector3(x + side * 0.5, strand, -54), 0.008, iron)
 					P.rod(art, Vector3(x, strand - 0.07, -54.07), Vector3(x + 0.1, strand + 0.07, -53.93), 0.006, iron)
 	# Slung camouflage strips above the gun, outside its firing and interaction rays.
-	for strip: int in range(18):
-		var net: MeshInstance3D = P.box(art, Vector3(-2.8 + strip * 0.32, 2.7 + sin(strip) * 0.12, -51.8), Vector3(0.09, 0.018, 3.2), canvas)
-		net.rotation.y = 0.2
-	for strip: int in range(10):
-		P.box(art, Vector3(0, 2.73, -53.2 + strip * 0.3), Vector3(5.5, 0.02, 0.07), canvas)
+	# Sagged rope mesh and irregular hanging scrim replace the rigid overhead grid.
+	for strip: int in range(24):
+		var x: float = -2.8 + strip * 0.24
+		for section: int in range(8):
+			var z: float = -53.2 + section * 0.4
+			var y: float = 2.78 - (1.0 - pow(absf(x) / 2.9, 2)) * 0.25
+			P.rod(art, Vector3(x,y,z), Vector3(x+0.02,y-0.015,z+0.4),0.008,canvas)
+			if (strip + section) % 3 == 0:
+				var scrim: MeshInstance3D = P.shape(art, Vector3(x,y-0.07,z), preload("res://scripts/presentation/crafted_mesh.gd").sack(), canvas)
+				scrim.scale = Vector3(0.19,0.012,0.26)
+				scrim.rotation = Vector3(section*0.37,strip*2.4,strip*0.41)
+	for section: int in range(9):
+		for strip: int in range(12):
+			var x: float = -2.8 + strip*0.47
+			P.rod(art,Vector3(x,2.78-(1-pow(absf(x)/2.9,2))*0.25,-53.2+section*0.4),Vector3(x+0.47,2.78-(1-pow(absf(x+0.47)/2.9,2))*0.25,-53.2+section*0.4),0.008,canvas)
 	for x: float in [-2.8, 2.8]:
 		P.rod(art, Vector3(x, 0, -53), Vector3(x, 2.8, -53), 0.06, wood)
 	_interior(level, art, wood, iron)

@@ -8,6 +8,20 @@ materials with original interim environment, equipment and sound assets.
 
 ## Character, voice, forest and combat fidelity
 
+The combat-feedback pass adds actor-validated dialogue and firing, layered bounded
+explosions, shared muzzle effects, distance-driven infantry legs, hit reactions and
+a downed first-person death camera. Wind uses seamless overlap-added loops with
+staggered canopy/gust layers. The radio desk has nonverbal positional static, hum
+and intermittent signal tones. F10 now has independent **Ambience**,
+**Communications** and **Artillery** volume sliders. Artillery is on for new settings;
+previously saved choices are preserved. No voice pack or spoken recordings were added.
+See [combat-feedback validation](docs/COMBAT_FEEDBACK_VALIDATION.md).
+
+The latest targeted pass fixes ghost gunfire, adds conservative Auto/Low/Medium/High
+graphics and revises foliage, terrain, fortifications, equipment and character heads.
+See [polish validation and screenshots](docs/POLISH_VALIDATION.md) for exact changes,
+performance, tests and remaining art limitations. This remains an interim visual build.
+
 Both factions now use skinned character scenes sharing 17 named bones, nine
 AnimationPlayer clips, an AnimationTree state-machine hook and a right-hand weapon
 socket. A CC0 soldier body by nisu is retargeted into this rig; faction helmets,
@@ -20,20 +34,27 @@ briefing. Spotting, damage, reload, advance, lost sight, nearby explosives, casu
 and death feed a scene-owned dialogue scheduler. Actor cooldown is 5 seconds,
 actor/category cooldown 16 seconds, shared/category cooldown 10 seconds, and the
 global channel reserves the line duration plus 0.4 seconds. Casualty calls can wait
-up to 8 seconds. Text keys, fallback subtitles, timings and recordings are separate.
+up to 8 seconds while the speaker remains alive and enabled. Actual death cancels
+pending lines and clears the active subtitle; it never starts a new spoken/subtitle
+event. Text keys, fallback subtitles, timings and recordings are separate.
 **Recording slots are empty: dialogue is subtitled but silent.** No fake speech is
-generated. Assigned recordings use spatial Dialogue/DialogueInterior buses.
+generated. Missing recordings are labeled in subtitles/settings. F10 can enable
+explicit NON-SPEECH diagnostic tones to test the spatial Dialogue/DialogueInterior
+pipeline. Production filenames and delivery requirements are in the
+[recording manifest](docs/VOICE_RECORDING_MANIFEST.md).
 
 An authored overcast sky, denser tree crowns, deterministic placement variation,
 near/far tree meshes (34 m transition, 85 m cull), moss variation and shallow
 collision-matched forest relief improve the exterior. Road/range/bunker/flank track
-heights are preserved. Navigation was rebuilt to 1,446 polygons. Impact debris,
+heights are preserved. Navigation was rebuilt to 5,792 polygons. Impact debris,
 bounded decals, smoke, explosion dust and subtle directional near-miss feedback
 supplement existing flash/recoil. Reduced-motion settings disable suppression roll.
 
 F10 opens a paused options panel in the menu or mission: FOV 60–110, mouse
-sensitivity, master/effects/dialogue volume, subtitles, reduced motion and two
-graphics tiers. Options persist in `user://settings.cfg`. Escape still only releases
+sensitivity, master/effects/dialogue volume, subtitles, reduced motion, optional
+distant artillery, voice diagnostics and Auto/Low/Medium/High graphics presets.
+Auto starts conservatively on integrated or unknown hardware. Options persist in
+`user://settings.cfg`. Escape still only releases
 the mouse. Checkpoints before the bunker and after documents retain position,
 health (minimum 50), carried magazines/reserves, selected slot, objective and defeated
 enemies across death/Enter. They are session-only; faction changes/new games and
@@ -60,13 +81,15 @@ details. Shared muzzle flashes use a soft additive shader; recoil includes small
 translation/roll feedback. Both factions use the shared rig, modular equipment and
 held firearm socket; damage and navigation remain independent of visual geometry.
 
-Forward+ uses ACES tone mapping, restrained desaturation, SSAO, low-intensity SSIL,
-volumetric haze, 65 m directional shadows, 2x MSAA plus FXAA, warm interior lights
-and sky-based material reflections. Settings are tuned rather than maximized.
+Forward+ uses ACES, balanced lighting and sky reflections on every preset. High adds
+SSAO/SSIL, volumetric haze, 65 m shadows, 2x MSAA and screen-space reflections. Low
+uses 80% resolution, shorter shadows, reduced understory, FXAA and no expensive
+screen-space effects. The full applied-settings table is in the polish report.
 
 Audio now uses distinct original layered firearm reports, mechanisms/reload cues,
 surface-specific impacts/footsteps, explosions, wind, birds, distant combat and
-bunker hum. A reverb bus and ambience crossfade distinguish bunker/exterior space.
+bunker hum. Distant artillery is now an optional quiet off-map channel; ambient
+rifle bursts no longer follow the listener. A reverb bus and ambience crossfade distinguish bunker/exterior space.
 These are authored synthesis placeholders, not authentic recordings. Speech uses
 the separate silent-until-recorded voice sets described above.
 
@@ -96,7 +119,7 @@ No plugins, dependencies or asset downloads are required.
 | Space | Jump while standing and grounded |
 | Hold Ctrl | Crouch; standing requires overhead clearance |
 | Left click / hold | Fire; pistols/launchers need separate clicks; automatic guns repeat |
-| Hold right click | Aim, narrow FOV and reduce firearm spread |
+| Hold right click | Aim, narrow FOV and reduce firearm spread; also aim behind mounted MG sights |
 | R | Reload carried magazine or mounted belt |
 | 1 / 2 / 3 / 4 | Select loadout slot |
 | Mouse wheel | Cycle carried weapons |
@@ -104,6 +127,7 @@ No plugins, dependencies or asset downloads are required.
 | E | Use aimed-at object within 2.8 m; mount/dismount gun |
 | F1 / F2 | Restart as Allied / German while in staging |
 | F10 | Open/close paused settings; saves options on close |
+| F9 | Toggle mission audio/soldier audit: names through cover, positions, states, recent shot sources and audio bus levels |
 | Enter | Resume latest checkpoint after death; fresh restart after completion |
 | Esc | Release mouse; click recaptures without firing |
 | Alt+F4 / window close | Quit |
@@ -112,6 +136,11 @@ Focus loss also releases the mouse. Released mouse disables movement input but
 **does not pause combat**. Mount while standing and not reloading. Mounted aiming
 is limited to 55 degrees yaw and 25 degrees pitch either side. Switching and
 grenades are disabled while mounted.
+
+Footsteps use softened boot/scuff sounds, with playback 12 dB quieter than the
+previous mix and a 12 m audible range. On either MG emplacement, hold right mouse
+to bring the camera behind the sights and zoom; release it for the normal view.
+Dismounting restores the camera and clears aim input, including on player death.
 
 ## Loadouts, ammunition and supplies
 
@@ -241,7 +270,7 @@ shooting into allies. This is small encounter coordination, not a full squad pla
   rerunning it intentionally restores defaults, so preserve custom recordings first.
 - `scenes/weapons/*_projectile.tscn`, `scenes/mounted_weapons/*.tscn`,
   `scenes/pickups/*.tscn`: configured reusable instances.
-- `resources/missions/command_post_navigation.tres`: committed 1,446-polygon bake.
+- `resources/missions/command_post_navigation.tres`: committed 5,792-polygon bake.
   Retain `.gd.uid` sidecars; generated caches/captures remain ignored in `.godot/`.
 
 ## Validation
@@ -260,6 +289,10 @@ godot --headless --path . --script res://tests/defensive_mg_smoke.gd
 godot --path . --script res://tests/mission_flow_smoke.gd
 godot --path . --script res://tests/presentation_smoke.gd
 godot --headless --path . --script res://tests/fidelity_smoke.gd
+godot --path . --script res://tests/polish_smoke.gd
+godot --path . --script res://tests/combat_feedback_smoke.gd
+godot --path . --script res://tests/cleared_command_post_smoke.gd
+godot --path . --script res://tests/combat_feedback_capture.gd
 godot --path . --script res://tests/presentation_capture.gd
 godot --path . --script res://tests/character_capture.gd
 ```
@@ -321,6 +354,9 @@ rendering, physics or gameplay.
   Faces, finger contact, uniform tailoring and skinning at extreme poses still need
   production art/animation. First-person hands use posed geometry, without finger IK
   or detachable magazine choreography. German mode remains a loadout test.
+  Distance-driven procedural legs reduce sliding, but terrain foot IK and authored
+  production locomotion remain future work. Smoke/fire are original shader particles;
+  debris is visual-only and the pressure skirt substitutes for screen distortion.
 - No shell ejection, ragdolls or body-part damage. Decals expire after 12 seconds
   and are capped at 40; impact bursts at 24 and smoke puffs at 12. Viewmodels can
   visually clip walls; obstruction still blocks damage. Panzerfaust reload represents
@@ -329,7 +365,8 @@ rendering, physics or gameplay.
   penetration or NPC explosives. Mounted ammo and enemy ammunition are finite.
 - Authored synthetic effects await licensed recordings and a human audio-mix pass.
   There is source-position reverb and ambience blending, but no acoustic occlusion.
-  Dialogue/briefings are silent pending licensed English/German recordings.
+  Dialogue/briefings are labeled as missing pending licensed English/German recordings;
+  opt-in diagnostic tones are non-speech pipeline tests only.
   No dynamic navigation rebakes, elaborate cover peeking or moving-obstacle avoidance.
 - Tree tiers can visibly transition; no baked impostors. Ground relief is shallow;
   final sculpted terrain and natural leaf/needle textures remain needed. Checkpoints

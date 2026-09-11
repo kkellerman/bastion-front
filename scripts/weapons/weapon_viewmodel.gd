@@ -12,22 +12,28 @@ var _flash_remaining: float = 0.0
 var _kick: float = 0.0
 var _roll_kick: float = 0.0
 var _draw_remaining: float = 0.25
+var muzzle_effect: MuzzleEffect
 
 func _ready() -> void:
+	muzzle_effect = MuzzleEffect.new()
+	muzzle.add_child(muzzle_effect)
 	_install_arms.call_deferred()
 	var flash_quad: QuadMesh = QuadMesh.new()
-	flash_quad.size = Vector2(0.13, 0.13)
+	flash_quad.size = Vector2(0.085, 0.085)
 	flash.mesh = flash_quad
 	var material: ShaderMaterial = ShaderMaterial.new()
 	material.shader = load("res://shaders/muzzle_flash.gdshader")
 	flash.material_override = material
 	flash.rotation = Vector3.ZERO
+	flash.hide()
+	flash_light.hide()
+	# Keep the public flash/light handles used by integrations and regression tests.
+	flash = muzzle_effect.flash
+	flash_light = muzzle_effect.light
 
 
 func _process(delta: float) -> void:
 	_flash_remaining = maxf(0.0, _flash_remaining - delta)
-	flash.visible = _flash_remaining > 0.0
-	flash_light.visible = flash.visible
 	_kick = move_toward(_kick, 0.0, delta * 30.0)
 	_roll_kick = move_toward(_roll_kick, 0.0, delta * 8.0)
 	var desired: Vector3 = Vector3(0.22, -0.22, -0.46)
@@ -46,8 +52,9 @@ func _process(delta: float) -> void:
 
 
 func play_shot(data: WeaponData) -> void:
-	CombatEffects.smoke(self, muzzle.global_position)
-	_flash_remaining = 0.045
+	var rig: Node = get_parent()
+	if "shooter" in rig: muzzle_effect.trigger(data, rig.shooter)
+	_flash_remaining = 0.035
 	_kick = minf(_kick + data.recoil, 12.0)
 	_roll_kick = randf_range(-0.7, 0.7)
 	flash.rotation.z = randf_range(0, TAU)

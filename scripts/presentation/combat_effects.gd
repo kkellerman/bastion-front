@@ -4,8 +4,17 @@ extends RefCounted
 static func burst(context: Node3D, point: Vector3, normal: Vector3, surface: StringName, explosion: bool = false) -> void:
 	var scene: Node = context.get_tree().current_scene
 	if scene == null: return
+	if explosion:
+		if context.get_tree().get_nodes_in_group(&"explosion_effects").size() >= 6: return
+		var effect: Node3D = load("res://scripts/presentation/explosion_effect.gd").new()
+		effect.surface = surface
+		scene.add_child(effect)
+		effect.global_position = point
+		effect.start()
+		_decal(context, point, normal, true)
+		return
 	var effects: Array[Node] = context.get_tree().get_nodes_in_group(&"combat_effects")
-	if effects.size() >= 24: effects[0].queue_free()
+	if effects.size() >= 24: return
 	var particles: CPUParticles3D = CPUParticles3D.new()
 	particles.add_to_group(&"combat_effects")
 	particles.amount = 32 if explosion else 9
@@ -19,9 +28,8 @@ static func burst(context: Node3D, point: Vector3, normal: Vector3, surface: Str
 	particles.initial_velocity_max = 7.0 if explosion else 2.5
 	particles.scale_amount_min = 0.05 if explosion else 0.012
 	particles.scale_amount_max = 0.28 if explosion else 0.055
-	var mesh: SphereMesh = SphereMesh.new()
-	mesh.radial_segments = 6
-	mesh.rings = 3
+	var mesh: BoxMesh = BoxMesh.new()
+	mesh.size = Vector3(0.4, 0.18, 0.9) if surface == &"wood" else Vector3(0.5, 0.4, 0.4)
 	var material: StandardMaterial3D = StandardMaterial3D.new()
 	material.albedo_color = Color(0.36, 0.30, 0.21) if surface in [&"dirt", &"wood"] else Color(0.43, 0.43, 0.40)
 	if surface == &"metal":
@@ -63,7 +71,7 @@ static func smoke(context: Node3D, point: Vector3, explosion: bool = false) -> v
 
 static func _decal(context: Node3D, point: Vector3, normal: Vector3, explosion: bool) -> void:
 	var decals: Array[Node] = context.get_tree().get_nodes_in_group(&"impact_decals")
-	if decals.size() >= 40: decals[0].queue_free()
+	if decals.size() >= 40: return
 	var decal: Decal = Decal.new()
 	decal.add_to_group(&"impact_decals")
 	decal.texture_albedo = _disc(Color(0.035, 0.028, 0.02, 0.8))

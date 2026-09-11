@@ -23,35 +23,46 @@ func _tree(variant: int, low: bool = false) -> void:
 	for root_index: int in range(7):
 		var angle: float = root_index * TAU / 7
 		W.tube(wood, Vector3(0, 0.2, 0), Vector3(cos(angle), 0.015, sin(angle)) * 1.1, 0.11, 0.018)
-	var branches: int = 28 if low else 65
+	var branches: int = 24 if low else 48
 	for branch: int in range(branches):
 		var fraction: float = float(branch) / branches
 		var angle: float = branch * 2.39996 + rng.randf_range(-0.3, 0.3)
-		var y: float = 2.8 + fraction * (height - 3.0)
+		var y: float = 3.6 + fraction * (height - 3.8)
 		var length: float = (1.0 - fraction) * rng.randf_range(2.1, 3.6) + 0.2
 		var direction: Vector3 = Vector3(cos(angle), -0.16, sin(angle))
 		if variant == 2:
-			y = 5.0 + fraction * 7.0
-			length = sin(fraction * PI) * 3.0 + 0.6
-			direction.y = 0.4
+			y = 7.5 + fraction * 7.0
+			length = sin(fraction * PI) * 2.7 + 0.6
+			direction.y = 0.22
 		var base: Vector3 = Vector3(0.1, y, 0)
 		var end: Vector3 = base + direction * length
 		W.tube(wood, base, end, 0.045 * (1.0 - fraction) + 0.008, 0.006)
-		var twigs: int = 6 if low else 12
+		var twigs: int = 3 if low else 7
 		for twig: int in range(twigs):
 			var along: float = float(twig + 1) / (twigs + 1)
 			var center: Vector3 = base.lerp(end, along)
 			var side: Vector3 = Vector3(-direction.z, 0.1, direction.x) * (1.0 if twig % 2 == 0 else -1.0)
 			var twig_end: Vector3 = center + (side + direction * 0.35) * (1.0 - along * 0.6) * 0.65
-			var needles: int = 4 if low else 8
-			for needle: int in range(needles):
-				var point: Vector3 = center.lerp(twig_end, float(needle) / needles)
-				var lateral: Vector3 = Vector3(-side.z, 0.15, side.x) * (1.0 if needle % 2 == 0 else -1.0)
-				var color: Color = Color(0.035, 0.065, 0.025).lerp(Color(0.13, 0.19, 0.075), rng.randf())
-				W.leaf(leaves, point, point + (lateral + side * 0.4) * (0.36 if variant < 2 else 0.30), (0.07 if variant < 2 else 0.11) * (1.65 if low else 1.0), color)
+			W.tube(wood, center, twig_end, 0.009, 0.002, 5)
+			_card(leaves, center, twig_end + side * 0.22, 0.36 if low else 0.24)
+			if not low: _card(leaves, center, twig_end + Vector3(0, -0.32, 0), 0.22)
 	var suffix: String = "_lod" if low else ""
 	_save(wood, "tree_%d_wood%s" % [variant, suffix], load("res://assets/materials/presentation/bark.tres"))
-	_save(leaves, "tree_%d_foliage%s" % [variant, suffix], _foliage())
+	var needles: ShaderMaterial = ShaderMaterial.new()
+	needles.shader = load("res://shaders/needle_branch.gdshader")
+	needles.set_shader_parameter("branch_atlas", load("res://assets/textures/spruce_branch.png"))
+	_save(leaves, "tree_%d_foliage%s" % [variant, suffix], needles)
+
+func _card(st: SurfaceTool, start: Vector3, end: Vector3, width: float) -> void:
+	var side: Vector3 = (end - start).cross(Vector3.UP).normalized() * width
+	var normal: Vector3 = side.cross(end - start).normalized()
+	var points: Array[Vector3] = [start - side, start + side, end + side, end - side]
+	var uvs: Array[Vector2] = [Vector2(0, 1), Vector2(1, 1), Vector2(1, 0), Vector2(0, 0)]
+	st.set_color(Color(rng.randf_range(0.25, 0.9), 1, 1))
+	for i: int in [0, 1, 2, 0, 2, 3]:
+		st.set_normal(normal)
+		st.set_uv(uvs[i])
+		st.add_vertex(points[i])
 
 func _ground_plants() -> void:
 	var fern: SurfaceTool = W.surface()

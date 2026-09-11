@@ -96,6 +96,7 @@ func _build(faction: String) -> void:
 	if german: _limb(4, 1, Vector3(-0.12, 1.05, 0.19), Vector3(0.10, 1.19, 0.19), 0.055, 0.055)
 	_finish_mesh("UniformAndBody")
 	var body_mesh: ArrayMesh = preload("res://tools/retarget_soldier.gd").body(skeleton, bone_positions)
+	body_mesh = preload("res://tools/character_head.gd").remove_donor_head(body_mesh)
 	var body_material: ShaderMaterial = ShaderMaterial.new()
 	body_material.shader = load("res://shaders/soldier_surface.gdshader")
 	body_material.set_shader_parameter("source_color_map", load("res://assets/characters/source/LowpolySoldier/LowpolySoldier_Texture.png"))
@@ -105,6 +106,12 @@ func _build(faction: String) -> void:
 	body_mesh.surface_set_material(0, body_material)
 	var body_node: MeshInstance3D = scene.get_node("UniformAndBody")
 	body_node.mesh = body_mesh
+	var head: MeshInstance3D = MeshInstance3D.new()
+	head.name = "AnatomicalHead"
+	head.mesh = preload("res://tools/character_head.gd").build()
+	head.skin = body_node.skin
+	head.skeleton = NodePath("../Skeleton3D")
+	scene.add_child(head)
 	# Original faction helmets and field equipment remain independently replaceable.
 	var equipment_mesh: ArrayMesh = ArrayMesh.new()
 	for index: int in [4, 5]: surfaces[index].commit(equipment_mesh)
@@ -199,7 +206,10 @@ func _animations() -> void:
 					if clip == "death": angle = t * 0.35
 				if clip == "reload" and bone_name == "LeftForearm": angle = sin(t * PI) * -0.7
 				if clip == "switch" and "Forearm" in bone_name: angle = sin(t * PI) * 0.4
-				animation.rotation_track_insert_key(track, t * animation.length, Quaternion(Vector3.RIGHT, angle))
+				var rotation: Quaternion = Quaternion(Vector3.RIGHT, angle)
+				if bone_name == "Head" and clip == "idle": rotation *= Quaternion(Vector3.UP,sin(t*TAU)*0.045)
+				if bone_name == "Hips" and clip in ["walk","run"]: rotation *= Quaternion(Vector3.UP,sin(t*TAU)*0.035)
+				animation.rotation_track_insert_key(track, t * animation.length, rotation)
 		library.add_animation(clip, animation)
 	player.add_animation_library("", library)
 	var tree: AnimationTree = AnimationTree.new()

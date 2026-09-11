@@ -11,6 +11,7 @@ weapon_id = &"mg42"
 display_name = "MG42"
 faction = &"german"
 weapon_class = &"mounted"
+muzzle_flash_size = Vector2(0.16, 0.28)
 damage = 22.0
 rate_of_fire = 1000.0
 automatic = true

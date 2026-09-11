@@ -14,20 +14,24 @@ var enabled: bool = true
 var _flash_remaining: float = 0.0
 var _burst_remaining: int = 3
 var _rest_remaining: float = 0.0
+var muzzle_effect: MuzzleEffect
 
 
 func _ready() -> void:
+	muzzle_effect = MuzzleEffect.new()
+	muzzle.add_child(muzzle_effect)
+	flash.hide()
+	flash = muzzle_effect.flash
 	hitscan.impact.connect(func(point: Vector3, normal: Vector3) -> void: CombatImpact.show(actor, point, normal))
 
 
 func _process(delta: float) -> void:
 	_flash_remaining = maxf(0.0, _flash_remaining - delta)
 	_rest_remaining = maxf(0.0, _rest_remaining - delta)
-	flash.visible = enabled and _flash_remaining > 0.0
 
 
 func attack(aim_point: Vector3) -> void:
-	if not enabled or (burst_control and _rest_remaining > 0.0):
+	if not enabled or not can_process() or not get_node("/root/CombatAudio").can_emit(actor) or (burst_control and _rest_remaining > 0.0):
 		return
 	if eye.global_position.distance_squared_to(aim_point) < 0.001:
 		return
@@ -40,6 +44,7 @@ func attack(aim_point: Vector3) -> void:
 	elif weapon.try_fire():
 		hitscan.fire(weapon.data, eye, muzzle, actor, false)
 		_flash_remaining = 0.07
+		muzzle_effect.trigger(weapon.data, actor)
 		get_node("/root/CombatAudio").play(&"gunshot", muzzle.global_position, actor, weapon.data.muzzle_audio)
 		if burst_control:
 			_burst_remaining -= 1
@@ -50,5 +55,8 @@ func attack(aim_point: Vector3) -> void:
 
 func disable() -> void:
 	enabled = false
+	_flash_remaining = 0.0
+	_rest_remaining = 0.0
 	flash.visible = false
+	muzzle_effect.stop()
 	weapon.set_physics_process(false)

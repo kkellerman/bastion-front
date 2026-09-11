@@ -13,6 +13,7 @@ weapon_id = &"stg44"
 display_name = "StG 44 / MP44"
 faction = &"german"
 weapon_class = &"rifle"
+muzzle_flash_size = Vector2(0.14, 0.24)
 damage = 28.0
 rate_of_fire = 500.0
 automatic = true

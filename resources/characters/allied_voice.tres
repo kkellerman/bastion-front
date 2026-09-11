@@ -5,6 +5,8 @@
 [resource]
 script = ExtResource("1_ins2a")
 language = &"en"
+recording_directory = "res://assets/audio/voice_allied"
+diagnostic_frequency = 660.0
 subtitles = Dictionary[StringName, String]({
 &"briefing": "Command to patrol: follow the forest track. Take the command post, recover the documents, then leave by the rear exit. The eastern supply track offers another approach.",
 &"casualty": "Man down!",

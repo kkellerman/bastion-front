@@ -11,6 +11,7 @@ weapon_id = &"m1919"
 display_name = "M1919 .30 cal"
 faction = &"allied"
 weapon_class = &"mounted"
+muzzle_flash_size = Vector2(0.16, 0.28)
 damage = 22.0
 rate_of_fire = 500.0
 automatic = true

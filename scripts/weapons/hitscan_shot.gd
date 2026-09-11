@@ -5,6 +5,7 @@ signal impact(position: Vector3, normal: Vector3)
 
 
 func fire(data: WeaponData, camera: Node3D, muzzle: Node3D, shooter: CollisionObject3D, aiming: bool) -> void:
+	if not get_node("/root/CombatAudio").can_emit(shooter): return
 	var direction: Vector3 = -camera.global_basis.z
 	var spread_radians: float = deg_to_rad(data.spread * (0.25 if aiming else 1.0))
 	var radius: float = sqrt(randf()) * tan(spread_radians)
@@ -28,8 +29,9 @@ func fire(data: WeaponData, camera: Node3D, muzzle: Node3D, shooter: CollisionOb
 		receiver.take_damage(data.damage, shooter)
 	impact.emit(hit["position"], hit["normal"])
 	var surface: StringName = hit["collider"].get_meta(&"surface", &"dirt")
-	CombatEffects.burst(shooter as Node3D, hit["position"], hit["normal"], &"flesh" if receiver != null else surface)
-	get_node("/root/CombatAudio").play(StringName("impact_" + str(surface)), hit["position"])
+	if receiver == null:
+		CombatEffects.burst(shooter as Node3D, hit["position"], hit["normal"], surface)
+		get_node("/root/CombatAudio").play(StringName("impact_" + str(surface)), hit["position"])
 
 
 func _trace(camera: Node3D, shooter: CollisionObject3D, start: Vector3, end: Vector3) -> Dictionary:

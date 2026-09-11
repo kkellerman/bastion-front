@@ -8,7 +8,7 @@ func build(data: WeaponData, faction: FactionData) -> void:
 	var cloth: ShaderMaterial = ShaderMaterial.new()
 	cloth.shader = load("res://shaders/uniform_fabric.gdshader")
 	cloth.set_shader_parameter("cloth_color", faction.sleeve_color if faction != null else Color(0.38, 0.36, 0.25))
-	var skin: Material = P.material(Color(0.48, 0.34, 0.25))
+	var skin: Material = P.worn(Color(0.43, 0.29, 0.21))
 	var trigger: Vector3 = Vector3(0.027, -0.077, 0.074)
 	var left: Vector3 = data.support_hand_position
 	for side: int in [-1, 1]:
@@ -34,12 +34,7 @@ func _process(delta: float) -> void:
 		support.rotation.x = lerpf(support.rotation.x, -0.7 if active else 0.0, minf(delta * 8, 1))
 
 func _segment(parent: Node3D, start: Vector3, end: Vector3, radius: float, tip: float, material: Material) -> MeshInstance3D:
-	var mesh: CylinderMesh = CylinderMesh.new()
-	mesh.bottom_radius = radius
-	mesh.top_radius = tip
-	mesh.height = start.distance_to(end)
-	mesh.radial_segments = 16
-	mesh.rings = 3
+	var mesh: ArrayMesh = preload("res://scripts/presentation/crafted_mesh.gd").limb(start.distance_to(end), radius, tip, radius > 0.04)
 	var part: MeshInstance3D = P.shape(parent, (start + end) * 0.5, mesh, material)
 	var axis: Vector3 = (end - start).normalized()
 	var right: Vector3 = axis.cross(Vector3.FORWARD).normalized()
