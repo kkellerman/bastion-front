@@ -25,6 +25,27 @@ static func leaf(st: SurfaceTool, base: Vector3, tip: Vector3, width: float, col
 		st.set_uv(Vector2.ZERO)
 		st.add_vertex(p)
 
+static func plant_card(st: SurfaceTool, base: Vector3, tip: Vector3, width: float, rect: Rect2, flip: bool, exposure: float) -> void:
+	## Upright quad carrying real UVs into one sub-rectangle of a foliage atlas, unlike
+	## leaf() whose tapered strip has no usable texture coordinates.
+	var axis: Vector3 = tip - base
+	var side: Vector3 = axis.cross(Vector3.UP).normalized() * width
+	if side.length_squared() < 0.00001:
+		side = Vector3.RIGHT * width
+	var normal: Vector3 = side.cross(axis).normalized()
+	var u0: float = rect.end.x if flip else rect.position.x
+	var u1: float = rect.position.x if flip else rect.end.x
+	var points: Array[Vector3] = [base - side, base + side, tip + side, tip - side]
+	var uvs: Array[Vector2] = [
+		Vector2(u0, rect.end.y), Vector2(u1, rect.end.y),
+		Vector2(u1, rect.position.y), Vector2(u0, rect.position.y),
+	]
+	st.set_color(Color(exposure, 1, 1))
+	for i: int in [0, 1, 2, 0, 2, 3]:
+		st.set_normal(normal)
+		st.set_uv(uvs[i])
+		st.add_vertex(points[i])
+
 static func surface() -> SurfaceTool:
 	var st: SurfaceTool = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)

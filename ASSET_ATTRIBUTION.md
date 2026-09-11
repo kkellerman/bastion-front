@@ -44,6 +44,16 @@ better than a tiled photo.
 | Worn Planks | https://polyhaven.com/a/worn_planks | `assets/textures/polyhaven/worn_planks/` | 1K diffuse, OpenGL normal, roughness JPG |
 | Rough Linen | https://polyhaven.com/a/rough_linen | `assets/textures/polyhaven/rough_linen/` | 1K diffuse, OpenGL normal, roughness JPG |
 | Fir Tree 01 (twig maps only) | https://polyhaven.com/a/fir_tree_01 | `assets/textures/polyhaven/fir_twig/` | 1K twig diffuse, cutout alpha PNG, OpenGL normal JPG |
+| Grass Medium 01 (maps only) | https://polyhaven.com/a/grass_medium_01 | `assets/textures/polyhaven/ground_plants/` | 1K diffuse, cutout alpha PNG, OpenGL normal JPG |
+| Fern 02 (maps only) | https://polyhaven.com/a/fern_02 | `assets/textures/polyhaven/ground_plants/` | 1K diffuse, cutout alpha PNG, OpenGL normal JPG |
+
+Grass Medium 01 and Fern 02 are likewise used for their **textures only**; the
+project's generated ground-cover geometry is retained and the photographic tufts and
+fronds are mapped onto it. `TUFTS` and `FERNS` in `tools/build_forest_assets.gd` select
+sub-rectangles of each atlas — the grass atlas holds dense tufts along its lower edge
+and single blades above, and only the tufts suit a ground-cover card.
+`shaders/ground_plant.gdshader` replaces the untextured vertex-colour foliage shading
+for grass, ferns and shrubs.
 
 Only the twig **textures** are taken from Fir Tree 01; its mesh is not used. That
 asset's geometry is a film/archviz scan of 8M+ triangles whose glTF buffer is roughly

@@ -1,5 +1,19 @@
 # Changelog
 
+## Ground Cover Texture Pass - 2026-09-11
+
+- Replaced untextured vertex-coloured grass, ferns and shrubs with photographic CC0
+  Poly Haven atlases (Grass Medium 01, Fern 02; textures only, meshes unused).
+  `shaders/ground_plant.gdshader` gives ground cover a real normal map and cutout
+  alpha so it lights like the terrain instead of reading as flat green strips.
+- Added `MeshWorkshop.plant_card`, an upright quad carrying real atlas UVs. The
+  previous `leaf()` strip wrote `Vector2.ZERO` to every vertex, so ground plants had
+  no usable texture coordinates at all, and a single up-facing normal that flattened
+  their lighting. Ferns now build as rosettes and grass as crossed tuft cards.
+- Forest measures 37.5 FPS at High and 128.6 FPS at Low/Auto on the Radeon 860M
+  reference machine; primitive count falls slightly as cards replace blade strips.
+- Leaf litter still uses the untextured shader pending a ground-debris texture.
+
 ## Material and Procedural Tree Density Pass - 2026-09-11
 
 - Trialed replacing procedural tree visuals with low-poly CC0 pine models
