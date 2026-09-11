@@ -36,12 +36,18 @@ func _build(faction: String) -> void:
 		_bone(prefix + "UpperArm", 2, Vector3(side * 0.21, 1.43, 0))
 		_bone(prefix + "Forearm", arm, Vector3(-0.05, 1.22, -0.20) if side < 0 else Vector3(0.3, 1.16, -0.04))
 		_bone(prefix + "Hand", arm + 1, Vector3(0.18 if side < 0 else 0.23, 1.31, -0.45 if side < 0 else -0.25))
-	materials = [P.material(Color(0.22, 0.265, 0.225) if german else Color(0.38, 0.36, 0.25)), P.material(Color(0.19, 0.22, 0.19) if german else Color(0.25, 0.26, 0.18)), P.material(Color(0.075, 0.066, 0.05)), P.material(Color(0.47, 0.335, 0.255)), P.material(Color(0.13, 0.17, 0.14), 0.4), P.material(Color(0.10, 0.11, 0.085) if german else Color(0.43, 0.42, 0.28))]
+	# Index 3 (skin: neck/ears and hands/fingers) previously used the flat, untextured
+	# material() helper, unlike every other slot here; worn() adds the same procedural
+	# noise/normal variation already used for weapon and prop skin tones elsewhere.
+	materials = [P.material(Color(0.22, 0.265, 0.225) if german else Color(0.38, 0.36, 0.25)), P.material(Color(0.19, 0.22, 0.19) if german else Color(0.25, 0.26, 0.18)), P.material(Color(0.075, 0.066, 0.05)), P.worn(Color(0.47, 0.335, 0.255)), P.material(Color(0.13, 0.17, 0.14), 0.4), P.material(Color(0.10, 0.11, 0.085) if german else Color(0.43, 0.42, 0.28))]
 	var sleeve: Color = materials[0].albedo_color
 	for index: int in [0, 1, 5]:
 		var cloth: ShaderMaterial = ShaderMaterial.new()
 		cloth.shader = load("res://shaders/uniform_fabric.gdshader")
 		cloth.set_shader_parameter("cloth_color", materials[index].albedo_color)
+		cloth.set_shader_parameter("fabric_albedo", load("res://assets/textures/polyhaven/rough_linen/rough_linen_diff_1k.jpg"))
+		cloth.set_shader_parameter("fabric_normal", load("res://assets/textures/polyhaven/rough_linen/rough_linen_nor_gl_1k.jpg"))
+		cloth.set_shader_parameter("fabric_rough", load("res://assets/textures/polyhaven/rough_linen/rough_linen_rough_1k.jpg"))
 		materials[index] = cloth
 	surfaces.clear()
 	for material: Material in materials:

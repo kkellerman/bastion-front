@@ -1,5 +1,29 @@
 # Changelog
 
+## Sleeve, Hand and Face Detail - 2026-09-11
+
+- Extended the CC0 linen fabric pass to the sleeve/forearm shader
+  (`shaders/uniform_fabric.gdshader`), used by both the third-person arms
+  (`tools/build_characters.gd`) and the first-person viewmodel arms
+  (`scripts/presentation/viewmodel_arms.gd`). The torso got real fabric
+  texture in the previous pass but this separate shader was missed, so
+  sleeves still read flat next to a textured torso.
+- Switched the third-person neck/ear/hand skin material from the flat,
+  untextured `DressingParts.material()` helper to `DressingParts.worn()`,
+  which adds the same procedural noise and normal-map variation already
+  used for weapon and prop surfaces. No CC0 skin texture exists to source
+  (checked); procedural variation is the ceiling here without a different
+  source asset.
+- Added a real two-octave normal map to the procedural face shader
+  (`shaders/face_surface.gdshader`); the previous map varied by 0.015 in a
+  single axis, which is invisible under normal lighting. Deliberately
+  scoped to normal-map-only: the existing eye/brow/lip/mouth shaping math
+  is untouched. A close-up capture during testing showed this doesn't fix
+  the underlying low-poly head geometry (flat nose bridge, smudge-like
+  eyes) — a real face-detail improvement needs geometry work, not a
+  shader change, and that's out of scope for this pass.
+- Geometry, rig, weights and animations are unchanged throughout.
+
 ## Uniform Fabric Texture - 2026-09-11
 
 - Added a photographic CC0 fabric pass to the shared soldier body shader

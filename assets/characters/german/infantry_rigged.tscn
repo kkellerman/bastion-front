@@ -119,6 +119,10 @@ roughness = 0.6
 render_priority = 0
 shader = ExtResource("7_ibvp2")
 shader_parameter/cloth_color = Color(0.1, 0.11, 0.085, 1)
+shader_parameter/fabric_albedo = ExtResource("2_y27eh")
+shader_parameter/fabric_normal = ExtResource("3_4f3nv")
+shader_parameter/fabric_rough = ExtResource("4_n4xjs")
+shader_parameter/fabric_scale = null
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_6ow7s"]
 _surfaces = [{
@@ -801,9 +805,9 @@ states/switch/position = Vector2(0, 0)
 states/walk/node = SubResource("AnimationNodeAnimation_y2g2m")
 states/walk/position = Vector2(0, 0)
 
-[node name="CharacterBase" type="Node3D" unique_id=1384565235]
+[node name="CharacterBase" type="Node3D" unique_id=560411836]
 
-[node name="Skeleton3D" type="Skeleton3D" parent="." unique_id=316134429]
+[node name="Skeleton3D" type="Skeleton3D" parent="." unique_id=63931751]
 bones/0/name = "Hips"
 bones/0/parent = -1
 bones/0/rest = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.94, 0)
@@ -924,27 +928,27 @@ bones/16/position = Vector3(-0.07000001, 0.14999998, -0.21000001)
 bones/16/rotation = Quaternion(0, 0, 0, 1)
 bones/16/scale = Vector3(1, 1, 1)
 
-[node name="WeaponSocket" type="BoneAttachment3D" parent="Skeleton3D" unique_id=1691750480]
+[node name="WeaponSocket" type="BoneAttachment3D" parent="Skeleton3D" unique_id=2037873738]
 bone_name = "RightHand"
 
-[node name="UniformAndBody" type="MeshInstance3D" parent="." unique_id=855527815]
+[node name="UniformAndBody" type="MeshInstance3D" parent="." unique_id=1790327728]
 mesh = SubResource("ArrayMesh_fhr37")
 skin = SubResource("Skin_u2dkf")
 skeleton = NodePath("../Skeleton3D")
 
-[node name="AnatomicalHead" type="MeshInstance3D" parent="." unique_id=849728804]
+[node name="AnatomicalHead" type="MeshInstance3D" parent="." unique_id=875997088]
 mesh = SubResource("ArrayMesh_fjihe")
 skin = SubResource("Skin_u2dkf")
 skeleton = NodePath("../Skeleton3D")
 
-[node name="HelmetAndEquipment" type="MeshInstance3D" parent="." unique_id=1562991333]
+[node name="HelmetAndEquipment" type="MeshInstance3D" parent="." unique_id=1059468126]
 mesh = SubResource("ArrayMesh_6ow7s")
 skin = SubResource("Skin_u2dkf")
 skeleton = NodePath("../Skeleton3D")
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=305059811]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1883139309]
 libraries/ = SubResource("AnimationLibrary_3s5ne")
 
-[node name="AnimationTree" type="AnimationTree" parent="." unique_id=320091631]
+[node name="AnimationTree" type="AnimationTree" parent="." unique_id=236770584]
 tree_root = SubResource("AnimationNodeStateMachine_3oyds")
 anim_player = NodePath("../AnimationPlayer")

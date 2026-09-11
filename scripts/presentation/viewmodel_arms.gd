@@ -8,6 +8,9 @@ func build(data: WeaponData, faction: FactionData) -> void:
 	var cloth: ShaderMaterial = ShaderMaterial.new()
 	cloth.shader = load("res://shaders/uniform_fabric.gdshader")
 	cloth.set_shader_parameter("cloth_color", faction.sleeve_color if faction != null else Color(0.38, 0.36, 0.25))
+	cloth.set_shader_parameter("fabric_albedo", load("res://assets/textures/polyhaven/rough_linen/rough_linen_diff_1k.jpg"))
+	cloth.set_shader_parameter("fabric_normal", load("res://assets/textures/polyhaven/rough_linen/rough_linen_nor_gl_1k.jpg"))
+	cloth.set_shader_parameter("fabric_rough", load("res://assets/textures/polyhaven/rough_linen/rough_linen_rough_1k.jpg"))
 	var skin: Material = P.worn(Color(0.43, 0.29, 0.21))
 	var trigger: Vector3 = Vector3(0.027, -0.077, 0.074)
 	var left: Vector3 = data.support_hand_position
