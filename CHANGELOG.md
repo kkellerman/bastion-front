@@ -1,5 +1,20 @@
 # Changelog
 
+## German Helmet Fit - 2026-09-11
+
+- Closed the German helmet crown with a skinned triangle fan. The procedural
+  shell previously ended in a roughly 35 mm open ring, which appeared as a hole
+  when viewed from above. Validation now includes a dedicated elevated capture.
+- Rebuilt the placeholder Stahlhelm around a close-fitting lower band so the
+  shell meets the forehead instead of leaving a visible halo around the head.
+- Added a shaped brow rim and a lower side/rear skirt. The brim now drops over
+  the ears and nape, while the front stays clear of the soldier's eyes.
+- Bound every new helmet vertex directly to the existing Head bone and added a
+  subtle worn-steel surface. The fit therefore remains locked to the head in
+  idle, aiming, hit-reaction, and locomotion animations.
+- Added a close front/three-quarter render capture for checking helmet fit.
+  The Allied M1 geometry and character collision remain unchanged.
+
 ## German Helmet Silhouette - 2026-09-11
 
 - Gave the German helmet its own distinct profile instead of sharing the

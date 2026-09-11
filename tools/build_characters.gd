@@ -39,7 +39,7 @@ func _build(faction: String) -> void:
 	# Index 3 (skin: neck/ears and hands/fingers) previously used the flat, untextured
 	# material() helper, unlike every other slot here; worn() adds the same procedural
 	# noise/normal variation already used for weapon and prop skin tones elsewhere.
-	materials = [P.material(Color(0.22, 0.265, 0.225) if german else Color(0.38, 0.36, 0.25)), P.material(Color(0.19, 0.22, 0.19) if german else Color(0.25, 0.26, 0.18)), P.material(Color(0.075, 0.066, 0.05)), P.worn(Color(0.47, 0.335, 0.255)), P.material(Color(0.13, 0.17, 0.14), 0.4), P.material(Color(0.10, 0.11, 0.085) if german else Color(0.43, 0.42, 0.28))]
+	materials = [P.material(Color(0.22, 0.265, 0.225) if german else Color(0.38, 0.36, 0.25)), P.material(Color(0.19, 0.22, 0.19) if german else Color(0.25, 0.26, 0.18)), P.material(Color(0.075, 0.066, 0.05)), P.worn(Color(0.47, 0.335, 0.255)), P.worn(Color(0.13, 0.17, 0.14), 0.4) if german else P.material(Color(0.13, 0.17, 0.14), 0.4), P.material(Color(0.10, 0.11, 0.085) if german else Color(0.43, 0.42, 0.28))]
 	var sleeve: Color = materials[0].albedo_color
 	for index: int in [0, 1, 5]:
 		var cloth: ShaderMaterial = ShaderMaterial.new()
@@ -71,12 +71,7 @@ func _build(faction: String) -> void:
 		_limb(2, 4, Vector3(side * 0.084, 1.69, 0), Vector3(side * 0.045, 1.55, -0.045), 0.007, 0.007)
 	_detail(2, 4, Vector3(0, 1.582, -0.088), Vector3(0.034, 0.003, 0.003))
 	if german:
-		# Stahlhelm silhouette: a low rounded dome (no apex point) over a skirt that
-		# flares outward toward the bottom edge to cover the ears and neck, unlike the
-		# American M1's evenly tapering dome-to-rim profile below. _loft() triangulates
-		# consecutive rings in array order regardless of height, so this list must stay
-		# strictly increasing bottom-to-top or the bands fold back on themselves.
-		_loft(4, 4, Vector3(0, 0, 0.005), [Vector3(1.700, 0.128, 0.136), Vector3(1.718, 0.112, 0.120), Vector3(1.748, 0.100, 0.108), Vector3(1.782, 0.086, 0.094), Vector3(1.808, 0.058, 0.064), Vector3(1.822, 0.018, 0.018)], 32)
+		_stahlhelm()
 	else:
 		# American M1's evenly tapering dome-to-rim profile.
 		_loft(4, 4, Vector3(0, 0, 0.005), [Vector3(1.681, 0.116, 0.134), Vector3(1.686, 0.102, 0.118), Vector3(1.725, 0.091, 0.105), Vector3(1.769, 0.062, 0.072), Vector3(1.79, 0.003, 0.003)], 32)
@@ -170,6 +165,53 @@ func _loft(material: int, bone: int, origin: Vector3, rings: Array[Vector3], seg
 				st.set_weights(PackedFloat32Array([1, 0, 0, 0]))
 				st.set_uv(Vector2(float(side + corner.x) / segments, float(ring + corner.y) / rings.size()))
 				st.add_vertex(origin + basis * Vector3(cos(angle) * shape.y * ripple, shape.x, sin(angle) * shape.z * ripple))
+
+func _stahlhelm() -> void:
+	# A close lower band bridges the forehead to the shell in the same painted steel,
+	# avoiding a dark gap that makes the helmet appear suspended above the head. The
+	# shell then steps out at the rolled rim and drops farther over the ears and nape.
+	# All vertices stay weighted to Head, so animation cannot separate the pieces.
+	_loft(4, 4, Vector3(0, 0, -0.006), [
+		Vector3(1.676, 0.083, 0.093), Vector3(1.686, 0.094, 0.105),
+		Vector3(1.697, 0.106, 0.116)], 32)
+	var rings: Array[Vector3] = [
+		Vector3(1.688, 0.129, 0.145), Vector3(1.704, 0.118, 0.130),
+		Vector3(1.724, 0.111, 0.121), Vector3(1.752, 0.102, 0.111),
+		Vector3(1.784, 0.085, 0.094), Vector3(1.809, 0.057, 0.064),
+		Vector3(1.823, 0.017, 0.018)]
+	var st: SurfaceTool = surfaces[4]
+	var segments: int = 40
+	for ring: int in range(rings.size() - 1):
+		for side: int in range(segments):
+			for corner: Vector2i in [Vector2i(0,0),Vector2i(1,0),Vector2i(1,1),Vector2i(0,0),Vector2i(1,1),Vector2i(0,1)]:
+				var shape: Vector3 = rings[ring + corner.y]
+				var angle: float = float(side + corner.x) * TAU / segments
+				var side_drop: float = pow(absf(cos(angle)), 4.0)
+				var rear_drop: float = smoothstep(-0.15, 0.75, sin(angle))
+				var rim_influence: float = 1.0 - smoothstep(0.0, 2.0, float(ring + corner.y))
+				var y: float = shape.x - (side_drop * 0.012 + rear_drop * 0.019) * rim_influence
+				var point: Vector3 = Vector3(cos(angle) * shape.y, y, sin(angle) * shape.z - 0.006)
+				st.set_bones(PackedInt32Array([4,0,0,0]))
+				st.set_weights(PackedFloat32Array([1,0,0,0]))
+				st.set_uv(Vector2(float(side + corner.x) / segments, float(ring + corner.y) / rings.size()))
+				st.add_vertex(point)
+	# _loft-style ring construction leaves both ends open. Close the crown with a
+	# shallow triangle fan instead of shrinking the final ring until the hole is
+	# merely hard to see. The slight rise keeps the dome rounded in silhouette.
+	var crown: Vector3 = rings[-1]
+	var crown_center: Vector3 = Vector3(0.0, crown.x + 0.004, -0.006)
+	for side: int in range(segments):
+		var angle: float = float(side) * TAU / segments
+		var next_angle: float = float(side + 1) * TAU / segments
+		var current_point: Vector3 = Vector3(cos(angle) * crown.y, crown.x, sin(angle) * crown.z - 0.006)
+		var next_point: Vector3 = Vector3(cos(next_angle) * crown.y, crown.x, sin(next_angle) * crown.z - 0.006)
+		for cap_point: Vector3 in [crown_center, next_point, current_point]:
+			st.set_bones(PackedInt32Array([4,0,0,0]))
+			st.set_weights(PackedFloat32Array([1,0,0,0]))
+			st.set_uv(Vector2(
+				0.5 + cap_point.x / (crown.y * 2.0),
+				0.5 + (cap_point.z + 0.006) / (crown.z * 2.0)))
+			st.add_vertex(cap_point)
 
 func _limb(mat: int, bone: int, start: Vector3, end: Vector3, width: float, tip: float) -> void:
 	var axis: Vector3 = (end - start).normalized()
