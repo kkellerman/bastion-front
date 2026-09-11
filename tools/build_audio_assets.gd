@@ -1,6 +1,16 @@
 extends SceneTree
 ## Original layered synthesis. Replace with licensed recordings at the resource hooks.
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+## Every firearm previously shared one synthesis formula, differentiated only by a
+## pitch offset hashed from the weapon id; mg42/m1919 landed within 1 Hz of several
+## pistols/SMGs and were indistinguishable in play. Classes now shape tone, envelope
+## and mechanical character, matching WeaponData.weapon_class in resources/weapons/.
+const GUNSHOT_CLASS: Dictionary = {
+	"m1911": "pistol", "p38": "pistol",
+	"thompson": "smg", "mp40": "smg",
+	"stg44": "rifle",
+	"mg42": "mounted", "m1919": "mounted",
+}
 
 func _initialize() -> void:
 	rng.seed = 47192
@@ -15,6 +25,8 @@ func _make(cue: String) -> void:
 	var loop: bool = cue in ["wind", "birds", "bunker", "canopy", "gust", "radio_bed"]
 	var length: float = 12.0 if loop else (3.5 if cue in ["explosion", "distant_artillery"] else 0.75)
 	if cue == "reload": length = 1.3
+	var gun_class: String = GUNSHOT_CLASS.get(cue, "")
+	if gun_class == "mounted": length = 1.1
 	var rate: int = 22050
 	var bytes: PackedByteArray = PackedByteArray()
 	bytes.resize(int(length * rate) * 2)
@@ -69,6 +81,8 @@ func _make(cue: String) -> void:
 			value = mid * exp(-t * 36) * 0.7
 			if cue.ends_with("metal") or cue == "dry": value += (sin(t * 7400) + sin(t * 5100)) * exp(-t * 24) * 0.18
 			if cue.ends_with("wood"): value += sin(t * 800) * exp(-t * 45) * 0.3
+		elif gun_class != "":
+			value = _gunshot(gun_class, t, noise, low, mid)
 		else:
 			value = noise * exp(-t * 140) * 0.8 + low * exp(-t * 12) * 3.5 + mid * exp(-t * 16) * 0.5
 			value += sin(TAU * pitch * t * exp(-t * 6)) * exp(-t * 28) * 0.35
@@ -93,3 +107,36 @@ func _make(cue: String) -> void:
 		wave.loop_mode = AudioStreamWAV.LOOP_FORWARD
 		wave.loop_end = bytes.size() / 2
 	ResourceSaver.save(wave, "res://assets/audio/designed/" + cue + ".res")
+
+func _gunshot(gun_class: String, t: float, noise: float, low: float, mid: float) -> float:
+	## Distinct report per weapon class instead of one shared shape with a hashed pitch
+	## offset, which put the mg42/m1919 within 1 Hz of several pistols/SMGs.
+	var value: float = 0.0
+	match gun_class:
+		"pistol":
+			# Crisp mid-focused crack, short tail: closest to the original generic shot.
+			value = noise * exp(-t * 150) * 0.7 + low * exp(-t * 14) * 2.6 + mid * exp(-t * 18) * 0.45
+			value += sin(TAU * 210.0 * t * exp(-t * 7)) * exp(-t * 32) * 0.3
+			if t > 0.06: value += mid * exp(-(t - 0.06) * 28) * 0.1
+		"smg":
+			# Sharper, brighter snap with more high-frequency transient content.
+			value = noise * exp(-t * 210) * 0.85 + low * exp(-t * 16) * 2.0 + mid * exp(-t * 22) * 0.55
+			value += sin(TAU * 340.0 * t * exp(-t * 9)) * exp(-t * 40) * 0.28
+			value += sin(TAU * 1900.0 * t) * exp(-t * 90) * 0.12
+			if t > 0.045: value += mid * exp(-(t - 0.045) * 34) * 0.12
+		"rifle":
+			# Full-power round: heavier low end, sharp crack, longer sustain than a pistol.
+			value = noise * exp(-t * 110) * 0.95 + low * exp(-t * 9) * 4.2 + mid * exp(-t * 13) * 0.6
+			value += sin(TAU * 150.0 * t * exp(-t * 5)) * exp(-t * 20) * 0.4
+			if t > 0.09: value += mid * exp(-(t - 0.09) * 20) * 0.16
+			if t > 0.16: value += noise * exp(-(t - 0.16) * 70) * 0.07
+		"mounted":
+			# Belt-fed machine gun: heavy low-end thump, longer decay than any handheld
+			# weapon, plus a mechanical bolt/receiver clack after the initial report so
+			# it reads as a big tripod-mounted gun rather than a pistol at a low pitch.
+			value = noise * exp(-t * 65) * 1.1 + low * exp(-t * 6) * 6.0 + mid * exp(-t * 9) * 0.7
+			value += sin(TAU * 85.0 * t * exp(-t * 3)) * exp(-t * 11) * 0.5
+			if t > 0.05: value += mid * exp(-(t - 0.05) * 26) * 0.22
+			if t > 0.1: value += (sin(t * 3200) + sin(t * 2100)) * exp(-(t - 0.1) * 40) * 0.16
+			if t > 0.22: value += noise * exp(-(t - 0.22) * 30) * 0.12
+	return value

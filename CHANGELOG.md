@@ -1,5 +1,67 @@
 # Changelog
 
+## Mounted Gun Distance Presence - 2026-09-11
+
+- Kept the MG42/M1919's "mounted" cue loud and bright out to real combat range
+  instead of it fading toward a handheld-weapon level within a few metres. The
+  cue previously used the default inverse-distance attenuation, which (measured
+  with a real audio capture, not by ear) dropped roughly 16x in peak amplitude
+  between point-blank and 15 m, and noticeably lost high-frequency content on
+  the way; a heavy tripod gun read as quieter and duller than it should well
+  within engagement range. Switched the cue to logarithmic attenuation with a
+  larger unit_size (22) and max_distance (90), which holds comparable
+  level/brightness from point-blank out to roughly 10-15 m before tapering
+  toward silence by 25 m+, rather than tapering immediately past the muzzle.
+  Confirmed both the player-occupant and NPC-gunner paths already played the
+  identical WeaponData/AudioStream resource before this change (same resource
+  instance ID in both cases) — the routing was never the issue, only how it
+  faded with distance.
+
+## Projectile Physics - 2026-09-11
+
+- Added tumbling spin to every thrown/launched projectile (grenades and rockets):
+  `ProjectileLauncher.launch` previously left `angular_velocity` at its
+  `RigidBody3D` default of zero, so grenades and rockets glided without rotating.
+- Added rocket motor thrust: rocket-class projectiles (`explode_on_contact`)
+  now accelerate under `apply_central_force` for 0.35s after launch instead of
+  coasting at muzzle velocity, and trail intermittent smoke puffs via the
+  existing `CombatEffects.smoke` (capped, self-cleaning) rather than a new
+  effect system.
+- Raised bazooka/panzerfaust `projectile_gravity` (0.08/0.35 to 0.35/0.55) and
+  bumped their speed slightly; both previously fell too slowly to read as a
+  real projectile at any believable range.
+- Fixed a real self-damage bug found while building this: the first version of
+  the new grenade arc computed a velocity to hit a fixed point 6 m ahead of the
+  thrower — exactly the grenade's own 6 m blast radius, so a level throw could
+  land within lethal range of the thrower and reliably killed the test player
+  outright. Replaced targeting a fixed point with a fixed throw angle (roughly
+  27 degrees above the aim ray) at the weapon's existing speed, matching how
+  the previous flat throw scaled with `projectile_speed` but arcing like a
+  real lob instead of flying level.
+- That bug surfaced as a long, misleading debugging trail: killing the test
+  player mid-run left `WeaponRig.process_mode` disabled for the remainder of
+  that run (the normal player-death handler), which read as unrelated failures
+  in later, unconnected checks — mounted-gun mounting, shared-pool reloads —
+  depending on which check happened to run first afterward. Confirmed the
+  mechanism by instrumenting the test directly rather than continuing to guess
+  from symptoms, and verified the fix by rerunning the full suite 10 times.
+
+## Weapon-Class Gunshot Synthesis - 2026-09-11
+
+- Fixed the mg42/m1919 sounding like a pistol: every firearm shared one synthesis
+  formula in `tools/build_audio_assets.gd`, differentiated only by a pitch offset
+  hashed from the weapon id, and mg42/m1919 landed within 1 Hz of several
+  pistols/SMGs by coincidence. Added `_gunshot()` with real per-class shaping
+  (pistol/smg/rifle/mounted) keyed to `WeaponData.weapon_class`: low-end weight,
+  crack sharpness and tail length now scale with weapon size, and mounted guns
+  carry a mechanical bolt/receiver clack and a longer report the others do not.
+  Verified by measuring early/late RMS energy across the rebuilt clips rather
+  than by ear: mounted guns now carry roughly 30x more energy after 0.3s than a
+  pistol or SMG, which previously had none.
+- Audio routing itself was already correct — verified with a live probe that the
+  mounted MG plays its own resource from the gunner actor on every shot before
+  concluding this was a content problem rather than a routing one.
+
 ## Ground Cover Texture Pass - 2026-09-11
 
 - Replaced untextured vertex-coloured grass, ferns and shrubs with photographic CC0

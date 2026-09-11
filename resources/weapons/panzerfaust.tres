@@ -31,5 +31,5 @@ viewmodel_scene = ExtResource("view")
 muzzle_audio = ExtResource("2_orelt")
 reload_audio = ExtResource("4_fgv0t")
 dry_audio = ExtResource("1_q00s2")
-projectile_speed = 26.0
-projectile_gravity = 0.35
+projectile_speed = 30.0
+projectile_gravity = 0.55

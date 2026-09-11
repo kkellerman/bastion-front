@@ -78,6 +78,14 @@ func play(cue: StringName, position: Vector3, source: CollisionObject3D = null, 
 		voice.volume_db = -15
 		voice.max_distance = 24
 		voice.unit_size = 4
+	if cue == &"mounted":
+		# A heavy tripod gun should stay loud and present at combat range, not fade
+		# toward a handheld-weapon volume by a few metres out. The default inverse-
+		# distance curve dropped it ~16x in amplitude between point-blank and 15 m;
+		# logarithmic falloff keeps far more level and top-end out to max_distance.
+		voice.attenuation_model = AudioStreamPlayer3D.ATTENUATION_LOGARITHMIC
+		voice.unit_size = 22.0
+		voice.max_distance = 90.0
 	voice.pitch_scale = randf_range(0.94, 1.06)
 	_voices += 1
 	voice.tree_exiting.connect(func() -> void:
