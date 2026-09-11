@@ -58,7 +58,7 @@ static func rod(parent: Node3D, start: Vector3, end: Vector3, radius: float, mat
 	cylinder.top_radius = radius
 	cylinder.bottom_radius = radius
 	cylinder.height = start.distance_to(end)
-	cylinder.radial_segments = 8
+	cylinder.radial_segments = 16
 	var part: MeshInstance3D = shape(parent, (start + end) * 0.5, cylinder, mat)
 	var axis: Vector3 = (end - start).normalized()
 	part.quaternion = Quaternion(Vector3.UP, axis)

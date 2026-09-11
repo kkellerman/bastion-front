@@ -7,8 +7,11 @@
 [ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="script"]
 [ext_resource type="PackedScene" path="res://assets/weapons/allied/bazooka_viewmodel.tscn" id="view"]
 
+[ext_resource type="Resource" path="res://resources/weapons/handling/launcher.tres" id="handling"]
+
 [resource]
 script = ExtResource("script")
+handling = ExtResource("handling")
 support_hand_position = Vector3(-0.025, -0.05, -0.24)
 weapon_id = &"bazooka"
 display_name = "Bazooka"

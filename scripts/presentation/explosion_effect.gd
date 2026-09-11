@@ -12,8 +12,8 @@ func start() -> void:
 	var count: int = 12 if low else 22
 	var dust: Color = Color(0.28, 0.23, 0.16, 0.6) if surface in [&"dirt", &"wood"] else Color(0.37, 0.36, 0.33, 0.55)
 	_cloud(5, 0.22, 0.7, 3.5, Color(1, 0.48, 0.1, 0.9), true)
-	_cloud(count, 1.4, 0.65, 3.0, dust)
-	_cloud(count, 3.6, 1.0, 1.0, Color(0.16, 0.17, 0.16, 0.48))
+	_cloud(count, 1.4, 1.25, 4.0, dust)
+	_cloud(count, 3.6, 2.0, 1.4, Color(0.23, 0.24, 0.22, 0.55))
 	var debris: CPUParticles3D = CPUParticles3D.new()
 	debris.amount = count
 	debris.lifetime = 1.3
@@ -59,7 +59,7 @@ func _cloud(count: int, duration: float, size: float, speed: float, color: Color
 	particles.scale_amount_min = size * 0.5
 	particles.scale_amount_max = size
 	var growth: Curve = Curve.new()
-	growth.add_point(Vector2(0, 0.3))
+	growth.add_point(Vector2(0, 0.55))
 	growth.add_point(Vector2(1, 1))
 	particles.scale_amount_curve = growth
 	var ramp: Gradient = Gradient.new()

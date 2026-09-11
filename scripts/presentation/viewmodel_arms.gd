@@ -29,9 +29,6 @@ func build(data: WeaponData, faction: FactionData) -> void:
 
 func _process(delta: float) -> void:
 	_time += delta
-	if support != null:
-		var active: bool = get_parent().reloading
-		support.rotation.x = lerpf(support.rotation.x, -0.7 if active else 0.0, minf(delta * 8, 1))
 
 func _segment(parent: Node3D, start: Vector3, end: Vector3, radius: float, tip: float, material: Material) -> MeshInstance3D:
 	var mesh: ArrayMesh = preload("res://scripts/presentation/crafted_mesh.gd").limb(start.distance_to(end), radius, tip, radius > 0.04)

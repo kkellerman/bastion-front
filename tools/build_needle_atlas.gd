@@ -7,14 +7,29 @@ func _initialize() -> void:
 	rng.seed = 87316
 	image.fill(Color(0.15, 0.20, 0.095, 0))
 	_line(Vector2(256, 1000), Vector2(244, 25), 3.5, Color(0.19, 0.14, 0.075))
-	for branch: int in range(22):
-		var y: float = 950.0 - branch * 40.0
+	for branch: int in range(38):
+		var y: float = 975.0 - branch * 24.0
 		for side: int in [-1, 1]:
 			var start: Vector2 = Vector2(250, y)
-			var end: Vector2 = start + Vector2(side * rng.randf_range(130, 220) * (0.4 + y / 1500.0), -rng.randf_range(55, 130))
-			_line(start, end, 1.6, Color(0.23, 0.19, 0.09))
-			for n: int in range(38):
-				var t: float = float(n) / 38.0
+			var end: Vector2 = start + Vector2(side * rng.randf_range(140, 235) * (0.4 + y / 1500.0), -rng.randf_range(55, 130))
+			_line(start, end, 1.7, Color(0.23, 0.19, 0.09))
+			# Sub-twigs branching off the main stem thicken the silhouette beyond a
+			# single row of needle strokes, closer to how real conifer clusters overlap.
+			for sub: int in range(3):
+				var sub_t: float = 0.25 + sub * 0.28
+				var sub_start: Vector2 = start.lerp(end, sub_t)
+				var sub_axis: Vector2 = (end - start).normalized().rotated(rng.randf_range(-0.5, 0.5))
+				var sub_end: Vector2 = sub_start + sub_axis * rng.randf_range(28, 55)
+				_line(sub_start, sub_end, 1.1, Color(0.21, 0.17, 0.085))
+				for n: int in range(20):
+					var t: float = float(n) / 20.0
+					var base: Vector2 = sub_start.lerp(sub_end, t)
+					var axis: Vector2 = sub_axis
+					var lateral: Vector2 = Vector2(-axis.y, axis.x) * (1 if n % 2 == 0 else -1)
+					var tip: Vector2 = base + (axis * 0.6 + lateral) * rng.randf_range(10, 24)
+					_line(base, tip, rng.randf_range(0.8, 1.4), Color(0.11, 0.18, 0.075).lerp(Color(0.30, 0.36, 0.15), rng.randf()))
+			for n: int in range(58):
+				var t: float = float(n) / 58.0
 				var base: Vector2 = start.lerp(end, t)
 				var axis: Vector2 = (end - start).normalized()
 				var lateral: Vector2 = Vector2(-axis.y, axis.x) * (1 if n % 2 == 0 else -1)

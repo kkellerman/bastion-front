@@ -9,8 +9,11 @@
 [ext_resource type="Resource" path="res://resources/weapons/thompson.tres" id="thompson"]
 [ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="weapon_script"]
 
+[ext_resource type="PackedScene" path="res://scenes/mounted_weapons/m1919.tscn" id="mount"]
+
 [resource]
 script = ExtResource("script")
+mounted_scene = ExtResource("mount")
 faction_id = &"allied"
 display_name = "Allied"
 spoken_language = &"en"

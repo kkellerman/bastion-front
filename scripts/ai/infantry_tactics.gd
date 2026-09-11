@@ -15,6 +15,7 @@ func _ready() -> void:
 	actor.add_to_group(&"tactical_infantry")
 
 func tick(delta: float) -> bool:
+	actor.crouching = order == &"cover" and actor.sees_target and actor.global_position.distance_to(destination) < 0.9
 	_broadcast -= delta
 	_decision -= delta
 	if actor.sees_target and _broadcast <= 0:

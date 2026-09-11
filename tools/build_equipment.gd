@@ -117,7 +117,7 @@ func _machine_gun(root: Node3D, id: String) -> void:
 	P.box(root, Vector3(0, -0.13, 0.08), Vector3(0.045, 0.13, 0.055), black)
 	_sights(root, 0.09, -0.55, 0.07)
 	for bullet: int in range(10):
-		P.rod(root, Vector3(-0.1 - bullet * 0.028, -0.015, -0.07), Vector3(-0.1 - bullet * 0.028, -0.015, 0.015), 0.009, P.material(Color(0.4, 0.3, 0.12), 0.7))
+		P.rod(root, Vector3(-0.1 - bullet * 0.028, -0.015, -0.07), Vector3(-0.1 - bullet * 0.028, -0.015, 0.015), 0.009, P.worn(Color(0.4, 0.3, 0.12), 0.7))
 
 func _guard(root: Node3D, point: Vector3, scaling: Vector3) -> void:
 	var ring: TorusMesh = TorusMesh.new()

@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="MissionZoneData" format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/mission_zone_option.gd" id="1_6b43g"]
+[ext_resource type="Script" path="res://scripts/gameplay/mission_zone_data.gd" id="2_hmdve"]
+
+[sub_resource type="Resource" id="Resource_ecl2f"]
+script = ExtResource("1_6b43g")
+label = "bunker_0"
+dressing_anchors = PackedVector3Array(-7.8, 0, -60.8, 7.8, 0, -68.5)
+
+[sub_resource type="Resource" id="Resource_lqh75"]
+script = ExtResource("1_6b43g")
+label = "bunker_1"
+actor_positions = Dictionary[StringName, Vector3]({
+&"RadioGuard": Vector3(3, 0.1, -66)
+})
+supply_positions = Dictionary[StringName, Vector3]({
+&"BunkerHealth": Vector3(6, 0, -62)
+})
+dressing_anchors = PackedVector3Array(-7.8, 0, -60.8, 7.8, 0, -68.5)
+
+[resource]
+script = ExtResource("2_hmdve")
+zone_id = &"bunker"
+bounds = AABB(-9, -1, -70, 18, 6, 11)
+options = Array[ExtResource("1_6b43g")]([SubResource("Resource_ecl2f"), SubResource("Resource_lqh75")])

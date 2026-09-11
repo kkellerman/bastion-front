@@ -2,11 +2,9 @@ extends RefCounted
 const P = preload("res://scripts/presentation/dressing_parts.gd")
 
 static func dress(level: Node3D, art: Node3D) -> void:
-	var wood: Material = P.worn(Color(0.27, 0.22, 0.145), 0.0, true)
-	var iron: Material = P.material(Color(0.075, 0.085, 0.077), 0.65)
-	var canvas: ShaderMaterial = ShaderMaterial.new()
-	canvas.shader = load("res://shaders/uniform_fabric.gdshader")
-	canvas.set_shader_parameter("cloth_color", Color(0.32, 0.29, 0.20))
+	var wood: Material = load("res://assets/materials/presentation/worn_planks.tres")
+	var iron: Material = load("res://assets/materials/presentation/worn_metal.tres")
+	var canvas: Material = load("res://assets/materials/presentation/field_canvas.tres")
 	for body: Node3D in level.get_node("Fortifications").get_children():
 		body.set_meta(&"surface", &"dirt")
 		var size: Vector3 = body.get_node("Mesh").mesh.size

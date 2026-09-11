@@ -10,6 +10,7 @@ func _run() -> void:
 		quit(1)
 		return
 	root.get_node("PrototypeSession").checkpoint.clear()
+	root.get_node("PlayerSettings").values.graphics_preset = 3
 	mission = load("res://scenes/missions/forest_command_post.tscn").instantiate()
 	root.add_child(mission)
 	current_scene = mission
@@ -44,7 +45,7 @@ func _run() -> void:
 	_aim(Vector3(0, 0.1, 13))
 	mission.rig.throw_grenade()
 	await _wait_explosion()
-	await _frames(5)
+	await _frames(18)
 	await _capture("feedback_grenade")
 	await _frames(250)
 	mission.rig.inventory.select(2)
@@ -52,7 +53,7 @@ func _run() -> void:
 	_aim(Vector3(0, 0.1, 12))
 	mission.rig.weapon.try_fire()
 	await _wait_explosion()
-	await _frames(3)
+	await _frames(12)
 	await _capture("feedback_rocket")
 	await _frames(240)
 	mission.player.get_node("HealthComponent").take_damage(100000)

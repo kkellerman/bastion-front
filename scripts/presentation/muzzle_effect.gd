@@ -1,5 +1,6 @@
 class_name MuzzleEffect
 extends Node3D
+var physics_emitter: Node
 ## Actor-owned flash. Always-processing cleanup also handles disabled parents.
 var actor: CollisionObject3D
 var flash: MeshInstance3D
@@ -77,9 +78,15 @@ func stop() -> void:
 	_first_frame = false
 	if flash != null: flash.hide()
 	if light != null: light.hide()
+	if sparks != null:
+		sparks.hide()
+		sparks.emitting = false
 
 func _process(delta: float) -> void:
-	if not is_instance_valid(actor) or not get_node("/root/CombatAudio").can_emit(actor):
+	if is_instance_valid(physics_emitter) and (not physics_emitter.can_process() or not physics_emitter.is_physics_processing()):
+		stop()
+		return
+	if not get_parent().can_process() or not is_instance_valid(actor) or not get_node("/root/CombatAudio").can_emit(actor):
 		stop()
 		sparks.hide()
 		sparks.emitting = false

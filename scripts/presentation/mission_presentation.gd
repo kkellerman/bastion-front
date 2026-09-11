@@ -56,6 +56,7 @@ func _install() -> void:
 			held.position = Vector3(0, 0.07, -0.06)
 			enemy.combat.muzzle.reparent(held, false)
 			enemy.combat.muzzle.transform = muzzle_transform
+		if is_instance_valid(enemy.mounted_weapon): held.hide()
 		if faction.voice_set != null:
 			var voice: Node3D = Voice.new()
 			voice.voice_set = faction.voice_set
@@ -63,7 +64,8 @@ func _install() -> void:
 			voice.director = dialogue
 			enemy.add_child(voice)
 			enemy.state_changed.connect(voice.state_changed)
-			enemy.combat.weapon.reload_changed.connect(func(active: bool) -> void:
+			var active_weapon: WeaponBase = enemy.mounted_weapon.weapon if is_instance_valid(enemy.mounted_weapon) else enemy.combat.weapon
+			active_weapon.reload_changed.connect(func(active: bool) -> void:
 				if active: voice.say(&"reloading"))
 			enemy.health.died.connect(_casualty.bind(enemy))
 	for mount: String in ["RangeM1919", "RangeMG42", "DefensiveMG"]:
@@ -73,14 +75,14 @@ func _install() -> void:
 	for point: Node3D in mission.get_node("Interactions").get_children():
 		point.get_node("Mesh").visible = false
 		point.get_node("Label").visible = false
-		P.crate(point, Vector3.ZERO, Vector3(0.8, 1.0, 0.8), load("res://assets/materials/presentation/bark.tres"), P.material(Color(0.1, 0.12, 0.11), 0.6))
+		P.crate(point, Vector3.ZERO, Vector3(0.8, 1.0, 0.8), load("res://assets/materials/presentation/worn_planks.tres"), P.worn(Color(0.1, 0.12, 0.11), 0.6))
 		if point.name == &"Documents":
 			P.box(point, Vector3(0, 1.015, 0), Vector3(0.5, 0.025, 0.38), P.material(Color(0.67, 0.61, 0.43)))
 		else:
 			P.sign_text(point, Vector3(0, 0.7, 0.411), "ALLIED" if point.name == &"AlliedStation" else "GERMAN", 0.002)
 	for supply: Node3D in mission.get_node("Supplies").get_children():
 		for child: Node in supply.get_children():
-			if child is MeshInstance3D: child.material_override = load("res://assets/materials/presentation/bark.tres")
+			if child is MeshInstance3D: child.material_override = load("res://assets/materials/presentation/worn_planks.tres")
 	var radio: Node3D = Voice.new()
 	radio.voice_set = mission.rig.inventory.faction.voice_set
 	radio.name = "PlayerVoice"

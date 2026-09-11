@@ -15,4 +15,9 @@ uv1_triplanar = true
 uv1_world_triplanar = true
 uv1_scale = Vector3(0.7, 0.7, 0.7)
 texture_filter = 4
-
+detail_enabled = true
+detail_blend_mode = 3
+detail_normal = ExtResource("normal")
+uv2_triplanar = true
+uv2_world_triplanar = true
+uv2_scale = Vector3(2.3, 1.8, 2.3)

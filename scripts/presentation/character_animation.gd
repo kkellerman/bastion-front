@@ -12,15 +12,21 @@ func _ready() -> void:
 	stride = load("res://scripts/presentation/infantry_stride.gd").new()
 	stride.actor = actor
 	model.get_node("Skeleton3D").add_child(stride)
+	var gunner_pose: SkeletonModifier3D = load("res://scripts/presentation/mounted_gunner_pose.gd").new()
+	gunner_pose.actor = actor
+	model.get_node("Skeleton3D").add_child(gunner_pose)
 	actor.state_changed.connect(_state)
-	actor.combat.weapon.shot_fired.connect(func() -> void: _play("fire", 0.16))
-	actor.combat.weapon.reload_changed.connect(func(active: bool) -> void:
-		if active: _play("reload", actor.combat.weapon.data.reload_time))
+	var active_weapon: WeaponBase = actor.mounted_weapon.weapon if is_instance_valid(actor.mounted_weapon) else actor.combat.weapon
+	active_weapon.shot_fired.connect(func() -> void: _play("fire", 0.16))
+	active_weapon.reload_changed.connect(func(active: bool) -> void:
+		if active and get_node("/root/CombatAudio").can_emit(actor): _play("reload", active_weapon.data.reload_time))
 	player.play("idle")
 
 func _process(delta: float) -> void:
 	if _dead: return
 	motion_state = &"run" if stride.speed > 2.7 else &"walk" if stride.speed > 0.12 else &"turn" if absf(stride.turning) > 0.25 else &"aim" if actor.sees_target else &"idle"
+	if actor.crouching: motion_state = &"crouch"
+	if is_instance_valid(actor.mounted_weapon): motion_state = &"mounted"
 	_lock -= delta
 	if _lock > 0: return
 	var clip: String = "aim" if actor.sees_target else "idle"
@@ -30,6 +36,7 @@ func _process(delta: float) -> void:
 
 func _play(clip: String, duration: float) -> void:
 	if _dead: return
+	if clip != "death" and not get_node("/root/CombatAudio").can_emit(actor): return
 	_lock = duration
 	player.speed_scale = 1
 	player.play(clip, 0.08, player.get_animation(clip).length / maxf(duration, 0.1))

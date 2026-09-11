@@ -32,7 +32,55 @@ and wheel ruts. No Poly Haven API is used at runtime or required by the project.
 Download URL pattern:
 `https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/{asset}/{asset}_{map}_1k.jpg`.
 
+Downloaded 2026-09-11 from the same Poly Haven CDN, verified CC0 1.0 on each
+linked asset page. Replace flat command-post furniture/dressing color with
+photographic detail; wood/metal weapon parts and tree trunks keep their
+existing procedural/bark materials, which suit small primitive and rod shapes
+better than a tiled photo.
+
+| Asset | Source | Local directory | Included maps |
+| --- | --- | --- | --- |
+| Metal Plate | https://polyhaven.com/a/metal_plate | `assets/textures/polyhaven/metal_plate/` | 1K diffuse, OpenGL normal, roughness JPG |
+| Worn Planks | https://polyhaven.com/a/worn_planks | `assets/textures/polyhaven/worn_planks/` | 1K diffuse, OpenGL normal, roughness JPG |
+| Rough Linen | https://polyhaven.com/a/rough_linen | `assets/textures/polyhaven/rough_linen/` | 1K diffuse, OpenGL normal, roughness JPG |
+| Fir Tree 01 (twig maps only) | https://polyhaven.com/a/fir_tree_01 | `assets/textures/polyhaven/fir_twig/` | 1K twig diffuse, cutout alpha PNG, OpenGL normal JPG |
+
+Only the twig **textures** are taken from Fir Tree 01; its mesh is not used. That
+asset's geometry is a film/archviz scan of 8M+ triangles whose glTF buffer is roughly
+950 MB at every offered resolution (the 1K-8K options change texture size only), which
+is orders of magnitude above a real-time foliage budget. The project's own procedural
+tree geometry is retained and these photographic needle sprigs are mapped onto it.
+`tools/pack_twig_atlas.gd` packs the separate cutout map into the diffuse alpha channel
+so `shaders/needle_branch.gdshader` samples one atlas instead of two; the packed result
+is `assets/textures/fir_twig_packed.png`. The atlas holds seven sprigs plus bark strips,
+so `SPRIGS` in `tools/build_forest_assets.gd` maps each leaf card to one sprig
+sub-rectangle rather than the full UV range. The supplied roughness map is near-uniform
+and was dropped in favour of a shader constant.
+
+Wired into `assets/materials/presentation/{worn_metal,worn_planks,field_canvas}.tres`
+(triplanar `StandardMaterial3D`, same pattern as the original four sets) and used by
+`command_post_dressing.gd` (furniture, fixtures, sandbags, camouflage scrim) and the
+mission crate/supply dressing in `mission_perimeter.gd` / `mission_presentation.gd`.
+
 ## Original project assets
+
+The constrained-operation iteration adds **no external downloads or licenses**.
+Zone/anchor resources, the log restriction, fixed overcast atmosphere, terrain-bank
+geometry, rear trail mask, seeded dressing and spatial horizon layout are original
+project work. `tools/build_forest_assets.gd` revises the original three tree variants
+and their LODs; the existing original spruce atlas is retained with tapered shader
+silhouettes. Ground blending/detail normals reuse the four credited Poly Haven CC0
+sets above without replacing their source pixels. Broad timber/metal patina is
+procedural original shading. Screenshots are actual Godot renders of this project.
+No external sky, foliage pack, voice recording, animation or proprietary game asset
+was incorporated. See `docs/OPERATION_VARIANTS_VALIDATION.md` for remaining art needs.
+
+The handling/nest/perimeter iteration adds no external assets. Handling resources,
+magazine/charging-handle motion, grip-target skeletal posing, stance/ground adaptation,
+perimeter berm geometry and extraction gate are original project work. The forest
+backdrop reuses the existing original tree LOD meshes; berms and timber reuse the
+previously credited materials. No new voice recordings or licensed sound pack were
+installed. These procedural animations and meshes remain production-replacement hooks.
 
 The combat-feedback iteration adds no external assets. New authored sound cues
 (`canopy`, `gust`, `radio_bed`, `radio_signal`, `hit_flesh`, `hit_gear`) and revised

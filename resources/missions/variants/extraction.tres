@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="MissionZoneData" format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/mission_zone_option.gd" id="1_obnpw"]
+[ext_resource type="Script" path="res://scripts/gameplay/mission_zone_data.gd" id="2_4g50v"]
+
+[sub_resource type="Resource" id="Resource_x8lpy"]
+script = ExtResource("1_obnpw")
+label = "extraction_0"
+dressing_anchors = PackedVector3Array(-7, 0, -83, 9, 0, -83)
+
+[sub_resource type="Resource" id="Resource_5nquk"]
+script = ExtResource("1_obnpw")
+label = "extraction_1"
+dressing_anchors = PackedVector3Array(-7, 0, -83, 9, 0, -83)
+
+[resource]
+script = ExtResource("2_4g50v")
+zone_id = &"extraction"
+bounds = AABB(-20, -1, -87, 40, 6, 7)
+options = Array[ExtResource("1_obnpw")]([SubResource("Resource_x8lpy"), SubResource("Resource_5nquk")])

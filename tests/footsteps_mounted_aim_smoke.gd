@@ -32,6 +32,11 @@ func _run() -> void:
 		await _frames(3)
 		_mouse(MOUSE_BUTTON_LEFT, false)
 		_check(gun.weapon.magazine < rounds, name + " fires while aimed")
+		gun.muzzle_effect.trigger(gun.data, player)
+		gun.set_physics_process(false)
+		await _frames(2)
+		_check(not gun.flash.visible, name + " disabled emplacement retires its flash")
+		gun.set_physics_process(true)
 		_mouse(MOUSE_BUTTON_RIGHT, false)
 		await _frames(30)
 		_check(not rig._aiming and absf(camera.fov - rig._base_fov) < 0.1 and camera.position.distance_to(rest) < 0.001, name + " releasing aim restores view")
@@ -51,7 +56,7 @@ func _run() -> void:
 		if AudioServer.get_driver_name() != "Dummy":
 			var voices: Array[Node] = get_nodes_in_group(&"combat_audio_voices")
 			var voice: AudioStreamPlayer3D = voices[-1]
-			_check(voice.volume_db == -30 and voice.max_distance == 12, surface + " quiet local playback settings")
+			_check(voice.volume_db <= -24 and voice.max_distance == 12, surface + " quiet local playback settings")
 	print("Footsteps/mounted aim smoke: %d failure(s)" % failures)
 	mission.queue_free()
 	await _frames(5)

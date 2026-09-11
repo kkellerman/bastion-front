@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="WeaponHandlingData" format=3]
+[ext_resource type="Script" path="res://scripts/weapons/weapon_handling_data.gd" id="script"]
+[resource]
+script = ExtResource("script")
+camera_kick = 1.7
+recovery = 5.0
+burst_growth = 0.0
+max_climb = 2.0
+inertia = 0.045
+breath = 0.003
+magazine_position = Vector3(0, 0, 0.3)
+magazine_size = Vector3(0.06, 0.06, 0.3)

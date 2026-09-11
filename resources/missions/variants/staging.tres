@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="MissionZoneData" format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/mission_zone_option.gd" id="1_x6w5a"]
+[ext_resource type="Script" path="res://scripts/gameplay/mission_zone_data.gd" id="2_owj21"]
+
+[sub_resource type="Resource" id="Resource_xj37p"]
+script = ExtResource("1_x6w5a")
+label = "staging_0"
+dressing_anchors = PackedVector3Array(7, 0, 25, 17, 0, 27, -21, 0, 28)
+
+[sub_resource type="Resource" id="Resource_gbmh2"]
+script = ExtResource("1_x6w5a")
+label = "staging_1"
+dressing_anchors = PackedVector3Array(7, 0, 25, 17, 0, 27, -21, 0, 28)
+
+[resource]
+script = ExtResource("2_owj21")
+zone_id = &"staging"
+bounds = AABB(-23, -1, 10, 46, 6, 22)
+options = Array[ExtResource("1_x6w5a")]([SubResource("Resource_xj37p"), SubResource("Resource_gbmh2")])

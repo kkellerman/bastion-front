@@ -12,7 +12,7 @@ func _ready() -> void:
 		enemy.tactics = tactics
 		role += 1
 	# Existing revetments/sandbags supply real cover; markers add no hidden collision.
-	for point: Vector3 in [Vector3(-4, 0, -46), Vector3(4, 0, -48), Vector3(-5, 0, -56), Vector3(5, 0, -56), Vector3(-3, 0, -64), Vector3(3, 0, -73)]:
+	for point: Vector3 in [Vector3(-5.4, 0, -46), Vector3(2.6, 0, -48), Vector3(-5, 0, -56), Vector3(5, 0, -56), Vector3(-3, 0, -64), Vector3(3, 0, -73)]:
 		var marker: Marker3D = Marker3D.new()
 		mission.add_child(marker)
 		marker.position = point

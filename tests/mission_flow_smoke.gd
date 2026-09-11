@@ -55,6 +55,10 @@ func _run() -> void:
 	_key(KEY_E)
 	await _frames(3)
 	_check(rig.mounted == null and player.is_physics_processing(), "E dismounts and restores movement")
+	if "--flank" in OS.get_cmdline_user_args():
+		_check(await _walk(Vector3(12,0,-20)), "Player reaches seeded eastern approach")
+		_check(await _walk(Vector3(12,0,-36)), "Player physically passes optional log restriction")
+		_check(await _walk(Vector3(12,0,-48)), "Player follows seeded flank to fortification")
 	_check(await _walk(Vector3(0, 0, -56)), "Player physically traverses forest and trench approach")
 	await _capture("mission_bunker_approach.png")
 	_check(await _walk(Vector3(-5, 0, -72.5)), "Player walks through bunker entrance and operations doorway")

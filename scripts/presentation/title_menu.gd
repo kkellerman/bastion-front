@@ -68,6 +68,25 @@ func _ready() -> void:
 	panel = _label(layout, "", Vector2(540, 405), 18, Color(0.9, 0.88, 0.79))
 	panel.size = Vector2(650, 240)
 	panel.add_theme_constant_override("outline_size", 5)
+	_label(layout, "OPERATION SEED", Vector2(540, 300), 15, Color(0.72, 0.74, 0.68))
+	var seed_input: SpinBox = SpinBox.new()
+	seed_input.name = "OperationSeed"
+	layout.add_child(seed_input)
+	seed_input.position = Vector2(540, 327)
+	seed_input.size = Vector2(200, 40)
+	seed_input.max_value = 2147483647
+	seed_input.value = get_node("/root/PrototypeSession").operation_seed
+	seed_input.value_changed.connect(func(value: float) -> void: get_node("/root/PrototypeSession").set_operation_seed(int(value)))
+	var operation: Button = Button.new()
+	operation.name = "NewOperation"
+	layout.add_child(operation)
+	operation.position = Vector2(760, 327)
+	operation.size = Vector2(215, 40)
+	operation.text = "NEW OPERATION"
+	operation.pressed.connect(func() -> void:
+		get_node("/root/PrototypeSession").new_operation()
+		seed_input.value = get_node("/root/PrototypeSession").operation_seed
+		panel.text = "Operation prepared. Choose Allied or German to begin.\nThe same seed reproduces the same authored layout.")
 	_label(layout, get_node("/root/PlayerSettings").recommendation_text(), Vector2(540, 655), 15, Color(0.72, 0.74, 0.68))
 	_label(layout, "A FICTIONAL OPERATION  ·  VISUAL DEVELOPMENT BUILD", Vector2(64, 670), 13, Color(0.52, 0.55, 0.49))
 
@@ -90,7 +109,7 @@ func _select(index: int) -> void:
 			get_node("/root/PrototypeSession").faction_id = &"allied" if index == 0 else &"german"
 			get_tree().change_scene_to_file("res://scenes/missions/forest_command_post.tscn")
 		2:
-			panel.text = "FIELD MANUAL\n\nWASD move · Mouse look · Shift sprint · Ctrl crouch\nSpace jump · LMB fire · RMB aim · R reload\n1–4 / wheel switch · G grenade · E interact / mount\nEsc release mouse · Enter restart after death\n\nRecover the operations documents. Reach the rear exit."
+			panel.text = "FIELD MANUAL\n\nWASD move · Mouse look · Shift sprint · Ctrl crouch\nSpace jump · LMB fire · RMB aim · R reload\n1–4 / wheel switch · G grenade · E interact / mount\nEsc release mouse · Enter restart after death\n\nF3 new operation in staging before combat\nRecover documents. Reach the rear exit."
 		3:
 			panel.text = "ASSET CREDITS\n\nCC0 PBR materials: Poly Haven\nCC0 soldier base: nisu / OpenGameArt\n\nOriginal equipment, rig, map and effects: Bastion Front\nVoice recordings remain unfilled / silent\nFull source and license records: ASSET_ATTRIBUTION.md"
 		4: soundscape.quit_game()

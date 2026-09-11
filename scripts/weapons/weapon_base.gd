@@ -21,6 +21,8 @@ var reserve: int:
 var is_reloading: bool = false
 var _cooldown: float = 0.0
 var _reload_remaining: float = 0.0
+var reload_progress: float:
+	get: return clampf(1.0 - _reload_remaining / data.reload_time, 0, 1) if is_reloading else 0.0
 
 
 func _ready() -> void:

@@ -6,6 +6,7 @@ extends Resource
 @export var spoken_language: StringName
 @export var weapons: Array[WeaponData] = []
 @export var grenade: WeaponData
+@export var mounted_scene: PackedScene
 @export var hostile_ids: Array[StringName] = []
 @export var uniform_scene: PackedScene
 @export var voice_set: Resource

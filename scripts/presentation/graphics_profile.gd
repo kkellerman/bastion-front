@@ -43,4 +43,8 @@ static func _apply_node(node: Node, preset: Dictionary, forward: bool) -> void:
 		node.visibility_range_end = preset.plants
 	if node.is_in_group(&"quality_tree_far") and node is GeometryInstance3D:
 		node.visibility_range_end = preset.trees
+	if node.is_in_group(&"quality_horizon") and node is MultiMeshInstance3D:
+		# Keep near silhouettes on every tier; distant chunks can disappear into haze.
+		node.visibility_range_end = 105.0 if preset.name == "Low" else 140.0
+		node.multimesh.visible_instance_count = maxi(1, int(node.multimesh.instance_count * (0.75 if preset.name == "Low" else 1.0)))
 	for child: Node in node.get_children(): _apply_node(child, preset, forward)

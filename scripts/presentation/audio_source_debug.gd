@@ -44,6 +44,10 @@ func _process(delta: float) -> void:
 	var camera: Camera3D = get_viewport().get_camera_3d()
 	if camera == null: return
 	var lines: PackedStringArray = PackedStringArray(["F9 AUDIO / SOLDIER AUDIT (labels show through cover)"])
+	var variant: MissionVariant = mission.get_node_or_null("MissionVariant")
+	if variant != null:
+		lines.append("Operation %d | %s" % [variant.operation_seed, "restricted flank" if variant.restricted_flank else "open flank"])
+		lines.append(variant.signature)
 	lines.append("Driver: %s | output: %s" % [AudioServer.get_driver_name(), AudioServer.output_device])
 	for bus: String in ["Master","Effects","Dialogue"]:
 		var index: int = AudioServer.get_bus_index(bus)

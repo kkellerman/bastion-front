@@ -19,6 +19,8 @@ var _state_time: float = 0.0
 var _patrol_index: int = 0
 var _previous_health: float = 100.0
 var tactics: Node
+var mounted_weapon: MountedWeapon
+@export var crouching: bool = false
 
 @onready var vision: InfantryVision = $Vision
 @onready var motor: InfantryMotor = $Motor
@@ -31,6 +33,7 @@ func _ready() -> void:
 	health.health_changed.connect(_on_health_changed)
 	health.died.connect(_die)
 	get_node("/root/CombatAudio").noise.connect(_hear_noise)
+	add_child(load("res://scripts/components/infantry_stance.gd").new())
 
 
 func _physics_process(delta: float) -> void:
@@ -50,6 +53,11 @@ func _physics_process(delta: float) -> void:
 		return
 	if sees_target and (state == State.IDLE or state == State.PATROL):
 		_set_state(State.ALERT)
+	if is_instance_valid(mounted_weapon):
+		motor.stop(delta)
+		if _state_time >= alert_delay:
+			_set_state(State.ATTACK if sees_target else State.IDLE)
+		return
 	if tactics != null and tactics.tick(delta): return
 	match state:
 		State.IDLE:

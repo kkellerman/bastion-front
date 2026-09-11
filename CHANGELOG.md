@@ -1,5 +1,91 @@
 # Changelog
 
+## Material and Procedural Tree Density Pass - 2026-09-11
+
+- Trialed replacing procedural tree visuals with low-poly CC0 pine models
+  (Quaternius); reverted after review found the stylized look a worse fit than
+  the existing procedural trees.
+  Densified the procedural trees instead: more branches with per-branch angle/
+  length/droop jitter, sub-twig clusters and a third off-axis leaf card per twig
+  in `tools/build_forest_assets.gd`, and a denser hand-drawn needle atlas in
+  `tools/build_needle_atlas.gd`. Same generation pipeline, meshes and materials;
+  no collision, navigation or placement changes. Forest primitive count rises
+  from roughly 4.16M to 4.71M at the High preset; Low/Auto remains well above
+  100 FPS on the Radeon 860M reference machine.
+- Replaced the hand-drawn needle atlas with photographic CC0 fir twig maps (Poly
+  Haven Fir Tree 01 textures only; its 8M-triangle mesh is unusable in real time).
+  `needle_branch.gdshader` now carries a real normal map instead of flat shading,
+  so foliage participates in the same PBR lighting as the ground and concrete.
+  Leaf cards map to individual sprig sub-rectangles within the atlas and flip
+  randomly, and carry a crown-depth vertex value the shader uses to darken cards
+  deep inside the canopy.
+- Fixed a severe forest frame-rate regression found while making that change: the
+  generated atlas imported uncompressed and without mipmaps, which on the scene's
+  most overdrawn surface cost roughly 46 to 7 FPS. Enabling VRAM compression and
+  mipmaps restored it; the forest now measures 38 FPS at High and 138 FPS at
+  Low/Auto on the Radeon 860M reference machine.
+- Fixed low-hanging canopy geometry: the added branch/droop jitter above could
+  put foliage as low as roughly 0.5-0.9 m, well under standing eye height
+  (1.65 m) and blocking sightlines/aim near the trunk. Raised the branch base
+  clearance floor (2.4 m to 3.4 m near the trunk) and reduced downward jitter/
+  droop specifically for low branches; verified lowest baked foliage vertex is
+  now 2.5-2.7 m, above the previous unjittered baseline.
+- Added three CC0 Poly Haven texture sets (worn metal, worn planks, rough linen)
+  and wired them into command-post furniture/fixtures, sandbags/camouflage scrim
+  and mission crate dressing in place of flat procedural colors.
+- Strengthened the procedural worn-surface shader's normal detail and increased
+  cylinder segment counts to remove visible faceting on rods/pipes/barrels.
+- Fixed a dialogue leak where a killed actor's in-progress voice line and subtitle
+  continued playing to completion instead of stopping immediately on death.
+
+## Constrained Operations and Forest World Presentation - 2026-09-11
+
+- Added seven authored zone resources with sixteen bounded options and deterministic
+  seed selection. Patrols, supplies, tree visuals, foliage/debris and fortification
+  kits vary without generating arbitrary terrain or moving objectives/nests.
+- Added menu seed entry/New Operation, guarded staging F3 regeneration and persistent
+  F9 seed/zone display. Death and faction reloads retain the seed; checkpoints store
+  it and reject cross-operation restores.
+- Added optional eastern-track log restriction and two committed navigation bakes.
+  Restricted baking to the playable rectangle and used 25 cm mission voxels / 50 cm
+  navigation clearance to keep long paths within Godot's default search budget.
+  Fixed two existing cover markers embedded in trench collision.
+- Added one reusable cold-overcast atmosphere resource, coherent sun direction,
+  layered fixed clouds, softer haze and balanced exposure. Replaced a trigonometric
+  noise hash that produced visible cloud-cell seams on the test GPU. No random weather.
+- Revised original tree crowns/LODs, clustered ground dressing, offset ground-texture
+  blending, moss/mud/gravel masks, detail normals and worn timber/metal variation.
+- Replaced the monolithic horizon batches with spatial MultiMesh groups; added
+  smooth closed banks, irregular plantings and a winding rear rendezvous trail.
+  Auto/Low retains atmosphere and silhouettes with bounded distance/density.
+- Added multi-seed/faction placement, full-route capsule, checkpoint and operation
+  input regressions; extended mission walking coverage to the restricted flank.
+  Captured Auto/High comparisons and documented validation/performance results in
+  `docs/OPERATION_VARIANTS_VALIDATION.md`. Reused original/credited CC0 assets only.
+
+## Weapon Handling, Operated Nests and Mission Perimeter - 2026-09-10
+
+- Added shared handling resources: camera kick/recovery, bounded automatic climb,
+  lateral drift, movement/turn inertia, breathing and stance transitions. Reduced
+  motion attenuates these effects; existing movement and ammunition rules remain.
+- Added timer-synchronized magazine and charging-handle presentation with moving
+  support-hand contact. Reload ammo still transfers once at completion.
+- Faction resources choose MG42/M1919 defensive scenes. Deterministic operator
+  placement and skeletal grip targets replace the idle soldier beside the gun.
+  Mounted combat enforces hostility, range, sight, muzzle obstruction and both
+  angular limits. Dead/disabled gunners release capture and their callbacks.
+- Added infantry acceleration/deceleration, shallow combat crouch with independent
+  capsule/vision height, ground-sampled foot adaptation and acceleration lean.
+- Added collision-matched perimeter berms, two batched forest backdrop layers and
+  a marked rear rendezvous gate. Unintended escapes recover to safe ground; invalid
+  falling positions no longer replace checkpoints.
+- Preserved softened footsteps and the user's -26 dB gain. Revalidated existing
+  actor/audio/dialogue retirement, ambience, effects and downed-camera behavior.
+- Enlarged dust/smoke cloud envelopes for readable explosions without increasing
+  particle counts; disabled emplacement physics now retires its flash immediately.
+- Added focused handling/faction-nest/perimeter and locomotion regressions plus High
+  rendered evidence. No external assets, plugins, dependencies or new gameplay modes.
+
 ## Quiet Footsteps and Mounted Aiming - 2026-09-10
 
 - Replaced sharp footstep transients with soft heel/scuff envelopes on dirt, wood,

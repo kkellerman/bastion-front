@@ -11,6 +11,7 @@ extends Node3D
 var viewmodel: WeaponViewModel
 var inventory: WeaponInventory
 var mounted: MountedWeapon
+var handling: WeaponHandling
 var _grenade_pending: bool = false
 var _grenade_cooldown: float = 0.0
 var _dry_cooldown: float = 0.0
@@ -33,6 +34,8 @@ func _ready() -> void:
 	viewmodel = weapon.data.viewmodel_scene.instantiate() as WeaponViewModel
 	add_child(viewmodel)
 	_base_fov = camera.fov
+	handling = WeaponHandling.new()
+	add_child(handling)
 	weapon.shot_fired.connect(_on_shot)
 	weapon.reload_changed.connect(_on_reload)
 	hitscan.impact.connect(_on_impact)
@@ -111,6 +114,11 @@ func _clear_input() -> void:
 	_reload_pending = false
 
 
+func combat_input_pending() -> bool:
+	# Scene transitions must wait until queued attacks reach the physics tick.
+	return _grenade_pending or _fire_pending or _fire_held
+
+
 func _on_shot() -> void:
 	if not can_process() or not get_node("/root/CombatAudio").can_emit(shooter): return
 	if weapon.data.hitscan_or_projectile == WeaponData.ShotType.HITSCAN:
@@ -118,6 +126,7 @@ func _on_shot() -> void:
 	else:
 		ProjectileLauncher.launch(weapon.data, camera, shooter)
 	viewmodel.play_shot(weapon.data)
+	handling.shot(weapon.data)
 	get_node("/root/CombatAudio").play(&"gunshot", camera.global_position, shooter, weapon.data.muzzle_audio)
 
 
@@ -133,6 +142,7 @@ func _on_impact(hit_position: Vector3, normal: Vector3) -> void:
 
 
 func _equip(next: WeaponBase) -> void:
+	handling.reset()
 	if weapon.shot_fired.is_connected(_on_shot):
 		weapon.shot_fired.disconnect(_on_shot)
 		weapon.reload_changed.disconnect(_on_reload)

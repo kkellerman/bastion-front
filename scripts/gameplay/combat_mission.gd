@@ -30,6 +30,7 @@ func _ready() -> void:
 		enemy.combat.weapon.magazine = weapon_data.magazine_capacity
 		enemy.combat.weapon.reserve = weapon_data.starting_reserve
 		variation += 1
+	_configure_nest(opposing)
 	$Enemies/Gunner.motor.move_speed = 0.0
 	$Enemies/Gunner.combat.enabled = false
 	$Enemies/Gunner.combat.firing_distance = 24.0
@@ -41,6 +42,8 @@ func _ready() -> void:
 	add_child(checkpoints)
 	var encounters: Node = load("res://scripts/gameplay/encounter_staging.gd").new()
 	add_child(encounters)
+	add_child(load("res://scripts/presentation/mission_perimeter.gd").new())
+	add_child(load("res://scripts/gameplay/mission_variant.gd").new())
 	_update_status()
 
 
@@ -99,3 +102,15 @@ func _update_status() -> void:
 	status.text = "%s  ·  G %d" % ["REACH REAR EXIT" if objective_done else "RECOVER OPERATIONS DOCUMENTS", rig.inventory.pool.get_amount(grenade.reserve_ammo_type)]
 	if player.position.z >= 10.0:
 		status.text += "\nF1 / F2 faction  ·  F10 settings  ·  Range left"
+
+
+func _configure_nest(faction: FactionData) -> void:
+	var previous: MountedWeapon = $DefensiveMG
+	var placement: Transform3D = previous.transform
+	remove_child(previous)
+	previous.queue_free()
+	var nest: MountedWeapon = faction.mounted_scene.instantiate() as MountedWeapon
+	nest.name = "DefensiveMG"
+	nest.transform = placement
+	add_child(nest)
+	nest.bind_defender($Enemies/Gunner)

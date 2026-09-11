@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="WeaponHandlingData" format=3]
+[ext_resource type="Script" path="res://scripts/weapons/weapon_handling_data.gd" id="script"]
+[resource]
+script = ExtResource("script")
+camera_kick = 0.65
+recovery = 13.0
+max_climb = 2.0
+burst_growth = 0.02
+

@@ -10,8 +10,11 @@
 [ext_resource type="Resource" path="res://resources/weapons/stick_grenade.tres" id="stick_grenade"]
 [ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="weapon_script"]
 
+[ext_resource type="PackedScene" path="res://scenes/mounted_weapons/mg42.tscn" id="mount"]
+
 [resource]
 script = ExtResource("script")
+mounted_scene = ExtResource("mount")
 faction_id = &"german"
 display_name = "German"
 spoken_language = &"de"

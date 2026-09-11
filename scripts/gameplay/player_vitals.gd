@@ -30,6 +30,7 @@ func _on_death() -> void:
 	player.get_node("MouseLook").set_process_unhandled_input(false)
 	player.get_node("Head/Camera3D/WeaponRig").process_mode = Node.PROCESS_MODE_DISABLED
 	rig._clear_input()
+	rig.handling.reset()
 	rig.viewmodel.hide()
 	rig.viewmodel.muzzle_effect.stop()
 	var camera: Camera3D = player.get_node("Head/Camera3D")

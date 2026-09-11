@@ -6,7 +6,73 @@ This pass follows the explicitly expanded combat/mission scope; the specificatio
 milestone numbering is unchanged. The visual pass combines CC0 photographic PBR
 materials with original interim environment, equipment and sound assets.
 
+## Replayable operations and fixed forest atmosphere
+
+The menu now accepts an **Operation Seed** and provides **New Operation**. Choose
+Allied or German to launch that layout. **F3** generates and loads a new operation
+while still in staging, before firing, throwing a grenade, or departing; it is
+unavailable while mounted.
+Returning to staging after departure does not unlock it. **F9** shows the active
+seed, selected zone options and existing soldier/audio audit. The default **1944**
+keeps the original encounter and supply positions; **1** exercises the restricted
+flank, and **73** offers a different open-flank operation. Direct launch example:
+
+```powershell
+godot --path . res://scenes/missions/forest_command_post.tscn -- --operation-seed=1
+```
+
+Seven native resource zones contain sixteen authored options: staging, forest
+approach, patrol encounters, fortification, bunker, documents and extraction.
+Local seeded generators select patrol/supply anchors, small dressing kits, tree
+crowns/orientation and bounded vegetation patches. The eastern track can have a
+log obstruction along one edge; a traversable lane remains beside it. Fortification
+log and crate kits share fixed collision envelopes. Required routes, doors,
+objectives, gun positions and terrain collision remain authored. Two committed
+navigation meshes cover the open/restricted track; no runtime rebake is needed.
+Seeds persist through death, checkpoint restore and faction switching. New seeds
+clear checkpoints, and saved checkpoints reject a different operation seed.
+
+There is one fixed **cold overcast** resource, with layered clouds, sun-aligned
+sky lighting, soft haze and balanced interior exposure. No weather selector or
+random weather was added. Ground shading blends offset texture samples, moss,
+mud/ruts, gravel and detail normals. Bark/concrete retain their credited CC0 maps;
+timber/metal gain broad wear variation. Revised tree crowns share their branch
+skeleton with lower-detail meshes. Irregular planted banks, softened rock groups
+and a winding trail beyond the extraction gate replace the sparse backdrop.
+
+The horizon uses spatial MultiMesh groups with bounded density and culling.
+Auto/Low keeps the same weather and mission silhouettes with fewer plants,
+shorter shadows and cheaper fog. See [operation validation](docs/OPERATION_VARIANTS_VALIDATION.md)
+for measured before/after frame times, seed coverage, screenshots and limitations.
+On the tested Radeon 860M, seed-1944 warmed forest frames improved from 8.39 to
+7.50 ms on Auto and 27.14 to 23.21 ms on High. All fifteen retained suites, the
+two new operation suites and the restricted-flank walkthrough passed. These are
+static presentation measurements, not worst-case combat frame-rate guarantees.
+All additions use original work and existing credited assets; no downloads.
+
 ## Character, voice, forest and combat fidelity
+
+The handling/nest/perimeter iteration adds resource-driven camera recoil with
+bounded burst climb/recovery, turn and movement inertia, breathing sway, and
+aim/crouch/sprint transitions. Reload presentation follows the existing ammo timer:
+grip (0–18%), magazine removal (18–45%), insertion (45–78%), chamber action
+(78–100%), then the single ammo transfer. The support hand follows these parts;
+the trigger hand remains attached to the carried weapon.
+
+Faction resources now select the defensive mounted scene: Allied play faces a
+German MG42 operator; German play faces an Allied M1919 operator. Gunners are
+placed at authored operating points, use grip-target arm posing, and run only
+mounted combat. Range, faction, sight, muzzle obstruction and yaw/pitch gates
+protect the flanking route. Death or disabling the operator releases capture.
+
+Infantry accelerate/decelerate, layer distance-driven legs beneath upper-body
+clips, crouch at existing cover positions, and adapt feet to sampled ground.
+Continuous collision-matched berms, near/distant forest and an extraction gate
+conceal the perimeter. Escapes return to the last safe checkpoint; falling actors
+cannot overwrite it. Your footstep playback adjustment to **−26 dB** is preserved.
+High was selected for the new rendered validation and screenshots without changing
+the game's default Auto preset or your saved settings. See
+[handling/nest/perimeter validation](docs/HANDLING_NESTS_VALIDATION.md).
 
 The combat-feedback pass adds actor-validated dialogue and firing, layered bounded
 explosions, shared muzzle effects, distance-driven infantry legs, hit reactions and
@@ -46,7 +112,7 @@ pipeline. Production filenames and delivery requirements are in the
 An authored overcast sky, denser tree crowns, deterministic placement variation,
 near/far tree meshes (34 m transition, 85 m cull), moss variation and shallow
 collision-matched forest relief improve the exterior. Road/range/bunker/flank track
-heights are preserved. Navigation was rebuilt to 5,792 polygons. Impact debris,
+heights are preserved. Current navigation has 4,354 open / 4,321 restricted polygons. Impact debris,
 bounded decals, smoke, explosion dust and subtle directional near-miss feedback
 supplement existing flash/recoil. Reduced-motion settings disable suppression roll.
 
@@ -77,8 +143,8 @@ chairs, drawers, crates, suspended lamps and conduit. New office furniture has
 collision and is included in the navigation bake. Most trim uses existing collision.
 
 Weapons have new beveled geometry, barrels, sights, grips, mechanisms and equipment
-details. Shared muzzle flashes use a soft additive shader; recoil includes small
-translation/roll feedback. Both factions use the shared rig, modular equipment and
+details. Shared muzzle flashes use a soft additive shader; handling adds recoverable
+camera kick, bounded burst climb and weapon inertia. Both factions use the shared rig, modular equipment and
 held firearm socket; damage and navigation remain independent of visual geometry.
 
 Forward+ uses ACES, balanced lighting and sky reflections on every preset. High adds
@@ -126,8 +192,9 @@ No plugins, dependencies or asset downloads are required.
 | G | Throw faction grenade |
 | E | Use aimed-at object within 2.8 m; mount/dismount gun |
 | F1 / F2 | Restart as Allied / German while in staging |
+| F3 | Generate/load a new operation while staging remains unlocked |
 | F10 | Open/close paused settings; saves options on close |
-| F9 | Toggle mission audio/soldier audit: names through cover, positions, states, recent shot sources and audio bus levels |
+| F9 | Toggle operation seed/zone choices and audio/soldier audit: names through cover, positions, states, recent shot sources and audio buses |
 | Enter | Resume latest checkpoint after death; fresh restart after completion |
 | Esc | Release mouse; click recaptures without firing |
 | Alt+F4 / window close | Quit |
@@ -186,7 +253,7 @@ after 25 seconds. Range targets reset three seconds after destruction.
    behind spawn. F1/F2 or E at stations restart with the chosen faction.
 2. Follow the trail through two patrol encounters. Solid trunks and road obstacles
    block sight and provide space to flank.
-3. Approach the fortified position and trench lane. A gunner-controlled MG42 covers
+3. Approach the fortified position and trench lane. A faction-correct defensive MG covers
    the central approach. Clear or flank it, then capture it with E. The east supply
    track around x=12 provides ammo/health and an approach outside the central gun arc.
 4. Enter the bunker through the central gap. Connected radio, operations and storage
@@ -198,8 +265,8 @@ after 25 seconds. Range targets reset three seconds after destruction.
 
 Seven infantry actors include the gunner. Allied play uses German opponents;
 German testing assigns Allied relationships, visuals, voice set and weapons to the same
-actors. This is one test mission, not two authored campaigns. The defensive MG42
-remains a capturable German emplacement in either testing configuration.
+actors. This is one test mission, not two authored campaigns. The defensive gun
+is an MG42 against Allied players and an M1919 against German players.
 
 ## Enemy behavior
 
@@ -232,7 +299,7 @@ shooting into allies. This is small encounter coordination, not a full squad pla
 ## Architecture and asset hooks
 
 - `resources/factions/{allied,german}.tres` / `FactionData`: loadouts, grenade,
-  hostility, language, uniform/optional variants, sleeve color and voice references.
+  mounted scene, hostility, language, uniform/optional variants, sleeve color and voice references.
 - `resources/weapons/*.tres` / `WeaponData`: identity, damage, fire mode/rate, ammo,
   reload, recoil/spread, projectile settings and presentation references.
   `WeaponBase` owns instance timers/magazines; `WeaponInventory` and `AmmoPool`
@@ -352,9 +419,10 @@ rendering, physics or gameplay.
 - This is an interim art pass, not finished photorealism. Characters use a low-poly
   donor body, approximate faction equipment and short authored animation clips.
   Faces, finger contact, uniform tailoring and skinning at extreme poses still need
-  production art/animation. First-person hands use posed geometry, without finger IK
-  or detachable magazine choreography. German mode remains a loadout test.
-  Distance-driven procedural legs reduce sliding, but terrain foot IK and authored
+  production art/animation. First-person hands use posed geometry and procedural
+  magazine/handle choreography, without finger IK or production reload clips.
+  German mode remains a loadout test. Distance-driven legs and two ground samples
+  improve foot placement; planted-foot locking, lateral slope roll and authored
   production locomotion remain future work. Smoke/fire are original shader particles;
   debris is visual-only and the pressure skirt substitutes for screen distortion.
 - No shell ejection, ragdolls or body-part damage. Decals expire after 12 seconds
