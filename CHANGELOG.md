@@ -1,5 +1,20 @@
 # Changelog
 
+## Uniform Fabric Texture - 2026-09-11
+
+- Added a photographic CC0 fabric pass to the shared soldier body shader
+  (`shaders/soldier_surface.gdshader`). The donor character's texture is a
+  near-flat-colour UV atlas with no shading, grain, or normal detail, so the
+  uniform previously read as solid-colour plastic even under good lighting;
+  the skin/leather regions were unaffected and untouched. Reuses the Rough
+  Linen CC0 set already in the project (from the ground-cover pass) rather
+  than a new download, sampled triplanar since the retargeted mesh has no
+  dedicated cloth UV island, with a real normal map so the weave catches
+  light instead of being drawn flat. Skin and leather keep their existing
+  procedural shading; boots, helmets, and other non-retargeted primitives are
+  unaffected, since they are separate meshes built by build_characters.gd.
+  Geometry, rig, weights, and animations are untouched.
+
 ## Mounted Gun Distance Presence - 2026-09-11
 
 - Kept the MG42/M1919's "mounted" cue loud and bright out to real combat range

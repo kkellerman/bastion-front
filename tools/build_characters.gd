@@ -103,6 +103,9 @@ func _build(faction: String) -> void:
 	body_material.set_shader_parameter("uniform_color", sleeve)
 	body_material.set_shader_parameter("gaiter_color", Color(0.36, 0.35, 0.24))
 	body_material.set_shader_parameter("short_gaiters", not german)
+	body_material.set_shader_parameter("fabric_albedo", load("res://assets/textures/polyhaven/rough_linen/rough_linen_diff_1k.jpg"))
+	body_material.set_shader_parameter("fabric_normal", load("res://assets/textures/polyhaven/rough_linen/rough_linen_nor_gl_1k.jpg"))
+	body_material.set_shader_parameter("fabric_rough", load("res://assets/textures/polyhaven/rough_linen/rough_linen_rough_1k.jpg"))
 	body_mesh.surface_set_material(0, body_material)
 	var body_node: MeshInstance3D = scene.get_node("UniformAndBody")
 	body_node.mesh = body_mesh

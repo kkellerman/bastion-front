@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" path="res://assets/characters/german/infantry_rigged.tscn" id="3_dwnvw"]
 [ext_resource type="Resource" path="res://resources/characters/german_voice.tres" id="4_dwnvw"]
+[ext_resource type="PackedScene" path="res://scenes/mounted_weapons/mg42.tscn" id="mount"]
 [ext_resource type="Resource" path="res://resources/weapons/mp40.tres" id="mp40"]
 [ext_resource type="Resource" path="res://resources/weapons/p38.tres" id="p38"]
 [ext_resource type="Resource" path="res://resources/weapons/panzerfaust.tres" id="panzerfaust"]
@@ -10,16 +11,14 @@
 [ext_resource type="Resource" path="res://resources/weapons/stick_grenade.tres" id="stick_grenade"]
 [ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="weapon_script"]
 
-[ext_resource type="PackedScene" path="res://scenes/mounted_weapons/mg42.tscn" id="mount"]
-
 [resource]
 script = ExtResource("script")
-mounted_scene = ExtResource("mount")
 faction_id = &"german"
 display_name = "German"
 spoken_language = &"de"
 weapons = Array[ExtResource("weapon_script")]([ExtResource("p38"), ExtResource("mp40"), ExtResource("stg44"), ExtResource("panzerfaust")])
 grenade = ExtResource("stick_grenade")
+mounted_scene = ExtResource("mount")
 hostile_ids = Array[StringName]([&"allied"])
 uniform_scene = ExtResource("3_dwnvw")
 voice_set = ExtResource("4_dwnvw")
