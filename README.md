@@ -44,6 +44,23 @@ for portfolio/demonstration purposes; it is not open source. Third-party assets
 listed in [ASSET_ATTRIBUTION.md](ASSET_ATTRIBUTION.md) remain under their own
 original licenses (chiefly CC0 1.0).
 
+## Development process
+
+Built through directed, AI-assisted development (Claude Code) under a human
+developer's design decisions, review, and test verification — not unreviewed
+"vibe coding." Every change lands only after the project's own automated test
+suites (`tests/*_smoke.gd`) pass, and every non-trivial visual/audio change is
+verified against an actual Godot render or a captured audio buffer before it's
+called done, not assumed to work from source alone. That discipline is visible
+directly in the commit history: several attempted approaches (a low-poly tree
+replacement, procedurally-textured weapon materials) were tried, measured
+against the existing baseline, found not to be an improvement, and reverted
+rather than kept. One commit fixes a self-inflicted regression — a grenade
+physics change that could land a throw within its own blast radius — found
+by root-causing an intermittent test failure back to its actual mechanism
+instead of patching around the symptom. Co-authorship trailers on individual
+commits reflect this workflow accurately and are not edited out.
+
 ---
 
 A playable WWII combat and first-mission presentation slice for **Godot 4.7.x**, typed
