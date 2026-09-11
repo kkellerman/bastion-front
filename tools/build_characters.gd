@@ -70,8 +70,16 @@ func _build(faction: String) -> void:
 		_detail(0, 2, Vector3(side * 0.155, 1.444, 0), Vector3(0.09, 0.017, 0.095))
 		_limb(2, 4, Vector3(side * 0.084, 1.69, 0), Vector3(side * 0.045, 1.55, -0.045), 0.007, 0.007)
 	_detail(2, 4, Vector3(0, 1.582, -0.088), Vector3(0.034, 0.003, 0.003))
-	# Separate M1-like rolled rim and flared German helmet silhouette.
-	_loft(4, 4, Vector3(0, 0, 0.005), [Vector3(1.659 if german else 1.681, 0.116, 0.134), Vector3(1.686, 0.102, 0.118), Vector3(1.725, 0.091, 0.105), Vector3(1.769, 0.062, 0.072), Vector3(1.79, 0.003, 0.003)], 32)
+	if german:
+		# Stahlhelm silhouette: a low rounded dome (no apex point) over a skirt that
+		# flares outward toward the bottom edge to cover the ears and neck, unlike the
+		# American M1's evenly tapering dome-to-rim profile below. _loft() triangulates
+		# consecutive rings in array order regardless of height, so this list must stay
+		# strictly increasing bottom-to-top or the bands fold back on themselves.
+		_loft(4, 4, Vector3(0, 0, 0.005), [Vector3(1.700, 0.128, 0.136), Vector3(1.718, 0.112, 0.120), Vector3(1.748, 0.100, 0.108), Vector3(1.782, 0.086, 0.094), Vector3(1.808, 0.058, 0.064), Vector3(1.822, 0.018, 0.018)], 32)
+	else:
+		# American M1's evenly tapering dome-to-rim profile.
+		_loft(4, 4, Vector3(0, 0, 0.005), [Vector3(1.681, 0.116, 0.134), Vector3(1.686, 0.102, 0.118), Vector3(1.725, 0.091, 0.105), Vector3(1.769, 0.062, 0.072), Vector3(1.79, 0.003, 0.003)], 32)
 	for side: int in [-1, 1]:
 		var prefix: String = "Left" if side < 0 else "Right"
 		var thigh: int = skeleton.find_bone(prefix + "Thigh")

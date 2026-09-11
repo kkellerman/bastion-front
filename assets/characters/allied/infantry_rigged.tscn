@@ -805,9 +805,9 @@ states/switch/position = Vector2(0, 0)
 states/walk/node = SubResource("AnimationNodeAnimation_n4xid")
 states/walk/position = Vector2(0, 0)
 
-[node name="CharacterBase" type="Node3D" unique_id=1534733810]
+[node name="CharacterBase" type="Node3D" unique_id=1428477045]
 
-[node name="Skeleton3D" type="Skeleton3D" parent="." unique_id=1899034193]
+[node name="Skeleton3D" type="Skeleton3D" parent="." unique_id=930883921]
 bones/0/name = "Hips"
 bones/0/parent = -1
 bones/0/rest = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.94, 0)
@@ -928,27 +928,27 @@ bones/16/position = Vector3(-0.07000001, 0.14999998, -0.21000001)
 bones/16/rotation = Quaternion(0, 0, 0, 1)
 bones/16/scale = Vector3(1, 1, 1)
 
-[node name="WeaponSocket" type="BoneAttachment3D" parent="Skeleton3D" unique_id=217325999]
+[node name="WeaponSocket" type="BoneAttachment3D" parent="Skeleton3D" unique_id=1132405912]
 bone_name = "RightHand"
 
-[node name="UniformAndBody" type="MeshInstance3D" parent="." unique_id=1045966072]
+[node name="UniformAndBody" type="MeshInstance3D" parent="." unique_id=993073783]
 mesh = SubResource("ArrayMesh_3iyt2")
 skin = SubResource("Skin_5fsg6")
 skeleton = NodePath("../Skeleton3D")
 
-[node name="AnatomicalHead" type="MeshInstance3D" parent="." unique_id=391701245]
+[node name="AnatomicalHead" type="MeshInstance3D" parent="." unique_id=1914689072]
 mesh = SubResource("ArrayMesh_vbqgv")
 skin = SubResource("Skin_5fsg6")
 skeleton = NodePath("../Skeleton3D")
 
-[node name="HelmetAndEquipment" type="MeshInstance3D" parent="." unique_id=105514867]
+[node name="HelmetAndEquipment" type="MeshInstance3D" parent="." unique_id=191265618]
 mesh = SubResource("ArrayMesh_aleuo")
 skin = SubResource("Skin_5fsg6")
 skeleton = NodePath("../Skeleton3D")
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1807998464]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=348573177]
 libraries/ = SubResource("AnimationLibrary_g7yud")
 
-[node name="AnimationTree" type="AnimationTree" parent="." unique_id=68618343]
+[node name="AnimationTree" type="AnimationTree" parent="." unique_id=1404344965]
 tree_root = SubResource("AnimationNodeStateMachine_y411j")
 anim_player = NodePath("../AnimationPlayer")

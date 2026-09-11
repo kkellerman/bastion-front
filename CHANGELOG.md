@@ -1,5 +1,22 @@
 # Changelog
 
+## German Helmet Silhouette - 2026-09-11
+
+- Gave the German helmet its own distinct profile instead of sharing the
+  Allied M1's evenly-tapering dome-to-rim shape with only the base height
+  changed. The Stahlhelm's defining trait is a flared skirt that widens
+  toward the bottom edge to cover the ears/neck under a low rounded dome,
+  not a smooth cone; the previous shared profile tapered to a near-point
+  apex regardless of faction.
+- Fixed a real self-intersecting mesh bug hit while building this: an
+  early version of the new profile had a non-monotonic height sequence
+  (rings ordered up-then-down), and `_loft()` triangulates consecutive
+  array entries regardless of height direction, producing a folded,
+  sail-like artifact. Caught by an actual render, not just reading the
+  numbers back. Fixed by keeping ring heights strictly increasing
+  bottom-to-top, matching how the existing M1 profile was already built.
+- The Allied M1 profile is unchanged.
+
 ## Sleeve, Hand and Face Detail - 2026-09-11
 
 - Extended the CC0 linen fabric pass to the sleeve/forearm shader
