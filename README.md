@@ -1,5 +1,51 @@
 # Bastion Front
 
+**Bastion Front** is a first-person WWII combat prototype built in Godot 4.7 —
+a single playable mission (forest approach, fortified trench line, and a bunker
+command post) with Allied and German loadouts, mounted machine guns, grenades,
+launchers, and squad-aware enemy infantry. It's an early **alpha / visual
+development build**: the mission layout, systems and code are functional and
+tested, but the art (character models, weapons, terrain) and sound are original
+placeholder work, not final production assets. See
+[Limitations and next phase](#limitations-and-next-phase) below for exactly
+what's interim.
+
+## Screenshots
+
+| | |
+| --- | --- |
+| ![Title menu](docs/screenshots/title_menu.png) | ![Forest approach](docs/screenshots/operation_1944_high_forest.png) |
+| Title menu — Allied/German start, operation seed, field manual | Forest approach to the fortified command post |
+| ![Bunker operations room](docs/screenshots/cleared_operations.png) | ![Allied and German infantry](docs/screenshots/polish_characters.png) |
+| Command post interior — radio, maps, operations desk | Allied and German infantry loadouts |
+
+## Install and run
+
+Requires the free [Godot 4.7.x](https://godotengine.org/download) engine (Forward+ /
+Vulkan renderer). No plugins, dependencies, or asset downloads are needed — every
+asset is either original or CC0 and already committed to the repository.
+
+1. Clone or download this repository.
+2. Open Godot, choose **Import**, and select this folder's `project.godot`.
+3. Press **F5** in the editor, or run from a terminal in this folder:
+
+   ```powershell
+   godot --path .
+   ```
+
+The default scene is the title menu (`BASTION FRONT`); choose Allied or German to
+start the mission. Full controls are documented under
+[Run and controls](#run-and-controls) below.
+
+## License
+
+All rights reserved — see [LICENSE](LICENSE). This repository is shared publicly
+for portfolio/demonstration purposes; it is not open source. Third-party assets
+listed in [ASSET_ATTRIBUTION.md](ASSET_ATTRIBUTION.md) remain under their own
+original licenses (chiefly CC0 1.0).
+
+---
+
 A playable WWII combat and first-mission presentation slice for **Godot 4.7.x**, typed
 GDScript, Forward+ / Vulkan. `wolf_like_godot_starter.md` remains authoritative.
 This pass follows the explicitly expanded combat/mission scope; the specification's
