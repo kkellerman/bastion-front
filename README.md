@@ -16,7 +16,7 @@ what's interim.
 | --- | --- |
 | ![Title menu](docs/screenshots/title_menu.png) | ![Forest approach](docs/screenshots/forest_approach.png) |
 | Title menu — Allied/German start, operation seed, field manual | Forest approach to the fortified command post |
-| ![Bunker operations room](docs/screenshots/cleared_operations.png) | ![Allied and German infantry](docs/screenshots/polish_characters.png) |
+| ![Bunker operations room](docs/screenshots/cleared_operations.png) | ![Allied and German infantry](docs/screenshots/faction_characters.png) |
 | Command post interior — radio, maps, operations desk | Allied and German infantry loadouts |
 
 ## Install and run
