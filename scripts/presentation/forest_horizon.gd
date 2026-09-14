@@ -76,6 +76,8 @@ static func plant(parent: Node3D, operation_seed: int) -> void:
 			batch.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			batch.add_to_group(&"quality_horizon")
 			batch.visibility_range_end = 140
+			batch.visibility_range_end_margin = 10.0
+			batch.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
 	parent.set_meta(&"horizon_tree_count", total)
 	# Low shrubs and debris soften bank contacts; all lie outside playable corridors.
 	for i: int in range(360):

@@ -1,6 +1,6 @@
 extends CanvasLayer
 ## Small persistent options panel; gameplay is paused while editing.
-var values: Dictionary = {"fov": 78.0, "sensitivity": 0.1, "master": 0.8, "effects": 1.0, "dialogue": 1.0, "ambience": 0.8, "communications": 0.7, "artillery": 0.7, "subtitles": true, "reduced_motion": false, "graphics_preset": 0, "distant_combat": true, "voice_diagnostics": false}
+var values: Dictionary = {"fov": 78.0, "sensitivity": 0.1, "master": 0.8, "effects": 1.0, "dialogue": 1.0, "ambience": 0.8, "communications": 0.7, "artillery": 0.7, "subtitles": true, "reduced_motion": false, "graphics_preset": 0, "vsync": true, "distant_combat": true, "voice_diagnostics": false}
 var panel: PanelContainer
 var _old_mouse: int
 var capabilities: Dictionary
@@ -8,6 +8,8 @@ var recommended: int = 0
 var applied_preset: int = 0
 var graphics_summary: Label
 var quality: OptionButton
+## -1 leaves normal settings alone; 0+ pins Low and layers one probe patch on top.
+var probe: int = -1
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -34,12 +36,24 @@ func _ready() -> void:
 	var reverb: AudioEffectReverb = AudioEffectReverb.new()
 	reverb.wet = 0.23
 	AudioServer.add_bus_effect(AudioServer.get_bus_index("DialogueInterior"), reverb)
+	var meter: CanvasLayer = load("res://scripts/presentation/frame_meter.gd").new()
+	meter.name = "FrameMeter"
+	get_tree().root.call_deferred("add_child", meter)
 	_build()
 	apply()
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.physical_keycode == KEY_F10:
 		toggle()
+		get_viewport().set_input_as_handled()
+	if event is InputEventKey and event.pressed and not event.echo and event.physical_keycode == KEY_F8:
+		# Shift steps back so a suspicious reading can be re-checked without a full lap.
+		probe = wrapi(probe + (-1 if event.shift_pressed else 1), -1, GraphicsProfile.PROBES.size())
+		apply()
+		var meter: Node = get_tree().root.get_node_or_null("FrameMeter")
+		if meter != null:
+			meter.reset()
+			meter.mark("probe -> %s" % probe_text())
 		get_viewport().set_input_as_handled()
 
 func toggle() -> void:
@@ -66,20 +80,27 @@ func auto_detect() -> void:
 	apply()
 	save()
 
+func probe_text() -> String:
+	if probe < 0: return "F8 probe: off  ·  now %s" % GraphicsProfile.PRESETS[applied_preset].name
+	return "F8 probe %d/%d (shift+F8 back)  ·  Low %s" % [probe, GraphicsProfile.PROBES.size() - 1, GraphicsProfile.PROBES[probe].label]
+
 func recommendation_text() -> String:
 	if int(values.graphics_preset) != 0:
 		return "Graphics: " + str(GraphicsProfile.PRESETS[clampi(int(values.graphics_preset)-1,0,2)].name)
-	if int(capabilities.get("type",-1)) == RenderingDevice.DEVICE_TYPE_INTEGRATED_GPU:
-		return "Auto: conservative settings for integrated graphics."
 	return "Auto: " + str(GraphicsProfile.PRESETS[recommended].name) + " settings recommended."
 
 func apply() -> void:
 	for key: String in ["master", "effects", "dialogue", "ambience", "communications"]:
 		AudioServer.set_bus_volume_linear(AudioServer.get_bus_index(key.capitalize()), float(values[key]))
 	AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("DistantCombat"), float(values.artillery))
+	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if bool(values.vsync) else DisplayServer.VSYNC_DISABLED)
+	# Uncapped frames a 60Hz panel cannot show are heat and fan noise, not smoothness.
+	# 200 leaves ample headroom to measure while keeping the GPU off its limiter.
+	Engine.max_fps = 0 if bool(values.vsync) else 200
 	var scene: Node = get_tree().current_scene
 	applied_preset = recommended if int(values.graphics_preset) == 0 else clampi(int(values.graphics_preset) - 1, 0, 2)
-	GraphicsProfile.apply(scene, get_viewport(), applied_preset, capabilities)
+	if probe >= 0: applied_preset = 0
+	GraphicsProfile.apply(scene, get_viewport(), applied_preset, capabilities, {} if probe < 0 else GraphicsProfile.PROBES[probe].patch)
 	if graphics_summary != null:
 		var p: Dictionary = GraphicsProfile.PRESETS[applied_preset].duplicate()
 		for feature: String in ["fog","ssao","ssil","reflections"]:
@@ -138,15 +159,17 @@ func _build() -> void:
 			values[key] = value
 			label.text = "  %s  %.2f" % [key.capitalize(), value]
 			apply())
-	for key: String in ["subtitles", "reduced_motion", "distant_combat", "voice_diagnostics"]:
+	for key: String in ["subtitles", "reduced_motion", "distant_combat", "voice_diagnostics", "vsync"]:
 		var check: CheckButton = CheckButton.new()
 		box.add_child(check)
 		check.text = key.capitalize().replace("_", " ")
 		if key == "voice_diagnostics": check.text = "Voice diagnostic tones (NON-SPEECH test clips)"
 		if key == "distant_combat": check.text = "Distant off-map artillery ambience"
+		if key == "vsync": check.text = "V-Sync: ON (caps at refresh rate)" if bool(values[key]) else "V-Sync: OFF (uncapped, may tear)"
 		check.button_pressed = bool(values[key])
 		check.toggled.connect(func(active: bool) -> void:
 			values[key] = active
+			if key == "vsync": check.text = "V-Sync: ON (caps at refresh rate)" if active else "V-Sync: OFF (uncapped, may tear)"
 			apply())
 	var voice_status: Label = Label.new()
 	voice_status.text = "English/German recordings missing: subtitles only.\nDiagnostic tones test routing; they are not soldier speech."

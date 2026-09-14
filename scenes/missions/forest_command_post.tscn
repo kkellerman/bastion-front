@@ -1,163 +1,159 @@
-[gd_scene load_steps=19 format=3]
-[ext_resource type="Script" path="res://scripts/presentation/mission_presentation.gd" id="presentation"]
-[ext_resource type="Script" path="res://scripts/presentation/mission_soundscape.gd" id="soundscape"]
-[ext_resource type="Script" path="res://scripts/gameplay/combat_mission.gd" id="script"]
-[ext_resource type="Resource" path="res://resources/missions/forest_command_post.tres" id="mission"]
+[gd_scene format=3 uid="uid://doandos1wpffi"]
+
 [ext_resource type="Resource" path="res://resources/factions/allied.tres" id="allied"]
-[ext_resource type="Resource" path="res://resources/factions/german.tres" id="german"]
-[ext_resource type="PackedScene" path="res://scenes/missions/command_post_environment.tscn" id="environment"]
-[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="player"]
+[ext_resource type="PackedScene" path="res://scenes/pickups/ammo.tscn" id="ammo"]
 [ext_resource type="PackedScene" path="res://scenes/characters/infantry.tscn" id="enemy"]
-[ext_resource type="PackedScene" path="res://scenes/interactables/test_target.tscn" id="target"]
+[ext_resource type="PackedScene" path="res://scenes/missions/command_post_environment.tscn" id="environment"]
+[ext_resource type="Resource" path="res://resources/factions/german.tres" id="german"]
+[ext_resource type="PackedScene" path="res://scenes/pickups/grenades.tscn" id="grenades"]
+[ext_resource type="PackedScene" path="res://scenes/pickups/health.tscn" id="health"]
 [ext_resource type="PackedScene" path="res://scenes/interactables/interaction_point.tscn" id="interaction"]
 [ext_resource type="PackedScene" path="res://scenes/mounted_weapons/m1919.tscn" id="m1919"]
-[ext_resource type="PackedScene" path="res://scenes/mounted_weapons/mg42.tscn" id="mg42"]
-[ext_resource type="PackedScene" path="res://scenes/pickups/health.tscn" id="health"]
-[ext_resource type="PackedScene" path="res://scenes/pickups/ammo.tscn" id="ammo"]
-[ext_resource type="PackedScene" path="res://scenes/pickups/grenades.tscn" id="grenades"]
+[ext_resource type="PackedScene" uid="uid://d2s7mw0ifdmwx" path="res://scenes/mounted_weapons/mg42.tscn" id="mg42"]
+[ext_resource type="Resource" path="res://resources/missions/forest_command_post.tres" id="mission"]
 [ext_resource type="NavigationMesh" path="res://resources/missions/command_post_navigation.tres" id="nav"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="player"]
+[ext_resource type="Script" uid="uid://boh6uojcyd5bg" path="res://scripts/presentation/mission_presentation.gd" id="presentation"]
+[ext_resource type="Script" uid="uid://rg16qtonh38s" path="res://scripts/gameplay/combat_mission.gd" id="script"]
+[ext_resource type="Script" uid="uid://cg0qjm6q873p2" path="res://scripts/presentation/mission_soundscape.gd" id="soundscape"]
+[ext_resource type="PackedScene" path="res://scenes/interactables/test_target.tscn" id="target"]
+
 [sub_resource type="BoxShape3D" id="ExitShape"]
 size = Vector3(4, 3, 3)
 
-[node name="ForestCommandPost" type="Node3D"]
+[node name="ForestCommandPost" type="Node3D" unique_id=701125538]
 script = ExtResource("script")
 data = ExtResource("mission")
 allied = ExtResource("allied")
 german = ExtResource("german")
-[node name="Presentation" type="Node" parent="."]
+
+[node name="Presentation" type="Node" parent="." unique_id=1412680696]
 script = ExtResource("presentation")
-[node name="Soundscape" type="Node3D" parent="." node_paths=PackedStringArray("listener")]
+
+[node name="Soundscape" type="Node3D" parent="." unique_id=1759874626 node_paths=PackedStringArray("listener")]
 script = ExtResource("soundscape")
 listener = NodePath("../Player/Head/Camera3D")
-[node name="Environment" parent="." instance=ExtResource("environment")]
-[node name="Player" parent="." instance=ExtResource("player")]
-position = Vector3(0, 0.05, 18)
-[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
-navigation_mesh = ExtResource("nav")
-[node name="RangeM1919" parent="." instance=ExtResource("m1919")]
-position = Vector3(-18, 0, 11)
-[node name="RangeMG42" parent="." instance=ExtResource("mg42")]
-position = Vector3(-13, 0, 11)
-[node name="RangeTargetA" parent="." instance=ExtResource("target")]
-position = Vector3(-18, 0, -3)
-[node name="RangeTargetB" parent="." instance=ExtResource("target")]
-position = Vector3(-13, 0, -3)
-[node name="DefensiveMG" parent="." node_paths=PackedStringArray("defender") instance=ExtResource("mg42")]
-position = Vector3(0, 0, -50)
-rotation = Vector3(0, 3.1415927, 0)
-defender = NodePath("../Enemies/Gunner")
-[node name="Enemies" type="Node3D" parent="."]
 
-[node name="ForestPatrol" parent="Enemies" node_paths=PackedStringArray("target", "target_aim") instance=ExtResource("enemy")]
-position = Vector3(3, 0.05, -21)
-rotation = Vector3(0, 3.1415927, 0)
+[node name="Environment" parent="." unique_id=1511745442 instance=ExtResource("environment")]
+
+[node name="Player" parent="." unique_id=396578895 instance=ExtResource("player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 18)
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="." unique_id=1826049436]
+navigation_mesh = ExtResource("nav")
+
+[node name="RangeM1919" parent="." unique_id=1677993123 instance=ExtResource("m1919")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0, 11)
+
+[node name="RangeMG42" parent="." unique_id=949115174 instance=ExtResource("mg42")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, 0, 11)
+
+[node name="RangeTargetA" parent="." unique_id=1854807965 instance=ExtResource("target")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0, -3)
+
+[node name="RangeTargetB" parent="." unique_id=1262061656 instance=ExtResource("target")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, 0, -3)
+
+[node name="DefensiveMG" parent="." unique_id=380518464 node_paths=PackedStringArray("defender") instance=ExtResource("mg42")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, -50)
+defender = NodePath("../Enemies/Gunner")
+
+[node name="Enemies" type="Node3D" parent="." unique_id=2086571365]
+
+[node name="ForestPatrol" parent="Enemies" unique_id=1006485679 node_paths=PackedStringArray("target", "target_aim") instance=ExtResource("enemy")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 3, 0.05, -21)
 target = NodePath("../../Player")
 target_aim = NodePath("../../Player/Head")
 patrol_points = Array[Vector3]([Vector3(3, 0, -21), Vector3(5, 0, -26)])
 
-[node name="RoadGuard" parent="Enemies" node_paths=PackedStringArray("target", "target_aim") instance=ExtResource("enemy")]
-position = Vector3(-5, 0.05, -32)
-rotation = Vector3(0, 3.1415927, 0)
+[node name="RoadGuard" parent="Enemies" unique_id=1651412768 node_paths=PackedStringArray("target", "target_aim") instance=ExtResource("enemy")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -5, 0.05, -32)
 target = NodePath("../../Player")
 target_aim = NodePath("../../Player/Head")
 patrol_points = Array[Vector3]([Vector3(-5, 0, -32), Vector3(-3, 0, -37)])
 
-[node name="PerimeterGuard" parent="Enemies" node_paths=PackedStringArray("target", "target_aim") instance=ExtResource("enemy")]
-position = Vector3(8, 0.05, -43)
-rotation = Vector3(0, 3.1415927, 0)
+[node name="PerimeterGuard" parent="Enemies" unique_id=692235572 node_paths=PackedStringArray("target", "target_aim") instance=ExtResource("enemy")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 8, 0.05, -43)
 target = NodePath("../../Player")
 target_aim = NodePath("../../Player/Head")
 
-
-[node name="Gunner" parent="Enemies" node_paths=PackedStringArray("target", "target_aim") instance=ExtResource("enemy")]
-position = Vector3(0, 0.05, -51.1)
-rotation = Vector3(0, 3.1415927, 0)
+[node name="Gunner" parent="Enemies" unique_id=157497881 node_paths=PackedStringArray("target", "target_aim") instance=ExtResource("enemy")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0.05, -51.1)
 target = NodePath("../../Player")
 target_aim = NodePath("../../Player/Head")
 
-
-[node name="EntranceGuard" parent="Enemies" node_paths=PackedStringArray("target", "target_aim") instance=ExtResource("enemy")]
-position = Vector3(-5, 0.05, -57)
-rotation = Vector3(0, 3.1415927, 0)
+[node name="EntranceGuard" parent="Enemies" unique_id=190999592 node_paths=PackedStringArray("target", "target_aim") instance=ExtResource("enemy")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -5, 0.05, -57)
 target = NodePath("../../Player")
 target_aim = NodePath("../../Player/Head")
 
-
-[node name="RadioGuard" parent="Enemies" node_paths=PackedStringArray("target", "target_aim") instance=ExtResource("enemy")]
-position = Vector3(5, 0.05, -65)
-rotation = Vector3(0, 3.1415927, 0)
+[node name="RadioGuard" parent="Enemies" unique_id=515816468 node_paths=PackedStringArray("target", "target_aim") instance=ExtResource("enemy")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 5, 0.05, -65)
 target = NodePath("../../Player")
 target_aim = NodePath("../../Player/Head")
 
-
-[node name="MapGuard" parent="Enemies" node_paths=PackedStringArray("target", "target_aim") instance=ExtResource("enemy")]
-position = Vector3(-5, 0.05, -76)
-rotation = Vector3(0, 3.1415927, 0)
+[node name="MapGuard" parent="Enemies" unique_id=724760556 node_paths=PackedStringArray("target", "target_aim") instance=ExtResource("enemy")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -5, 0.05, -76)
 target = NodePath("../../Player")
 target_aim = NodePath("../../Player/Head")
 
+[node name="Supplies" type="Node3D" parent="." unique_id=205429064]
 
-[node name="Supplies" type="Node3D" parent="."]
+[node name="StagingAmmo" parent="Supplies" unique_id=1768097024 instance=ExtResource("ammo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0, 18)
 
-[node name="StagingAmmo" parent="Supplies" instance=ExtResource("ammo")]
-position = Vector3(-7, 0, 18)
+[node name="StagingHealth" parent="Supplies" unique_id=766988168 instance=ExtResource("health")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0, 21)
 
-[node name="StagingHealth" parent="Supplies" instance=ExtResource("health")]
-position = Vector3(-7, 0, 21)
+[node name="StagingGrenades" parent="Supplies" unique_id=353941992 instance=ExtResource("grenades")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0, 15)
 
-[node name="StagingGrenades" parent="Supplies" instance=ExtResource("grenades")]
-position = Vector3(-7, 0, 15)
+[node name="ForwardAmmo" parent="Supplies" unique_id=1517550957 instance=ExtResource("ammo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -35)
 
-[node name="ForwardAmmo" parent="Supplies" instance=ExtResource("ammo")]
-position = Vector3(6, 0, -35)
+[node name="ForwardHealth" parent="Supplies" unique_id=996450866 instance=ExtResource("health")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0, -35)
 
-[node name="ForwardHealth" parent="Supplies" instance=ExtResource("health")]
-position = Vector3(7, 0, -35)
+[node name="ForwardGrenades" parent="Supplies" unique_id=1101169160 instance=ExtResource("grenades")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -35)
 
-[node name="ForwardGrenades" parent="Supplies" instance=ExtResource("grenades")]
-position = Vector3(8, 0, -35)
+[node name="BunkerHealth" parent="Supplies" unique_id=1465561634 instance=ExtResource("health")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -61)
 
-[node name="BunkerHealth" parent="Supplies" instance=ExtResource("health")]
-position = Vector3(6, 0, -61)
+[node name="BunkerAmmo" parent="Supplies" unique_id=2066000134 instance=ExtResource("ammo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0, -61)
 
-[node name="BunkerAmmo" parent="Supplies" instance=ExtResource("ammo")]
-position = Vector3(7, 0, -61)
+[node name="Interactions" type="Node3D" parent="." unique_id=564375396]
 
-[node name="Interactions" type="Node3D" parent="."]
-
-[node name="AlliedStation" parent="Interactions" instance=ExtResource("interaction")]
-position = Vector3(-2, 0, 23)
+[node name="AlliedStation" parent="Interactions" unique_id=297266867 instance=ExtResource("interaction")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 23)
 action = &"allied"
 prompt = "E: Allied loadout / restart"
-[node name="Label" parent="Interactions/AlliedStation" index="2"]
-text = "E: Allied loadout / restart"
 
-[node name="GermanStation" parent="Interactions" instance=ExtResource("interaction")]
-position = Vector3(2, 0, 23)
+[node name="GermanStation" parent="Interactions" unique_id=1024432137 instance=ExtResource("interaction")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 23)
 action = &"german"
 prompt = "E: German loadout / restart"
-[node name="Label" parent="Interactions/GermanStation" index="2"]
-text = "E: German loadout / restart"
 
-[node name="Documents" parent="Interactions" instance=ExtResource("interaction")]
-position = Vector3(-5, 0, -74)
+[node name="Documents" parent="Interactions" unique_id=651648991 instance=ExtResource("interaction")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, -74)
 action = &"documents"
 prompt = "E: recover operations documents"
-[node name="Label" parent="Interactions/Documents" index="2"]
-text = "E: recover operations documents"
 
-[node name="Extraction" type="Area3D" parent="."]
-position = Vector3(0, 1.5, -85)
+[node name="Extraction" type="Area3D" parent="." unique_id=1444901390]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -85)
 collision_layer = 0
 collision_mask = 2
-[node name="Collision" type="CollisionShape3D" parent="Extraction"]
+
+[node name="Collision" type="CollisionShape3D" parent="Extraction" unique_id=881360647]
 shape = SubResource("ExitShape")
-[node name="MissionUI" type="CanvasLayer" parent="."]
-[node name="Status" type="Label" parent="MissionUI"]
+
+[node name="MissionUI" type="CanvasLayer" parent="." unique_id=1731621508]
+
+[node name="Status" type="Label" parent="MissionUI" unique_id=210481001]
 offset_left = 24.0
 offset_top = 58.0
 offset_right = 1160.0
 offset_bottom = 145.0
-mouse_filter = 2
-theme_override_font_sizes/font_size = 18
 theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 18

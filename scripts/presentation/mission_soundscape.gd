@@ -39,7 +39,7 @@ func _ready() -> void:
 	if AudioServer.get_driver_name() == "Dummy":
 		set_process(false)
 		return
-	wind = _loop("wind", -20.0)
+	wind = _loop("wind", -28.0)
 	canopy = _loop("canopy", -28.0)
 	canopy.play(4.1)
 	gust = _loop("gust", -28.0)
@@ -92,7 +92,7 @@ func _process(delta: float) -> void:
 		signals.pitch_scale = randf_range(0.94, 1.05)
 		signals.play()
 	for tail: AudioStreamPlayer3D in get_tree().get_nodes_in_group(&"distant_combat_audio"):
-		tail.volume_db = move_toward(tail.volume_db, -34.0 if _inside else -22.0, delta * 12)
+		tail.volume_db = move_toward(tail.volume_db, -12.0 if _inside else -4.0, delta * 12)
 		if not distant_combat_enabled:
 			tail.stop()
 			tail.queue_free()
@@ -107,8 +107,8 @@ func _process(delta: float) -> void:
 		audio.add_to_group(&"distant_combat_audio")
 		audio.global_position = distant_position + Vector3(randf_range(-70, 70), 0, randf_range(-50, 50))
 		audio.stream = load("res://assets/audio/designed/distant_artillery.res")
-		audio.volume_db = -30 if _inside else -22
-		audio.unit_size = 70
+		audio.volume_db = -12.0 if _inside else -4.0
+		audio.unit_size = 320
 		audio.max_distance = 650
 		audio.pitch_scale = randf_range(0.78, 1.05)
 		audio.tree_exiting.connect(func() -> void:

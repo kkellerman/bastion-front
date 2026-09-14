@@ -1,10 +1,10 @@
-[gd_scene format=4]
+[gd_scene format=4 uid="uid://d03in4pckwqo3"]
 
-[ext_resource type="Shader" path="res://shaders/worn_surface.gdshader" id="3_4sili"]
-[ext_resource type="Script" path="res://scripts/weapons/weapon_base.gd" id="base"]
+[ext_resource type="Shader" uid="uid://dnjb84oy4iiph" path="res://shaders/worn_surface.gdshader" id="3_4sili"]
+[ext_resource type="Script" uid="uid://dv802g3xlj4xw" path="res://scripts/weapons/weapon_base.gd" id="base"]
 [ext_resource type="Resource" path="res://resources/weapons/m1919.tres" id="data"]
-[ext_resource type="Script" path="res://scripts/weapons/hitscan_shot.gd" id="hitscan"]
-[ext_resource type="Script" path="res://scripts/weapons/mounted_weapon.gd" id="script"]
+[ext_resource type="Script" uid="uid://boycrumguavf6" path="res://scripts/weapons/hitscan_shot.gd" id="hitscan"]
+[ext_resource type="Script" uid="uid://c30ulqmh3o76e" path="res://scripts/weapons/mounted_weapon.gd" id="script"]
 
 [sub_resource type="BoxShape3D" id="BaseShape"]
 size = Vector3(0.6, 1, 0.5)

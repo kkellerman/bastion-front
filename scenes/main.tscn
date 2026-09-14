@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene format=3 uid="uid://keue1u8f7vwo"]
 
 [ext_resource type="PackedScene" path="res://scenes/missions/forest_sandbox.tscn" id="1_world"]
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="2_player"]
@@ -6,22 +6,21 @@
 [ext_resource type="PackedScene" path="res://scenes/characters/infantry.tscn" id="4_enemy"]
 [ext_resource type="NavigationMesh" path="res://resources/missions/forest_navigation.tres" id="5_navigation"]
 
-[node name="Main" type="Node3D"]
+[node name="Main" type="Node3D" unique_id=1651788243]
 
-[node name="ForestSandbox" parent="." instance=ExtResource("1_world")]
+[node name="ForestSandbox" parent="." unique_id=1789187274 instance=ExtResource("1_world")]
 
-[node name="Player" parent="." instance=ExtResource("2_player")]
-position = Vector3(0, 0.05, 12)
+[node name="Player" parent="." unique_id=1702979501 instance=ExtResource("2_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 12)
 
-[node name="TestTarget" parent="." instance=ExtResource("3_target")]
-position = Vector3(0, 0.02, -6)
+[node name="TestTarget" parent="." unique_id=1990356010 instance=ExtResource("3_target")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, -6)
 
-[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="." unique_id=1740217216]
 navigation_mesh = ExtResource("5_navigation")
 
-[node name="GermanInfantry" parent="." node_paths=PackedStringArray("target", "target_aim") instance=ExtResource("4_enemy")]
-position = Vector3(3, 0.05, -20)
-rotation = Vector3(0, 3.1415927, 0)
+[node name="GermanInfantry" parent="." unique_id=1177328842 node_paths=PackedStringArray("target", "target_aim") instance=ExtResource("4_enemy")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 3, 0.05, -20)
 target = NodePath("../Player")
 target_aim = NodePath("../Player/Head")
 patrol_points = Array[Vector3]([Vector3(3, 0, -20), Vector3(3, 0, -24)])
