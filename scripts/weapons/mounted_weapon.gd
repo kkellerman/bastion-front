@@ -31,7 +31,7 @@ func _ready() -> void:
 	flash.hide()
 	flash = muzzle_effect.flash
 	# The child is configured in the scene; the exported resource also labels the station.
-	$Label.text = data.display_name + "\nE: mount / dismount"
+	$Label.text = data.display_name + "\nF: mount / dismount"
 	_npc_data = data.duplicate() as WeaponData
 	_npc_data.damage = 8.0
 	$InteractionArea.set_meta(&"interactable", self)
@@ -41,7 +41,7 @@ func _ready() -> void:
 func get_prompt() -> String:
 	if has_defender():
 		return "Clear the gunner before mounting " + data.display_name
-	return "E: mount " + data.display_name
+	return "F: mount " + data.display_name
 
 
 func interact(player: CharacterBody3D) -> void:

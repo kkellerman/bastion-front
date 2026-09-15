@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/gameplay/first_person_player.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/components/mouse_look.gd" id="2_look"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/player_vitals.tscn" id="6_vitals"]
 [ext_resource type="Script" path="res://scripts/gameplay/player_interaction.gd" id="7_interaction"]
 [ext_resource type="Script" path="res://scripts/gameplay/footsteps.gd" id="8_steps"]
+[ext_resource type="Script" path="res://scripts/components/player_lean.gd" id="9_lean"]
 
 [sub_resource type="CapsuleShape3D" id="Capsule_body"]
 resource_local_to_scene = true
@@ -55,6 +56,11 @@ enabled = false
 
 [node name="MouseLook" type="Node" parent="." node_paths=PackedStringArray("player", "head")]
 script = ExtResource("2_look")
+player = NodePath("..")
+head = NodePath("../Head")
+
+[node name="PlayerLean" type="Node" parent="." node_paths=PackedStringArray("player", "head")]
+script = ExtResource("9_lean")
 player = NodePath("..")
 head = NodePath("../Head")
 

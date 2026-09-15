@@ -128,17 +128,17 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0, -61)
 [node name="AlliedStation" parent="Interactions" unique_id=297266867 instance=ExtResource("interaction")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 23)
 action = &"allied"
-prompt = "E: Allied loadout / restart"
+prompt = "F: Allied loadout / restart"
 
 [node name="GermanStation" parent="Interactions" unique_id=1024432137 instance=ExtResource("interaction")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 23)
 action = &"german"
-prompt = "E: German loadout / restart"
+prompt = "F: German loadout / restart"
 
 [node name="Documents" parent="Interactions" unique_id=651648991 instance=ExtResource("interaction")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, -74)
 action = &"documents"
-prompt = "E: recover operations documents"
+prompt = "F: recover operations documents"
 
 [node name="Extraction" type="Area3D" parent="." unique_id=1444901390]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -85)

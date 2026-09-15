@@ -109,7 +109,8 @@ func _select(index: int) -> void:
 			get_node("/root/PrototypeSession").faction_id = &"allied" if index == 0 else &"german"
 			get_tree().change_scene_to_file("res://scenes/missions/forest_command_post.tscn")
 		2:
-			panel.text = "FIELD MANUAL\n\nWASD move · Mouse look · Shift sprint · Ctrl crouch\nSpace jump · LMB fire · RMB aim · R reload\n1–4 / wheel switch · G grenade · E interact / mount\nEsc release mouse · Enter restart after death\n\nF3 new operation in staging before combat\nRecover documents. Reach the rear exit."
+			panel.text = "FIELD MANUAL\n\nWASD move · Mouse look · Shift sprint · Ctrl crouch
+Q/E lean left/right\nSpace jump · LMB fire · RMB aim · R reload\n1–4 / wheel switch · G grenade · F interact / mount\nEsc release mouse · Enter restart after death\n\nF3 new operation in staging before combat\nRecover documents. Reach the rear exit."
 		3:
 			panel.text = "ASSET CREDITS\n\nCC0 PBR materials: Poly Haven\nCC0 soldier base: nisu / OpenGameArt\n\nOriginal equipment, rig, map and effects: Bastion Front\nVoice recordings remain unfilled / silent\nFull source and license records: ASSET_ATTRIBUTION.md"
 		4: soundscape.quit_game()
