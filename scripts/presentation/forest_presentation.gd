@@ -101,7 +101,7 @@ func _trees() -> void:
 			# A hard swap at one distance pops every tree crossing it as the player
 			# walks; a dither margin spreads the change over 6m instead.
 			part.visibility_range_end_margin = 6.0
-			part.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
+			GraphicsProfile.mark_fade(part, GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF)
 			var distant: MeshInstance3D = MeshInstance3D.new()
 			distant.mesh = load("res://assets/environments/germany/forest/tree_%d_%s_lod.res" % [variant, part_name])
 			tree.add_child(distant)
@@ -110,7 +110,7 @@ func _trees() -> void:
 			distant.visibility_range_begin_margin = 6.0
 			distant.visibility_range_end = 85.0
 			distant.visibility_range_end_margin = 6.0
-			distant.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_DEPENDENCIES
+			GraphicsProfile.mark_fade(distant, GeometryInstance3D.VISIBILITY_RANGE_FADE_DEPENDENCIES)
 			distant.add_to_group(&"quality_tree_far")
 			distant.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			part.lod_bias = 0.65
@@ -157,7 +157,7 @@ func _undergrowth() -> void:
 				if kind != "rock": batch.add_to_group(&"quality_vegetation")
 				batch.visibility_range_end = 45.0 if kind != "rock" else 65.0
 				batch.visibility_range_end_margin = 5.0
-				batch.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
+				GraphicsProfile.mark_fade(batch, GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF)
 				batch.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	# Fallen timber and roots stay beyond the clear combat lanes.
 	for i: int in range(24):

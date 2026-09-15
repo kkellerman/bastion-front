@@ -21,6 +21,24 @@ const PROBES: Array[Dictionary] = [
 	{"label": "Medium (all deltas)", "patch": {"scale": 1.0, "ssao": true, "shadow_distance": 45.0, "shadow_size": 2048, "density": 0.7, "plants": 36.0, "trees": 75.0, "mip_bias": 0.0}}
 ]
 
+## Live A/B for the LOD cross-fade. Dither fading costs fill rate during a
+## transition, so on integrated parts it is worth measuring rather than assuming.
+static var fades_enabled: bool = true
+
+static func set_fades(scene: Node, enabled: bool) -> void:
+	fades_enabled = enabled
+	if scene != null: _fade_node(scene, enabled)
+
+static func _fade_node(node: Node, enabled: bool) -> void:
+	if node is GeometryInstance3D and node.has_meta(&"fade_mode"):
+		node.visibility_range_fade_mode = int(node.get_meta(&"fade_mode")) if enabled else GeometryInstance3D.VISIBILITY_RANGE_FADE_DISABLED
+	for child: Node in node.get_children(): _fade_node(child, enabled)
+
+## Records the intended mode once so the toggle can restore it later.
+static func mark_fade(node: GeometryInstance3D, mode: int) -> void:
+	node.set_meta(&"fade_mode", mode)
+	node.visibility_range_fade_mode = mode if fades_enabled else GeometryInstance3D.VISIBILITY_RANGE_FADE_DISABLED
+
 static func audit() -> Dictionary:
 	return {"renderer": RenderingServer.get_current_rendering_method(), "api": RenderingServer.get_video_adapter_api_version(), "adapter": RenderingServer.get_video_adapter_name(), "type": RenderingServer.get_video_adapter_type(), "headless": DisplayServer.get_name() == "headless", "graphics_memory_budget": "unknown (Godot exposes usage, not available VRAM)"}
 
@@ -64,11 +82,11 @@ static func _apply_node(node: Node, preset: Dictionary, forward: bool) -> void:
 		node.multimesh.visible_instance_count = int(int(node.get_meta(&"full_instance_count")) * float(preset.density))
 		node.visibility_range_end = preset.plants
 		node.visibility_range_end_margin = 5.0
-		node.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
+		mark_fade(node, GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF)
 	if node.is_in_group(&"quality_tree_far") and node is GeometryInstance3D:
 		node.visibility_range_end = preset.trees
 		node.visibility_range_end_margin = 6.0
-		node.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_DEPENDENCIES
+		mark_fade(node, GeometryInstance3D.VISIBILITY_RANGE_FADE_DEPENDENCIES)
 	if node.is_in_group(&"quality_horizon") and node is MultiMeshInstance3D:
 		# Keep near silhouettes on every tier; distant chunks can disappear into haze.
 		node.visibility_range_end = 105.0 if preset.name == "Low" else 140.0

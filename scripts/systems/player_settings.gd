@@ -46,6 +46,14 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.physical_keycode == KEY_F10:
 		toggle()
 		get_viewport().set_input_as_handled()
+	if event is InputEventKey and event.pressed and not event.echo and event.physical_keycode == KEY_F6:
+		# Live A/B: the same firefight with and without LOD cross-fading.
+		GraphicsProfile.set_fades(get_tree().current_scene, not GraphicsProfile.fades_enabled)
+		var meter_node: Node = get_tree().root.get_node_or_null("FrameMeter")
+		if meter_node != null:
+			meter_node.reset()
+			meter_node.mark("LOD fades -> %s" % ("ON" if GraphicsProfile.fades_enabled else "OFF"))
+		get_viewport().set_input_as_handled()
 	if event is InputEventKey and event.pressed and not event.echo and event.physical_keycode == KEY_F8:
 		# Shift steps back so a suspicious reading can be re-checked without a full lap.
 		probe = wrapi(probe + (-1 if event.shift_pressed else 1), -1, GraphicsProfile.PROBES.size())

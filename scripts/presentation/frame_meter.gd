@@ -136,7 +136,7 @@ func _write_header() -> void:
 	_log.store_line("=== RUN  %s ===" % Time.get_datetime_string_from_system())
 	_log.store_line("adapter: %s  ·  budget %.1f ms  ·  spike threshold %.1f ms" % [RenderingServer.get_video_adapter_name(), _budget_ms, _budget_ms * SPIKE_FACTOR])
 	_log.store_line("vsync %s  ·  screen %.0f Hz  ·  max_fps %s" % [VSYNC_NAMES[clampi(DisplayServer.window_get_vsync_mode(), 0, 3)], DisplayServer.screen_get_refresh_rate(), "uncapped" if Engine.max_fps == 0 else str(Engine.max_fps)])
-	_log.store_line("quality: %s" % _tier())
+	_log.store_line("quality: %s  ·  LOD fades %s" % [_tier(), "on" if GraphicsProfile.fades_enabled else "off"])
 	_log.store_line("")
 	_log.flush()
 
