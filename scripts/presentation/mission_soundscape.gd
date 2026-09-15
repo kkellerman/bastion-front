@@ -16,6 +16,11 @@ var radio: AudioStreamPlayer3D
 var signals: AudioStreamPlayer3D
 var _radio_time: float = 3.0
 var _age: float = 0.0
+var comm_room_warning: AudioStreamPlayer3D
+var _comm_room_warning_played: bool = false
+## Same spot as the radio_bed source: this is the communications desk.
+const COMM_ROOM_POSITION: Vector3 = Vector3(6, 1.3, -64)
+const COMM_ROOM_TRIGGER_RADIUS: float = 6.0
 
 func _exit_tree() -> void:
 	stop_audio()
@@ -48,6 +53,17 @@ func _ready() -> void:
 	radio = _radio_source("radio_bed", -28)
 	signals = _radio_source("radio_signal", -27)
 	radio.play()
+	comm_room_warning = AudioStreamPlayer3D.new()
+	add_child(comm_room_warning)
+	comm_room_warning.add_to_group(&"communications_audio")
+	comm_room_warning.global_position = COMM_ROOM_POSITION
+	comm_room_warning.bus = &"Communications"
+	# A real recording dropped in for review; unlike the *.res cues this loads
+	# a raw .wav directly, since it has no synthesized-prototype fallback.
+	comm_room_warning.stream = load("res://assets/audio/ambience/186890__beat24__warning_message_german.wav")
+	comm_room_warning.volume_db = -6.0
+	comm_room_warning.unit_size = 4
+	comm_room_warning.max_distance = 20
 	var birds: AudioStreamPlayer3D = AudioStreamPlayer3D.new()
 	add_child(birds)
 	birds.position = Vector3(15, 8, 0)
@@ -79,6 +95,9 @@ func _process(delta: float) -> void:
 		return
 	_age += delta
 	_inside = interior_bounds.has_point(listener.global_position)
+	if not _comm_room_warning_played and listener.global_position.distance_to(COMM_ROOM_POSITION) <= COMM_ROOM_TRIGGER_RADIUS:
+		_comm_room_warning_played = true
+		comm_room_warning.play()
 	wind.volume_db = move_toward(wind.volume_db, -35.0 if _inside else -20.0, delta * 15)
 	canopy.volume_db = move_toward(canopy.volume_db, (-43.0 if _inside else -29.0) + sin(_age * 0.17) * 2, delta * 8)
 	gust.volume_db = move_toward(gust.volume_db, (-43.0 if _inside else -29.0) - sin(_age * 0.17) * 2, delta * 8)

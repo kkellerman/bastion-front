@@ -25,11 +25,15 @@ static func from_body(collider: Object) -> DamageReceiver:
 	return collider.get_meta(&"damage_receiver") as DamageReceiver
 
 
-func take_damage(amount: float, source: CollisionObject3D = null) -> void:
+func take_damage(amount: float, source: CollisionObject3D = null, weapon_class: StringName = &"") -> void:
 	if source != body and not FactionData.hostile(source, body):
 		return
-	if is_instance_valid(health):
-		health.take_damage(amount * damage_multiplier)
+	if not is_instance_valid(health): return
+	# Recorded before the damage lands, so a killing blow can push the ragdoll
+	# the way the shot was travelling instead of dropping it straight down.
+	if is_instance_valid(source) and body.has_method("note_hit"):
+		body.note_hit(source.global_position, amount * damage_multiplier, weapon_class)
+	health.take_damage(amount * damage_multiplier)
 
 
 func set_faction(data: FactionData) -> void:

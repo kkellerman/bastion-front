@@ -68,7 +68,11 @@ func play_shot(data: WeaponData) -> void:
 	var rig: Node = get_parent()
 	if "shooter" in rig: muzzle_effect.trigger(data, rig.shooter)
 	_flash_remaining = 0.035
-	_kick = minf(_kick + data.recoil, 12.0)
+	# Extra kick while leaning, for the same reason the cone widens.
+	var lean: float = 0.0
+	var lean_node: Node = get_tree().current_scene.get_node_or_null("Player/PlayerLean") if get_tree().current_scene != null else null
+	if lean_node != null: lean = lean_node.accuracy_penalty()
+	_kick = minf(_kick + data.recoil * (1.0 + lean * 0.5), 12.0)
 	_roll_kick = randf_range(-0.7, 0.7)
 	flash.rotation.z = randf_range(0, TAU)
 

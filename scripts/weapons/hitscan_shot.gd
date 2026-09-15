@@ -3,11 +3,21 @@ extends Node
 
 signal impact(position: Vector3, normal: Vector3)
 
+## Spread multiplier added at full standing lean: 1.6x cone, so a leaning shot
+## is noticeably looser without being useless.
+const LEAN_SPREAD: float = 0.6
+
 
 func fire(data: WeaponData, camera: Node3D, muzzle: Node3D, shooter: CollisionObject3D, aiming: bool) -> void:
 	if not get_node("/root/CombatAudio").can_emit(shooter): return
 	var direction: Vector3 = -camera.global_basis.z
-	var spread_radians: float = deg_to_rad(data.spread * (0.25 if aiming else 1.0))
+	# Leaning puts the weapon off the shoulder line, so it costs accuracy. The
+	# penalty is worst standing and much smaller crouched, which keeps the lean
+	# useful for peeking without turning it into a free damage bonus.
+	var lean: float = 0.0
+	var lean_node: Node = shooter.get_node_or_null("PlayerLean")
+	if lean_node != null: lean = lean_node.accuracy_penalty()
+	var spread_radians: float = deg_to_rad(data.spread * (0.25 if aiming else 1.0) * (1.0 + lean * LEAN_SPREAD))
 	var radius: float = sqrt(randf()) * tan(spread_radians)
 	var angle: float = randf() * TAU
 	direction = (direction + camera.global_basis.x * cos(angle) * radius + camera.global_basis.y * sin(angle) * radius).normalized()
@@ -26,7 +36,7 @@ func fire(data: WeaponData, camera: Node3D, muzzle: Node3D, shooter: CollisionOb
 		return
 	var receiver: DamageReceiver = DamageReceiver.from_body(hit["collider"])
 	if receiver != null:
-		receiver.take_damage(data.damage, shooter)
+		receiver.take_damage(data.damage, shooter, data.weapon_class)
 	impact.emit(hit["position"], hit["normal"])
 	var surface: StringName = hit["collider"].get_meta(&"surface", &"dirt")
 	if receiver == null:

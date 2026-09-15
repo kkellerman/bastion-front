@@ -1,7 +1,7 @@
 extends StaticBody3D
 signal activated(action: StringName, player: CharacterBody3D)
 @export var action: StringName
-@export var prompt: String = "E: interact"
+@export var prompt: String = "F: interact"
 
 
 func get_prompt() -> String:
