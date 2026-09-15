@@ -46,6 +46,26 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.physical_keycode == KEY_F10:
 		toggle()
 		get_viewport().set_input_as_handled()
+	if event is InputEventKey and event.pressed and not event.echo and event.physical_keycode == KEY_F5:
+		# Kill the nearest living enemy so ragdoll poses can be judged on demand
+		# instead of waiting for a firefight to produce one.
+		var scene: Node = get_tree().current_scene
+		var camera: Camera3D = get_viewport().get_camera_3d()
+		var group: Node = null if scene == null else scene.find_child("Enemies", true, false)
+		if group != null and camera != null:
+			var nearest: Node = null
+			var best: float = INF
+			for candidate: Node in group.get_children():
+				if not candidate is Node3D or candidate.health.current_health <= 0.0: continue
+				var span: float = camera.global_position.distance_to(candidate.global_position)
+				if span < best:
+					best = span
+					nearest = candidate
+			if nearest != null:
+				# Shove from the camera so the body falls away from the player.
+				nearest.note_hit(camera.global_position, 60.0, &"rifle")
+				nearest.health.take_damage(9999.0)
+		get_viewport().set_input_as_handled()
 	if event is InputEventKey and event.pressed and not event.echo and event.physical_keycode == KEY_F6:
 		# Live A/B: the same firefight with and without LOD cross-fading.
 		GraphicsProfile.set_fades(get_tree().current_scene, not GraphicsProfile.fades_enabled)

@@ -67,7 +67,7 @@ func detonate() -> void:
 		var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(global_position, point, 7, [get_rid()])
 		var obstruction: Dictionary = get_world_3d().direct_space_state.intersect_ray(query)
 		if obstruction.is_empty() or obstruction["collider"] == receiver.body:
-			receiver.take_damage(data.damage * (1.0 - distance / data.blast_radius), source)
+			receiver.take_damage(data.damage * (1.0 - distance / data.blast_radius), source, data.weapon_class)
 	get_node("/root/CombatAudio").play(&"explosion", global_position, source)
 	var ground: Dictionary = get_world_3d().direct_space_state.intersect_ray(PhysicsRayQueryParameters3D.create(global_position + Vector3.UP * 0.1, global_position - Vector3.UP * 2, 1))
 	var surface: StringName = &"dirt" if ground.is_empty() else ground.collider.get_meta(&"surface", &"dirt")

@@ -107,6 +107,29 @@ func _on_health_changed(current: float, _maximum: float) -> void:
 	_previous_health = current
 
 
+## Direction and force of the blow that killed this soldier, for the ragdoll.
+var death_impulse: Vector3 = Vector3.ZERO
+
+## How hard each weapon class throws a body. A rifle round drops a man where he
+## stands; a bazooka does not, and a sustained MG burst walks him backwards.
+const CLASS_FORCE: Dictionary[StringName, float] = {
+	&"launcher": 5.0,
+	&"grenade": 4.0,
+	&"mounted": 2.2,
+	&"rifle": 1.0,
+	&"smg": 0.9,
+	&"pistol": 0.8,
+}
+
+func note_hit(from: Vector3, amount: float, weapon_class: StringName = &"") -> void:
+	var away: Vector3 = (global_position - from)
+	away.y = 0.0
+	if away.length_squared() < 0.0001: away = -global_basis.z
+	var force: float = float(CLASS_FORCE.get(weapon_class, 1.0))
+	# Explosives lift as well as shove; bullets mostly shove.
+	var lift: float = 2.6 if weapon_class in [&"launcher", &"grenade"] else 0.8
+	death_impulse = away.normalized() * clampf(amount * 0.035, 0.6, 3.5) * force + Vector3.UP * lift
+
 func _die() -> void:
 	_set_state(State.DEATH)
 	combat.disable()
@@ -114,8 +137,7 @@ func _die() -> void:
 	set_deferred("collision_layer", 0)
 	set_deferred("collision_mask", 0)
 	$BodyCollision.set_deferred("disabled", true)
-	$Visuals.rotation.z = PI * 0.5
-	$Visuals.position.y = 0.3
+	# Pose is the ragdoll's job now; the scripted flop only runs as its fallback.
 	$Eyes.visible = false
 	set_physics_process(false)
 

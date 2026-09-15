@@ -6,6 +6,10 @@ var _lock: float = 0.0
 var _dead: bool = false
 var stride: SkeletonModifier3D
 var motion_state: StringName = &"idle"
+## How far into the 1s death animation physics takes over. Late enough that the
+## authored collapse reads, early enough that the body still falls, rather than
+## snapping, onto whatever is beneath it.
+const HANDOVER_DELAY: float = 0.55
 
 func _ready() -> void:
 	player = model.get_node("AnimationPlayer")
@@ -35,7 +39,7 @@ func _process(delta: float) -> void:
 	player.speed_scale = clampf(stride.speed / 2.0, 0.5, 1.8) if clip in ["walk", "run"] else 1.0
 
 func _play(clip: String, duration: float) -> void:
-	if _dead: return
+	if _dead and clip != "death": return
 	if clip != "death" and not get_node("/root/CombatAudio").can_emit(actor): return
 	_lock = duration
 	player.speed_scale = 1
@@ -44,12 +48,42 @@ func _play(clip: String, duration: float) -> void:
 func _state(state: String) -> void:
 	if state == "HURT": _play("hurt", 0.3)
 	if state == "DEATH":
-		_play("death", 0.7)
 		_dead = true
 		motion_state = &"death"
-		# The gameplay death signal disables collision immediately; the rig settles visually.
+		# The authored death animation is an anatomically correct collapse, which
+		# is the part physics is worst at inventing. Play it, then hand over to
+		# the ragdoll only for where the body finally comes to rest: that keeps
+		# the fall readable and lets terrain and impact still matter.
+		_play("death", 1.0)
+		if RagdollBudget.allows():
+			_hand_over.call_deferred()
+			return
 		var visuals: Node3D = actor.get_node("Visuals")
 		_settle.call_deferred(visuals)
+
+func _hand_over() -> void:
+	## Let the death animation carry the body most of the way down, then switch
+	## to physics so it settles against whatever it actually landed on.
+	if not is_instance_valid(actor): return
+	await actor.get_tree().create_timer(HANDOVER_DELAY).timeout
+	if not is_instance_valid(actor) or not is_instance_valid(model): return
+	if not RagdollBudget.allows(): return
+	_ragdoll()
+
+func _ragdoll() -> void:
+	## Physics owns the pose from here, so every animation and skeleton modifier
+	## must stop first or they fight the simulation for the same bones.
+	player.stop()
+	var skeleton: Skeleton3D = model.get_node("Skeleton3D")
+	# Every modifier runs after the simulator and would overwrite the simulated
+	# pose each frame, leaving the mesh standing while the bodies fall. The
+	# gunner pose is as guilty as the stride, so disable them all rather than
+	# naming one.
+	for child: Node in skeleton.get_children():
+		if child is SkeletonModifier3D: child.active = false
+	var simulator: PhysicalBoneSimulator3D = Ragdoll.build(skeleton)
+	RagdollBudget.register(simulator, actor)
+	Ragdoll.start(simulator, actor.death_impulse)
 
 func _settle(visuals: Node3D) -> void:
 	visuals.rotation = Vector3.ZERO
