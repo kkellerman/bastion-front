@@ -69,10 +69,17 @@ func _run() -> void:
 		settings.apply()
 		_check(AudioServer.is_bus_mute(AudioServer.get_bus_index("DistantCombat")),"Ambience can be disabled independently")
 	await _voices(mission,settings)
-	_check(GraphicsProfile.recommend({"renderer":"forward_plus","type":RenderingDevice.DEVICE_TYPE_INTEGRATED_GPU}) == 0,"Integrated capability selects conservative Low")
-	_check(GraphicsProfile.recommend({"renderer":"forward_plus","type":RenderingDevice.DEVICE_TYPE_DISCRETE_GPU}) == 1,"Discrete type alone never selects High")
+	_check(GraphicsProfile.recommend({"renderer":"forward_plus","type":RenderingDevice.DEVICE_TYPE_INTEGRATED_GPU}) == 1,"Integrated capability selects Medium-Low")
+	_check(GraphicsProfile.recommend({"renderer":"forward_plus","type":RenderingDevice.DEVICE_TYPE_DISCRETE_GPU}) == 2,"Discrete capability selects Medium")
 	_check(GraphicsProfile.recommend({"renderer":"gl_compatibility","type":RenderingDevice.DEVICE_TYPE_DISCRETE_GPU}) == 0,"Fallback renderer selects Low")
-	for choice: int in [1,2,3,0]:
+	var low: Dictionary = GraphicsProfile.PRESETS[0]
+	var medium_low: Dictionary = GraphicsProfile.PRESETS[1]
+	var medium: Dictionary = GraphicsProfile.PRESETS[2]
+	_check(low.scale < medium_low.scale and medium_low.scale < medium.scale,"Medium-Low render scale sits between Low and Medium")
+	_check(low.density < medium_low.density and medium_low.density < medium.density,"Medium-Low vegetation load sits between Low and Medium")
+	_check(not medium_low.ssao and medium.ssao and medium_low.shadow_size < medium.shadow_size,"Medium-Low omits costly Medium lighting features")
+	_check(settings.quality.item_count == GraphicsProfile.PRESETS.size() + 1 and settings.quality.get_item_text(2) == "Graphics: Medium-Low","Settings menu exposes Medium-Low in quality order")
+	for choice: int in [1,2,3,4,0]:
 		settings.values.graphics_preset = choice
 		settings.apply()
 		var p: Dictionary = GraphicsProfile.PRESETS[settings.applied_preset]
@@ -83,11 +90,11 @@ func _run() -> void:
 		var env: Environment = mission.get_node("Environment/Environment").environment
 		_check(env.volumetric_fog_enabled == p.fog and env.ssao_enabled == p.ssao and env.ssil_enabled == p.ssil and env.ssr_enabled == p.reflections,"Environment features applied " + p.name)
 		_check(int(root.msaa_3d) == p.msaa and (root.screen_space_aa == Viewport.SCREEN_SPACE_AA_FXAA) == p.fxaa and is_equal_approx(root.texture_mipmap_bias,p.mip_bias),"Antialiasing and texture sampling applied " + p.name)
-	settings.values.graphics_preset = 2
+	settings.values.graphics_preset = 3
 	settings.save()
 	var config: ConfigFile = ConfigFile.new()
 	config.load("user://settings.cfg")
-	_check(config.get_value("settings","graphics_preset") == 2,"Manual Medium override persists on disk")
+	_check(config.get_value("settings","graphics_preset") == 3,"Manual Medium override persists on disk")
 	settings.auto_detect()
 	_check(settings.values.graphics_preset == 0,"Auto-detect resets manual choice explicitly")
 	settings.values = saved

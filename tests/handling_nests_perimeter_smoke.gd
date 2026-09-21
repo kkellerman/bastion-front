@@ -6,7 +6,7 @@ func _initialize() -> void: _run.call_deferred()
 
 func _run() -> void:
 	captures = "--capture" in OS.get_cmdline_user_args() and DisplayServer.get_name() != "headless"
-	root.get_node("PlayerSettings").values.graphics_preset = 3
+	root.get_node("PlayerSettings").values.graphics_preset = 4
 	for faction: StringName in [&"allied", &"german"]:
 		root.get_node("PrototypeSession").faction_id = faction
 		root.get_node("PrototypeSession").checkpoint.clear()

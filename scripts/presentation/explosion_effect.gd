@@ -8,8 +8,8 @@ func _ready() -> void:
 	add_to_group(&"explosion_effects")
 
 func start() -> void:
-	var low: bool = get_node("/root/PlayerSettings").applied_preset == 0
-	var count: int = 12 if low else 22
+	var tier: int = get_node("/root/PlayerSettings").applied_preset
+	var count: int = 12 if tier == 0 else 17 if tier == 1 else 22
 	var dust: Color = Color(0.28, 0.23, 0.16, 0.6) if surface in [&"dirt", &"wood"] else Color(0.37, 0.36, 0.33, 0.55)
 	_cloud(5, 0.22, 0.7, 3.5, Color(1, 0.48, 0.1, 0.9), true)
 	_cloud(count, 1.4, 1.25, 4.0, dust)

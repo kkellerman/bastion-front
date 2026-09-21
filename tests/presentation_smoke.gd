@@ -35,7 +35,7 @@ func _run() -> void:
 	_check(mission.has_node("Player"), "Allied menu entry launches the playable mission")
 	var env: Node3D = mission.get_node("Environment") as Node3D
 	# SSAO is a High feature; Auto is deliberately conservative now.
-	root.get_node("PlayerSettings").values.graphics_preset = 3
+	root.get_node("PlayerSettings").values.graphics_preset = 4
 	root.get_node("PlayerSettings").apply()
 	_check(not env.get_node("Forest/Conifer1/LowerCanopy").visible, "Original cone presentation is replaced")
 	_check(env.get_node("Presentation").get_child_count() > 100, "Forest and command-post dressing is present")

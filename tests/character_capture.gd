@@ -4,7 +4,7 @@ func _initialize() -> void:
 	_run.call_deferred()
 
 func _run() -> void:
-	root.get_node("PlayerSettings").values.graphics_preset = 3
+	root.get_node("PlayerSettings").values.graphics_preset = 4
 	var mission: Node3D = load("res://scenes/missions/forest_command_post.tscn").instantiate()
 	root.add_child(mission)
 	current_scene = mission

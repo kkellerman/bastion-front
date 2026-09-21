@@ -33,7 +33,7 @@ func _run() -> void:
 				"east_boundary": [Vector3(12,0.05,-30),Vector3(27,3,-38)],
 				"start_boundary": [Vector3(0,0.05,22),Vector3(0,3,35)],
 				"west_boundary": [Vector3(-18,0.05,11),Vector3(-28,3,-5)]}
-		for preset: int in [0, 3]:
+		for preset: int in [0, 4]:
 			root.get_node("PlayerSettings").values.graphics_preset = preset
 			root.get_node("PlayerSettings").apply()
 			for key: String in views:

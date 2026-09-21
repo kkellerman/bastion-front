@@ -9,7 +9,7 @@ func _run() -> void:
 	var preset_name: String = "auto"
 	for argument: String in OS.get_cmdline_user_args():
 		if argument.begins_with("--preset="): preset_name = argument.trim_prefix("--preset=")
-	settings.values.graphics_preset = {"auto":0,"low":1,"medium":2,"high":3}.get(preset_name,0)
+	settings.values.graphics_preset = {"auto":0,"low":1,"medium-low":2,"medium":3,"high":4}.get(preset_name,0)
 	var mission: Node3D = load("res://scenes/missions/forest_command_post.tscn").instantiate() as Node3D
 	root.add_child(mission)
 	current_scene = mission

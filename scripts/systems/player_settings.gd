@@ -1,6 +1,6 @@
 extends CanvasLayer
 ## Small persistent options panel; gameplay is paused while editing.
-var values: Dictionary = {"fov": 78.0, "sensitivity": 0.1, "master": 0.8, "effects": 1.0, "dialogue": 1.0, "ambience": 0.8, "communications": 0.7, "artillery": 0.7, "subtitles": true, "reduced_motion": false, "graphics_preset": 0, "vsync": true, "distant_combat": true, "voice_diagnostics": false}
+var values: Dictionary = {"fov": 78.0, "sensitivity": 0.1, "master": 0.8, "effects": 1.0, "dialogue": 1.0, "ambience": 0.8, "communications": 0.7, "artillery": 0.7, "subtitles": true, "reduced_motion": false, "graphics_preset": 0, "graphics_preset_version": 2, "vsync": true, "distant_combat": true, "voice_diagnostics": false}
 var panel: PanelContainer
 var _old_mouse: int
 var capabilities: Dictionary
@@ -19,7 +19,14 @@ func _ready() -> void:
 	print("Graphics audit: ", capabilities, " Recommended: ", GraphicsProfile.PRESETS[recommended].name)
 	var config: ConfigFile = ConfigFile.new()
 	if config.load("user://settings.cfg") == OK:
+		var stored_preset_version: int = int(config.get_value("settings", "graphics_preset_version", 1))
 		for key: String in values: values[key] = config.get_value("settings", key, values[key])
+		# Version 1 stored Medium and High as 2 and 3. Preserve those selections
+		# now that Medium-Low occupies the new slot between Low and Medium.
+		if stored_preset_version < 2:
+			if int(values.graphics_preset) >= 2: values.graphics_preset = int(values.graphics_preset) + 1
+			values.graphics_preset_version = 2
+			save()
 	for bus: String in ["Effects", "Dialogue", "DialogueInterior", "DistantCombat", "Ambience", "Communications"]:
 		if AudioServer.get_bus_index(bus) < 0:
 			AudioServer.add_bus()
@@ -114,7 +121,7 @@ func probe_text() -> String:
 
 func recommendation_text() -> String:
 	if int(values.graphics_preset) != 0:
-		return "Graphics: " + str(GraphicsProfile.PRESETS[clampi(int(values.graphics_preset)-1,0,2)].name)
+		return "Graphics: " + str(GraphicsProfile.PRESETS[clampi(int(values.graphics_preset) - 1, 0, GraphicsProfile.PRESETS.size() - 1)].name)
 	return "Auto: " + str(GraphicsProfile.PRESETS[recommended].name) + " settings recommended."
 
 func apply() -> void:
@@ -126,14 +133,14 @@ func apply() -> void:
 	# 200 leaves ample headroom to measure while keeping the GPU off its limiter.
 	Engine.max_fps = 0 if bool(values.vsync) else 200
 	var scene: Node = get_tree().current_scene
-	applied_preset = recommended if int(values.graphics_preset) == 0 else clampi(int(values.graphics_preset) - 1, 0, 2)
+	applied_preset = recommended if int(values.graphics_preset) == 0 else clampi(int(values.graphics_preset) - 1, 0, GraphicsProfile.PRESETS.size() - 1)
 	if probe >= 0: applied_preset = 0
 	GraphicsProfile.apply(scene, get_viewport(), applied_preset, capabilities, {} if probe < 0 else GraphicsProfile.PROBES[probe].patch)
 	if graphics_summary != null:
 		var p: Dictionary = GraphicsProfile.PRESETS[applied_preset].duplicate()
 		for feature: String in ["fog","ssao","ssil","reflections"]:
 			p[feature] = p[feature] and capabilities.get("renderer", "") == "forward_plus"
-		graphics_summary.text = recommendation_text() + "\nResolution %d%% · shadows %dm · vegetation %d%%\nPlant range %dm · tree range %dm\nFog %s · SSAO %s · SSIL %s · MSAA %s · FXAA %s\nReflections %s · textures: %s" % [int(p.scale * 100), p.shadow_distance, int(p.density * 100), p.plants, p.trees, _on_off(p.fog), _on_off(p.ssao), _on_off(p.ssil), "2x" if p.msaa > 0 else "Off", _on_off(p.fxaa), _on_off(p.reflections), ["reduced detail","full detail","sharper sampling"][applied_preset]]
+		graphics_summary.text = recommendation_text() + "\nResolution %d%% · shadows %dm · vegetation %d%%\nPlant range %dm · tree range %dm\nFog %s · SSAO %s · SSIL %s · MSAA %s · FXAA %s\nReflections %s · textures: %s" % [int(p.scale * 100), p.shadow_distance, int(p.density * 100), p.plants, p.trees, _on_off(p.fog), _on_off(p.ssao), _on_off(p.ssil), "2x" if p.msaa > 0 else "Off", _on_off(p.fxaa), _on_off(p.reflections), p.texture_label]
 	AudioServer.set_bus_mute(AudioServer.get_bus_index("DistantCombat"), not values.distant_combat)
 	if scene == null: return
 	var player: Node = scene.get_node_or_null("Player")
@@ -204,8 +211,9 @@ func _build() -> void:
 	box.add_child(voice_status)
 	quality = OptionButton.new()
 	box.add_child(quality)
-	for preset: String in ["Auto (recommended)", "Low", "Medium", "High"]: quality.add_item("Graphics: " + preset)
-	quality.select(clampi(int(values.graphics_preset), 0, 3))
+	quality.add_item("Graphics: Auto (recommended)")
+	for preset: Dictionary in GraphicsProfile.PRESETS: quality.add_item("Graphics: " + str(preset.name))
+	quality.select(clampi(int(values.graphics_preset), 0, GraphicsProfile.PRESETS.size()))
 	quality.item_selected.connect(func(index: int) -> void:
 		values.graphics_preset = index
 		apply())

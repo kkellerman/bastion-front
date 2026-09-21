@@ -10,7 +10,7 @@ func _run() -> void:
 		quit(1)
 		return
 	root.get_node("PrototypeSession").checkpoint.clear()
-	root.get_node("PlayerSettings").values.graphics_preset = 3
+	root.get_node("PlayerSettings").values.graphics_preset = 4
 	mission = load("res://scenes/missions/forest_command_post.tscn").instantiate()
 	root.add_child(mission)
 	current_scene = mission
