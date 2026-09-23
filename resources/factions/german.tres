@@ -2,6 +2,8 @@
 
 [ext_resource type="PackedScene" path="res://assets/characters/german/infantry_rigged.tscn" id="3_dwnvw"]
 [ext_resource type="Resource" path="res://resources/characters/german_voice.tres" id="4_dwnvw"]
+[ext_resource type="PackedScene" path="res://assets/characters/german/infantry_rigged_face_2.tscn" id="5_b1p7f"]
+[ext_resource type="PackedScene" path="res://assets/characters/german/infantry_rigged_face_3.tscn" id="6_lihp7"]
 [ext_resource type="PackedScene" path="res://scenes/mounted_weapons/mg42.tscn" id="mount"]
 [ext_resource type="Resource" path="res://resources/weapons/mp40.tres" id="mp40"]
 [ext_resource type="Resource" path="res://resources/weapons/p38.tres" id="p38"]
@@ -23,3 +25,4 @@ hostile_ids = Array[StringName]([&"allied"])
 uniform_scene = ExtResource("3_dwnvw")
 voice_set = ExtResource("4_dwnvw")
 sleeve_color = Color(0.22, 0.265, 0.225, 1)
+visual_variants = Array[PackedScene]([ExtResource("3_dwnvw"), ExtResource("5_b1p7f"), ExtResource("6_lihp7")])

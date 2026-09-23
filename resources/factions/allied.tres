@@ -2,6 +2,8 @@
 
 [ext_resource type="PackedScene" path="res://assets/characters/allied/infantry_rigged.tscn" id="3_0glu5"]
 [ext_resource type="Resource" path="res://resources/characters/allied_voice.tres" id="4_h18ia"]
+[ext_resource type="PackedScene" path="res://assets/characters/allied/infantry_rigged_face_2.tscn" id="5_1fsyj"]
+[ext_resource type="PackedScene" path="res://assets/characters/allied/infantry_rigged_face_3.tscn" id="6_m658m"]
 [ext_resource type="Resource" path="res://resources/weapons/bazooka.tres" id="bazooka"]
 [ext_resource type="Resource" path="res://resources/weapons/m1911.tres" id="m1911"]
 [ext_resource type="Resource" path="res://resources/weapons/mk2.tres" id="mk2"]
@@ -21,3 +23,4 @@ mounted_scene = ExtResource("mount")
 hostile_ids = Array[StringName]([&"german"])
 uniform_scene = ExtResource("3_0glu5")
 voice_set = ExtResource("4_h18ia")
+visual_variants = Array[PackedScene]([ExtResource("3_0glu5"), ExtResource("5_1fsyj"), ExtResource("6_m658m")])

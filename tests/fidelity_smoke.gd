@@ -16,6 +16,7 @@ func _run() -> void:
 	mission.get_node("DefensiveMG").set_physics_process(false)
 	for id: String in ["allied", "german"]:
 		var faction: FactionData = load("res://resources/factions/" + id + ".tres")
+		_check(faction.visual_variants.size() == 3, id + " provides three deterministic face variants")
 		var model: Node3D = faction.uniform_scene.instantiate()
 		mission.add_child(model)
 		var skeleton: Skeleton3D = model.get_node("Skeleton3D")
@@ -31,6 +32,7 @@ func _run() -> void:
 			if absf(sum - 1.0) > 0.002: normalized = false
 		_check(normalized, id + " retargeted skin weights are normalized")
 		_check(model.has_node("Skeleton3D/WeaponSocket") and model.has_node("AnimationTree"), id + " attachment and AnimationTree hooks")
+		_check(model.get_node("AnatomicalHead").mesh.get_surface_count() == 4, id + " head has skin, sclera, iris and pupil geometry")
 		var animations: AnimationPlayer = model.get_node("AnimationPlayer")
 		for clip: String in ["idle", "walk", "run", "aim", "fire", "reload", "hurt", "death", "switch"]:
 			_check(animations.has_animation(clip), id + " animation " + clip)

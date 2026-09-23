@@ -9,11 +9,22 @@ var bone_positions: Array[Vector3] = []
 
 func _initialize() -> void:
 	for faction: String in ["allied", "german"]:
-		_build(faction)
-	print("Built shared rig, faction clothing, sockets and animation libraries")
+		var paths: Array[String] = []
+		for face_variant: int in range(preload("res://tools/character_head.gd").variant_count()):
+			var suffix: String = "" if face_variant == 0 else "_face_%d" % (face_variant + 1)
+			var path: String = "res://assets/characters/%s/infantry_rigged%s.tscn" % [faction, suffix]
+			_build(faction, face_variant, path)
+			paths.append(path)
+		var data: FactionData = load("res://resources/factions/" + faction + ".tres")
+		data.uniform_scene = load(paths[0])
+		data.visual_variants.clear()
+		for path: String in paths:
+			data.visual_variants.append(load(path))
+		ResourceSaver.save(data, data.resource_path)
+	print("Built shared rig, three face variants, faction clothing, sockets and animation libraries")
 	quit()
 
-func _build(faction: String) -> void:
+func _build(faction: String, face_variant: int, output_path: String) -> void:
 	var german: bool = faction == "german"
 	scene = Node3D.new()
 	scene.name = "CharacterBase"
@@ -121,7 +132,7 @@ func _build(faction: String) -> void:
 	body_node.mesh = body_mesh
 	var head: MeshInstance3D = MeshInstance3D.new()
 	head.name = "AnatomicalHead"
-	head.mesh = preload("res://tools/character_head.gd").build()
+	head.mesh = preload("res://tools/character_head.gd").build(face_variant)
 	head.skin = body_node.skin
 	head.skeleton = NodePath("../Skeleton3D")
 	scene.add_child(head)
@@ -139,11 +150,7 @@ func _build(faction: String) -> void:
 	socket.bone_name = "RightHand"
 	skeleton.add_child(socket)
 	_animations()
-	_save(scene, "res://assets/characters/" + faction + "/infantry_rigged.tscn")
-	var data: FactionData = load("res://resources/factions/" + faction + ".tres")
-	data.uniform_scene = load("res://assets/characters/" + faction + "/infantry_rigged.tscn")
-	data.sleeve_color = sleeve
-	ResourceSaver.save(data, data.resource_path)
+	_save(scene, output_path)
 
 func _bone(bone_name: String, parent: int, point: Vector3) -> void:
 	var index: int = skeleton.get_bone_count()

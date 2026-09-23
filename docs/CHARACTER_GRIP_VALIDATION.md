@@ -1,6 +1,6 @@
 # Character, weapon grip and ragdoll pass
 
-Validated September 22, 2026 with Godot 4.7.2, Forward+/Vulkan on Radeon 860M.
+Validated September 23, 2026 with Godot 4.7.2, Forward+/Vulkan on Radeon 860M.
 
 ## Changes
 
@@ -8,6 +8,7 @@ Validated September 22, 2026 with Godot 4.7.2, Forward+/Vulkan on Radeon 860M.
 - Shared wrist anchors align weapon meshes and hands in first and third person. MP40 and launcher support positions follow their different geometry. Infantry arm solving keeps the supporting wrist on the weapon during movement and recoil, and raises the weapon when aiming. Mounted gunners have revised wrist positions/orientations.
 - Closed the first-person wrist joins and added missing front/rear sight pedestals on pistols and long guns; the sights no longer float above the receiver/barrel.
 - Retargeted upper/forearm geometry now matches the target segment length, as well as its direction. Reduced upper-arm and trouser bulges; revised head/jaw/skull profile, ears, skin color and normal-map encoding.
+- Replaced the single shared painted face with three baked low-poly head variants per faction. Each has distinct skull, jaw, nose, eye spacing, complexion, stubble and asymmetry. Separate skinned eyelids, sclera, irises and pupils replace the shader-painted eyes, while all head geometry remains bound to the existing Head bone for animation and ragdolls.
 - Disabled the unused AnimationTree: it was actively restoring the default pose underneath AnimationPlayer and the ragdoll system. The death clip lowers the hips and bends the knees before the physical handover.
 - Settling measures translation and rotation of every physical bone. Settled poses are retained in the skeleton, physical bodies are removed, and all six simulation slots become reusable. The maximum lifetime also applies to bodies that are still falling.
 - Rockets align their motor with the launch direction and no longer receive grenade tumble. Explosion knockback uses the blast origin independently of the damage owner. Aiming respects a 60-degree FOV preference. Impact gradient textures and hand meshes are cached.
@@ -25,7 +26,7 @@ These are actual engine captures, not generated illustrations.
 
 ## Validation
 
-The new `tests/character_grips_smoke.gd` checks all seven handheld weapons, shared wrist anchors, support contact during idle/aim/walk/fire, completed reloads, rocket thrust and flight at four headings with elevation, low-FOV aiming, six-body budget exhaustion/reuse, lateral movement, forced retirement, pose persistence, blast direction, and an actual infantry death through ground settling. It passes headless and with native rendering. Its `--capture` mode also exercises and captures first-person aiming.
+The new `tests/character_grips_smoke.gd` checks all seven handheld weapons, shared wrist anchors, support contact during idle/aim/walk/fire, completed reloads, rocket thrust and flight at four headings with elevation, low-FOV aiming, six-body budget exhaustion/reuse, lateral movement, forced retirement, pose persistence, blast direction, and an actual infantry death through ground settling. It passes headless and with native rendering. Its `--capture` mode also exercises and captures first-person aiming. `tests/fidelity_smoke.gd` verifies that both factions expose all three deterministic face variants and that each head contains separate skin, sclera, iris and pupil surfaces.
 
 Existing weapon, combat prototype, combat feedback, defensive MG, fidelity, handling/nests/perimeter, infantry separation, infantry, locomotion/stance, operation variants, polish and presentation suites pass. Native movement, operation controls, mission flow and cleared-command-post walkthroughs pass. The latter kills all seven enemies and walks through the bunker without subsequent hostile sound, shots or flashes.
 
@@ -49,4 +50,4 @@ Captures are written under `.godot/validation`; selected comparisons are retaine
 
 ## Limits
 
-This improves the existing procedural/low-poly assets. It is not a replacement with production character scans, independently animated fingers, or a full authored reload library. The shared 17-bone rig remains; shoulder, elbow and cloth deformation still have limits at extreme angles. Ragdolls remain world-colliding only and do not collide with each other. No new worst-case combat performance benchmark or foliage overhaul is claimed.
+This improves the existing low-poly assets. It is not a replacement with production character scans, facial blend shapes, independently animated fingers, or a full authored reload library. The shared 17-bone rig remains; the eyes do not track targets and the faces do not animate speech. Shoulder, elbow and cloth deformation still have limits at extreme angles. Ragdolls remain world-colliding only and do not collide with each other. No new worst-case combat performance benchmark or foliage overhaul is claimed.
