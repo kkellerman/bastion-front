@@ -9,7 +9,7 @@ var motion_state: StringName = &"idle"
 ## How far into the 1s death animation physics takes over. Late enough that the
 ## authored collapse reads, early enough that the body still falls, rather than
 ## snapping, onto whatever is beneath it.
-const HANDOVER_DELAY: float = 0.55
+const HANDOVER_DELAY: float = 0.45
 
 func _ready() -> void:
 	player = model.get_node("AnimationPlayer")
@@ -51,10 +51,9 @@ func _state(state: String) -> void:
 	if state == "DEATH":
 		_dead = true
 		motion_state = &"death"
-		# The authored death animation is an anatomically correct collapse, which
-		# is the part physics is worst at inventing. Play it, then hand over to
-		# the ragdoll only for where the body finally comes to rest: that keeps
-		# the fall readable and lets terrain and impact still matter.
+		# The authored opening only breaks the rigid standing silhouette. Physics
+		# takes over before the knees can tuck under the torso, preserving a long
+		# human outline while terrain and impact still decide the final pose.
 		_play("death", 1.0)
 		if RagdollBudget.allows():
 			_hand_over.call_deferred()
@@ -63,8 +62,7 @@ func _state(state: String) -> void:
 		_settle.call_deferred(visuals)
 
 func _hand_over() -> void:
-	## Let the death animation carry the body most of the way down, then switch
-	## to physics so it settles against whatever it actually landed on.
+	## Hand over during the initial buckle, while the limbs are still extended.
 	if not is_instance_valid(actor): return
 	await actor.get_tree().create_timer(HANDOVER_DELAY).timeout
 	if not is_instance_valid(actor) or not is_instance_valid(model): return

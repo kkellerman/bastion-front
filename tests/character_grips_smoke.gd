@@ -139,7 +139,9 @@ func _ragdoll_budget(mission: Node3D) -> void:
 
 func _capture(label: String) -> void:
 	await RenderingServer.frame_post_draw
-	root.get_texture().get_image().save_png("res://.godot/validation/"+label+".png")
+	var image: Image = root.get_texture().get_image()
+	image.save_png("res://.godot/validation/"+label+".png")
+	if label == "ragdoll_settled": image.save_png("res://docs/screenshots/ragdoll_death_after.png")
 
 func _live_ragdoll(mission: Node3D) -> void:
 	var actor: InfantryBrain = mission.get_node("Enemies/ForestPatrol")
@@ -172,8 +174,28 @@ func _live_ragdoll(mission: Node3D) -> void:
 	var pelvis: Vector3 = skeleton.global_transform*skeleton.get_bone_global_pose(0).origin
 	print("Settled pelvis: ",pelvis)
 	_check(pelvis.y<0.7 and pelvis.y> -0.3,"Actual corpse remains at ground level after physics retires")
+	var head: Vector3 = _bone_world(skeleton,"Head")
+	var feet: Vector3 = (_bone_world(skeleton,"LeftFoot")+_bone_world(skeleton,"RightFoot"))*0.5
+	var head_to_feet: float = head.distance_to(feet)
+	var widest_span: float = _widest_bone_span(skeleton)
+	print("Settled corpse length: %.3f, widest bone span: %.3f" % [head_to_feet,widest_span])
+	_check(head_to_feet>1.0,"Settled corpse keeps head and feet separated")
+	_check(widest_span>1.15,"Settled corpse does not collapse into a compact pile")
 	if capture: await _capture("ragdoll_settled")
 	camera.queue_free()
+
+func _bone_world(skeleton: Skeleton3D, bone_name: String) -> Vector3:
+	var index: int = skeleton.find_bone(bone_name)
+	return (skeleton.global_transform*skeleton.get_bone_global_pose(index)).origin
+
+func _widest_bone_span(skeleton: Skeleton3D) -> float:
+	var widest: float = 0.0
+	for first: int in range(skeleton.get_bone_count()):
+		var first_position: Vector3 = (skeleton.global_transform*skeleton.get_bone_global_pose(first)).origin
+		for second: int in range(first+1,skeleton.get_bone_count()):
+			var second_position: Vector3 = (skeleton.global_transform*skeleton.get_bone_global_pose(second)).origin
+			widest = maxf(widest,first_position.distance_to(second_position))
+	return widest
 
 func _hide_ui(node: Node) -> void:
 	if node is CanvasLayer: node.hide()

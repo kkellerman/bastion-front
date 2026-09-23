@@ -6,30 +6,27 @@ extends RefCounted
 
 ## Per-joint swing and twist in degrees. One shared cone made every joint equally
 ## free, so knees bent sideways and elbows spun: that reads as a contorted body,
-## not a dead one. Hinges (knee, elbow) get almost no swing and no twist; the
-## neck and spine stay tight; shoulders and hips keep the range they really have.
+## not a dead one. Knee and elbow cones get almost no swing or twist; the neck
+## and spine stay tight while shoulders and hips keep a useful range.
 const JOINT_LIMITS: Dictionary[StringName, Vector2] = {
-	&"Spine": Vector2(14.0, 8.0),
-	&"Chest": Vector2(12.0, 8.0),
-	&"Neck": Vector2(18.0, 10.0),
-	&"Head": Vector2(22.0, 12.0),
-	&"LeftThigh": Vector2(45.0, 12.0),
-	&"RightThigh": Vector2(45.0, 12.0),
+	&"Spine": Vector2(12.0, 6.0),
+	&"Chest": Vector2(10.0, 6.0),
+	&"Neck": Vector2(14.0, 8.0),
+	&"Head": Vector2(18.0, 10.0),
+	&"LeftThigh": Vector2(36.0, 10.0),
+	&"RightThigh": Vector2(36.0, 10.0),
 	&"LeftFoot": Vector2(16.0, 6.0),
 	&"RightFoot": Vector2(16.0, 6.0),
 	&"LeftHand": Vector2(20.0, 8.0),
 	&"RightHand": Vector2(20.0, 8.0),
 	&"LeftShin": Vector2(8.0, 2.0),
 	&"RightShin": Vector2(8.0, 2.0),
-	&"LeftUpperArm": Vector2(85.0, 35.0),
-	&"RightUpperArm": Vector2(85.0, 35.0),
-	&"LeftForearm": Vector2(20.0, 8.0),
-	&"RightForearm": Vector2(20.0, 8.0),
+	&"LeftUpperArm": Vector2(62.0, 22.0),
+	&"RightUpperArm": Vector2(62.0, 22.0),
+	&"LeftForearm": Vector2(16.0, 6.0),
+	&"RightForearm": Vector2(16.0, 6.0),
 }
 const DEFAULT_LIMIT: Vector2 = Vector2(20.0, 20.0)
-## Jolt ignores cone-twist softness and relaxation, so bias is the only tuning
-## parameter that survives; the demo's other two values applied to Godot Physics.
-const BIAS: float = 0.3
 const FRICTION: float = 0.6
 ## The demo's 0.8 bounce suits a toy mannequin dropped for show; a body hitting
 ## forest floor should not rebound, so limbs are kept nearly dead.
@@ -39,8 +36,39 @@ const BOUNCE: float = 0.05
 const RAGDOLL_LAYER: int = 1 << 8
 ## Explicit damping: joint solvers leak energy into a chain this long, and a
 ## corpse that keeps twitching reads worse than one that settles a little fast.
-const LINEAR_DAMP: float = 0.5
-const ANGULAR_DAMP: float = 0.6
+const LINEAR_DAMP: float = 0.8
+const ANGULAR_DAMP: float = 1.25
+
+## Branching bones need an anatomical successor. Picking the longest child made
+## the chest capsule point toward a shoulder because the upper arms start
+## farther away than the neck; that put the torso's collision shape sideways
+## and encouraged the whole chain to fold around it.
+const BONE_TAILS: Dictionary[StringName, StringName] = {
+	&"Hips": &"Spine",
+	&"Spine": &"Chest",
+	&"Chest": &"Neck",
+	&"Neck": &"Head",
+	&"LeftThigh": &"LeftShin",
+	&"RightThigh": &"RightShin",
+	&"LeftShin": &"LeftFoot",
+	&"RightShin": &"RightFoot",
+	&"LeftUpperArm": &"LeftForearm",
+	&"RightUpperArm": &"RightForearm",
+	&"LeftForearm": &"LeftHand",
+	&"RightForearm": &"RightHand",
+}
+const LEAF_AXES: Dictionary[StringName, Vector3] = {
+	&"Head": Vector3.UP,
+	&"LeftFoot": Vector3.FORWARD,
+	&"RightFoot": Vector3.FORWARD,
+}
+const LEAF_LENGTHS: Dictionary[StringName, float] = {
+	&"Head": 0.18,
+	&"LeftFoot": 0.25,
+	&"RightFoot": 0.25,
+	&"LeftHand": 0.12,
+	&"RightHand": 0.12,
+}
 
 ## radius as a fraction of bone length, mass in kg. A 75 kg soldier, distributed
 ## the way a body actually is: torso heavy, extremities light.
@@ -86,8 +114,8 @@ static func _add_bone(simulator: PhysicalBoneSimulator3D, skeleton: Skeleton3D, 
 	# Direction to the child bone in the skeleton's own space. The rig poses arms
 	# across the chest for a rifle carry, so assuming every bone runs down local
 	# -Y wedges the forearms inside the torso and the solver ejects them.
-	var axis: Vector3 = _bone_axis(skeleton, index)
-	var length: float = _bone_length(skeleton, index)
+	var axis: Vector3 = _bone_axis(skeleton, index, bone_name)
+	var length: float = _bone_length(skeleton, index, bone_name)
 	var bone: PhysicalBone3D = PhysicalBone3D.new()
 	bone.name = "Physical " + str(bone_name)
 	bone.bone_name = str(bone_name)
@@ -109,8 +137,6 @@ static func _add_bone(simulator: PhysicalBoneSimulator3D, skeleton: Skeleton3D, 
 		var limit: Vector2 = JOINT_LIMITS.get(bone_name, DEFAULT_LIMIT)
 		bone.set("joint_constraints/swing_span", limit.x)
 		bone.set("joint_constraints/twist_span", limit.y)
-		bone.set("joint_constraints/bias", BIAS)
-	simulator.add_child(bone)
 	var shape: CollisionShape3D = CollisionShape3D.new()
 	var capsule: CapsuleShape3D = CapsuleShape3D.new()
 	capsule.radius = float(spec[0])
@@ -123,24 +149,33 @@ static func _add_bone(simulator: PhysicalBoneSimulator3D, skeleton: Skeleton3D, 
 	# slide the body to the bone's midpoint. The joint stays at the bone head.
 	var half: Vector3 = axis * (length * 0.5)
 	bone.body_offset = Transform3D(_basis_for(axis), half)
-	bone.joint_offset = Transform3D(Basis.IDENTITY, -half)
+	# joint_offset is expressed in the physical body's local frame. Its +Y has
+	# already been rotated onto `axis` by body_offset, so using `-half` here
+	# rotates the direction a second time (and puts leg joints at the ankle end).
+	bone.joint_offset = Transform3D(Basis.IDENTITY, Vector3(0.0,-length*0.5,0.0))
 	# A cone-twist constrains around the joint's OWN axis. Without this the cone
 	# always pointed along default +Y, so a knee's narrow limit was applied
 	# sideways to the shin and constrained nothing that mattered.
 	bone.joint_rotation = _basis_for(axis).get_euler()
+	# PhysicalBone3D creates its physics joint when it enters the tree. Every
+	# offset and constraint must be ready first; changing body_offset afterward
+	# moves the capsule but leaves the already-created joint at its default frame.
+	simulator.add_child(bone)
 
-static func _bone_axis(skeleton: Skeleton3D, index: int) -> Vector3:
-	## Unit vector from this bone's head toward its child, in skeleton space.
+static func _bone_axis(skeleton: Skeleton3D, index: int, bone_name: StringName) -> Vector3:
+	## Unit vector from this bone's head toward its anatomical tail.
 	var here: Vector3 = skeleton.get_bone_global_rest(index).origin
-	var best: Vector3 = Vector3.DOWN
-	var longest: float = 0.0
-	for child: int in skeleton.get_bone_count():
-		if skeleton.get_bone_parent(child) != index: continue
-		var offset: Vector3 = skeleton.get_bone_global_rest(child).origin - here
-		if offset.length() > longest:
-			longest = offset.length()
-			best = offset.normalized()
-	return best if longest > 0.01 else Vector3.DOWN
+	if BONE_TAILS.has(bone_name):
+		var tail: int = skeleton.find_bone(BONE_TAILS[bone_name])
+		if tail >= 0:
+			var offset: Vector3 = skeleton.get_bone_global_rest(tail).origin - here
+			if offset.length() > 0.01: return offset.normalized()
+	if LEAF_AXES.has(bone_name): return LEAF_AXES[bone_name]
+	var parent: int = skeleton.get_bone_parent(index)
+	if parent >= 0:
+		var continuation: Vector3 = here - skeleton.get_bone_global_rest(parent).origin
+		if continuation.length() > 0.01: return continuation.normalized()
+	return Vector3.DOWN
 
 static func _basis_for(axis: Vector3) -> Basis:
 	## Rotation taking a capsule's +Y long axis onto the bone direction.
@@ -148,14 +183,15 @@ static func _basis_for(axis: Vector3) -> Basis:
 	if absf(up.dot(axis)) > 0.999: return Basis.IDENTITY if axis.y > 0.0 else Basis(Vector3.RIGHT, PI)
 	return Basis(up.cross(axis).normalized(), up.angle_to(axis))
 
-static func _bone_length(skeleton: Skeleton3D, index: int) -> float:
-	## Distance to the first child bone; leaf bones fall back to a head-sized stub.
+static func _bone_length(skeleton: Skeleton3D, index: int, bone_name: StringName) -> float:
+	## Distance to the anatomical successor, with measured leaf proportions.
 	var here: Vector3 = skeleton.get_bone_global_rest(index).origin
-	var longest: float = 0.0
-	for child: int in skeleton.get_bone_count():
-		if skeleton.get_bone_parent(child) != index: continue
-		longest = maxf(longest, here.distance_to(skeleton.get_bone_global_rest(child).origin))
-	return longest if longest > 0.01 else 0.18
+	if BONE_TAILS.has(bone_name):
+		var tail: int = skeleton.find_bone(BONE_TAILS[bone_name])
+		if tail >= 0:
+			var length: float = here.distance_to(skeleton.get_bone_global_rest(tail).origin)
+			if length > 0.01: return length
+	return LEAF_LENGTHS.get(bone_name, 0.14)
 
 static func start(simulator: PhysicalBoneSimulator3D, impulse: Vector3) -> void:
 	simulator.physical_bones_start_simulation()

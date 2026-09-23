@@ -260,14 +260,17 @@ func _animations() -> void:
 					if "Thigh" in bone_name: angle = sin(t * TAU) * (0.42 if clip == "walk" else 0.65) * (-1 if bone_name.begins_with("Left") else 1)
 					if "Shin" in bone_name: angle = maxf(0, sin(t * TAU + (PI if bone_name.begins_with("Left") else 0))) * 0.7
 				if clip == "death":
-					if "Thigh" in bone_name: angle = -0.9 * smoothstep(0,0.7,t)
-					if "Shin" in bone_name: angle = 1.45 * smoothstep(0,0.7,t)
-					if bone_name == "Hips": angle = -0.25 * t
+					# Begin a loose forward buckle without pre-folding the legs into a
+					# crouch. The ragdoll takes over at 0.45 s and completes the fall.
+					var fall: float = smoothstep(0.0, 0.7, t)
+					if "Thigh" in bone_name: angle = -0.18 * fall
+					if "Shin" in bone_name: angle = 0.22 * fall
+					if bone_name == "Hips": angle = -0.42 * fall
 				if bone_name == "Spine":
 					angle = sin(t * TAU) * 0.015
 					if clip == "fire": angle = -sin(t * PI) * 0.09
 					if clip == "hurt": angle = sin(t * PI) * 0.22
-					if clip == "death": angle = t * 0.35
+					if clip == "death": angle = smoothstep(0.0, 0.7, t) * 0.10
 				if clip == "reload" and bone_name == "LeftForearm": angle = sin(t * PI) * -0.7
 				if clip == "switch" and "Forearm" in bone_name: angle = sin(t * PI) * 0.4
 				var rotation: Quaternion = Quaternion(Vector3.RIGHT, angle)
@@ -278,8 +281,8 @@ func _animations() -> void:
 			var drop: int = animation.add_track(Animation.TYPE_POSITION_3D)
 			animation.track_set_path(drop, NodePath("Skeleton3D:Hips"))
 			animation.position_track_insert_key(drop,0.0,bone_positions[0])
-			animation.position_track_insert_key(drop,0.55,bone_positions[0]-Vector3(0,0.23,0))
-			animation.position_track_insert_key(drop,1.0,bone_positions[0]-Vector3(0,0.35,0))
+			animation.position_track_insert_key(drop,0.45,bone_positions[0]-Vector3(0,0.08,0))
+			animation.position_track_insert_key(drop,1.0,bone_positions[0]-Vector3(0,0.18,0))
 		library.add_animation(clip, animation)
 	player.add_animation_library("", library)
 	var tree: AnimationTree = AnimationTree.new()
