@@ -52,9 +52,11 @@ func _process(_delta: float) -> void:
 	mechanism.position = mechanism_rest + Vector3(0, 0, bolt * 0.06)
 	var arms: Node3D = view.get_node_or_null("Arms")
 	if arms != null and arms.support != null:
-		var destination: Vector3 = rig.weapon.data.support_hand_position
+		arms.set_support_reload(rig.weapon.is_reloading and progress > 0.15 and progress < 0.94)
+		var rest: Vector3 = preload("res://scripts/presentation/weapon_grip.gd").support(rig.weapon.data)
+		var destination: Vector3 = rest
 		if rig.weapon.is_reloading:
-			destination = mechanism.position if stage == &"chamber" else magazine.position + Vector3(-0.035, 0, 0)
+			destination = mechanism.position + Vector3(-0.035,-0.02,0.09) if stage == &"chamber" else magazine.position + Vector3(-0.034,-0.012,0.078)
 			var blend: float = smoothstep(0, 0.18, progress) * (1 - smoothstep(0.94, 1, progress))
-			destination = rig.weapon.data.support_hand_position.lerp(destination, blend)
+			destination = rest.lerp(destination, blend)
 		arms.support.position = destination

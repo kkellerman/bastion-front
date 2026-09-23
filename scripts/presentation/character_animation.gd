@@ -13,6 +13,7 @@ const HANDOVER_DELAY: float = 0.55
 
 func _ready() -> void:
 	player = model.get_node("AnimationPlayer")
+	model.get_node("AnimationTree").active = false
 	stride = load("res://scripts/presentation/infantry_stride.gd").new()
 	stride.actor = actor
 	model.get_node("Skeleton3D").add_child(stride)
@@ -67,13 +68,16 @@ func _hand_over() -> void:
 	if not is_instance_valid(actor): return
 	await actor.get_tree().create_timer(HANDOVER_DELAY).timeout
 	if not is_instance_valid(actor) or not is_instance_valid(model): return
-	if not RagdollBudget.allows(): return
+	if not RagdollBudget.allows():
+		_settle(actor.get_node("Visuals"))
+		return
 	_ragdoll()
 
 func _ragdoll() -> void:
 	## Physics owns the pose from here, so every animation and skeleton modifier
 	## must stop first or they fight the simulation for the same bones.
-	player.stop()
+	player.pause()
+	player.active = false
 	var skeleton: Skeleton3D = model.get_node("Skeleton3D")
 	# Every modifier runs after the simulator and would overwrite the simulated
 	# pose each frame, leaving the mesh standing while the bodies fall. The

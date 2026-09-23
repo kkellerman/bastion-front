@@ -9,7 +9,8 @@ func _process_modification() -> void:
 	for side: int in [-1, 1]:
 		var prefix: String = "Left" if side < 0 else "Right"
 		var hand: int = skeleton.find_bone(prefix + "Hand")
-		var target: Vector3 = skeleton.to_local(mount.pivot.to_global(Vector3(side * 0.09, -0.04, 0.22)))
+		var wrist: Vector3 = Vector3(-0.041,-0.075,0.28) if side < 0 else Vector3(0.035,-0.13,0.18)
+		var target: Vector3 = skeleton.to_local(mount.pivot.to_global(wrist))
 		for iteration: int in range(5):
 			for joint: String in ["Forearm", "UpperArm"]:
 				var bone: int = skeleton.find_bone(prefix + joint)
@@ -20,3 +21,6 @@ func _process_modification() -> void:
 				var rotation_delta: Quaternion = Quaternion(from.normalized(), to.normalized())
 				var parent: Basis = skeleton.get_bone_global_pose(skeleton.get_bone_parent(bone)).basis
 				skeleton.set_bone_pose_rotation(bone, (parent.inverse() * Basis(rotation_delta) * pose.basis).get_rotation_quaternion())
+		var parent_basis: Basis = skeleton.get_bone_global_pose(skeleton.get_bone_parent(hand)).basis
+		var grip_basis: Basis = skeleton.global_basis.inverse()*mount.pivot.global_basis
+		skeleton.set_bone_pose_rotation(hand,(parent_basis.inverse()*grip_basis).get_rotation_quaternion())

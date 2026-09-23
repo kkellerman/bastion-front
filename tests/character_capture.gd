@@ -16,6 +16,7 @@ func _run() -> void:
 	mission.player.get_node("PlayerVitals").hide()
 	mission.rig.hide()
 	mission.rig.get_node("WeaponHUD").hide()
+	_hide_ui(mission)
 	var camera: Camera3D = Camera3D.new()
 	mission.add_child(camera)
 	camera.position = Vector3(0, 1.3, 17)
@@ -33,7 +34,7 @@ func _run() -> void:
 		var held: Node3D = preview.get_node("WeaponMesh").duplicate()
 		preview.free()
 		model.get_node("Skeleton3D/WeaponSocket").add_child(held)
-		held.position = Vector3(0, 0.07, -0.06)
+		preload("res://scripts/presentation/infantry_weapon_pose.gd").install(model, held, faction.weapons[1])
 	var light: OmniLight3D = OmniLight3D.new()
 	mission.add_child(light)
 	light.position = Vector3(0, 3, 16)
@@ -42,6 +43,11 @@ func _run() -> void:
 	for i: int in range(90): await process_frame
 	await RenderingServer.frame_post_draw
 	root.get_texture().get_image().save_png("res://.godot/validation/characters.png")
+	camera.position = Vector3(2.4,1.6,16.4)
+	camera.look_at(Vector3(0,1.15,14))
+	for i: int in range(12): await process_frame
+	await RenderingServer.frame_post_draw
+	root.get_texture().get_image().save_png("res://.godot/validation/characters_side.png")
 	mission.rig.show()
 	mission.rig.get_node("WeaponHUD").show()
 	mission.get_node("MissionUI").show()
@@ -63,3 +69,7 @@ func _run() -> void:
 	mission.queue_free()
 	for i: int in range(20): await process_frame
 	quit()
+
+func _hide_ui(node: Node) -> void:
+	if node is CanvasLayer: node.hide()
+	for child: Node in node.get_children(): _hide_ui(child)

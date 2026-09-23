@@ -34,8 +34,8 @@ func _build(faction: String) -> void:
 		_bone(prefix + "Foot", thigh + 1, Vector3(side * 0.105, 0.13, 0))
 		var arm: int = skeleton.get_bone_count()
 		_bone(prefix + "UpperArm", 2, Vector3(side * 0.21, 1.43, 0))
-		_bone(prefix + "Forearm", arm, Vector3(-0.05, 1.22, -0.20) if side < 0 else Vector3(0.3, 1.16, -0.04))
-		_bone(prefix + "Hand", arm + 1, Vector3(0.18 if side < 0 else 0.23, 1.31, -0.45 if side < 0 else -0.25))
+		_bone(prefix + "Forearm", arm, Vector3(-0.14, 1.20, -0.20) if side < 0 else Vector3(0.29, 1.18, 0.04))
+		_bone(prefix + "Hand", arm + 1, Vector3(0.078, 1.36, -0.42) if side < 0 else Vector3(0.13, 1.34, -0.11))
 	# Index 3 (skin: neck/ears and hands/fingers) previously used the flat, untextured
 	# material() helper, unlike every other slot here; worn() adds the same procedural
 	# noise/normal variation already used for weapon and prop skin tones elsewhere.
@@ -105,6 +105,7 @@ func _build(faction: String) -> void:
 	if german: _limb(4, 1, Vector3(-0.12, 1.05, 0.19), Vector3(0.10, 1.19, 0.19), 0.055, 0.055)
 	_finish_mesh("UniformAndBody")
 	var body_mesh: ArrayMesh = preload("res://tools/retarget_soldier.gd").body(skeleton, bone_positions)
+	body_mesh = preload("res://tools/retarget_soldier.gd").remove_hands(body_mesh, skeleton)
 	body_mesh = preload("res://tools/character_head.gd").remove_donor_head(body_mesh)
 	var body_material: ShaderMaterial = ShaderMaterial.new()
 	body_material.shader = load("res://shaders/soldier_surface.gdshader")
@@ -258,6 +259,10 @@ func _animations() -> void:
 				if clip in ["walk", "run"]:
 					if "Thigh" in bone_name: angle = sin(t * TAU) * (0.42 if clip == "walk" else 0.65) * (-1 if bone_name.begins_with("Left") else 1)
 					if "Shin" in bone_name: angle = maxf(0, sin(t * TAU + (PI if bone_name.begins_with("Left") else 0))) * 0.7
+				if clip == "death":
+					if "Thigh" in bone_name: angle = -0.9 * smoothstep(0,0.7,t)
+					if "Shin" in bone_name: angle = 1.45 * smoothstep(0,0.7,t)
+					if bone_name == "Hips": angle = -0.25 * t
 				if bone_name == "Spine":
 					angle = sin(t * TAU) * 0.015
 					if clip == "fire": angle = -sin(t * PI) * 0.09
@@ -269,9 +274,17 @@ func _animations() -> void:
 				if bone_name == "Head" and clip == "idle": rotation *= Quaternion(Vector3.UP,sin(t*TAU)*0.045)
 				if bone_name == "Hips" and clip in ["walk","run"]: rotation *= Quaternion(Vector3.UP,sin(t*TAU)*0.035)
 				animation.rotation_track_insert_key(track, t * animation.length, rotation)
+		if clip == "death":
+			var drop: int = animation.add_track(Animation.TYPE_POSITION_3D)
+			animation.track_set_path(drop, NodePath("Skeleton3D:Hips"))
+			animation.position_track_insert_key(drop,0.0,bone_positions[0])
+			animation.position_track_insert_key(drop,0.55,bone_positions[0]-Vector3(0,0.23,0))
+			animation.position_track_insert_key(drop,1.0,bone_positions[0]-Vector3(0,0.35,0))
 		library.add_animation(clip, animation)
 	player.add_animation_library("", library)
 	var tree: AnimationTree = AnimationTree.new()
+	# Retained as an integration hook; AnimationPlayer is the current owner.
+	tree.active = false
 	tree.name = "AnimationTree"
 	tree.anim_player = NodePath("../AnimationPlayer")
 	var machine: AnimationNodeStateMachine = AnimationNodeStateMachine.new()

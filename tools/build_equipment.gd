@@ -131,6 +131,10 @@ func _guard(root: Node3D, point: Vector3, scaling: Vector3) -> void:
 	P.rod(root, point + Vector3(0, 0.017, 0), point + Vector3(0, -0.008, 0.008), 0.004, steel)
 
 func _sights(root: Node3D, y: float, front: float, back: float) -> void:
+	var front_floor: float = 0.012 if front < -0.2 else 0.017
+	var rear_floor: float = 0.032 if y > 0.04 else 0.017
+	P.box(root, Vector3(0,(front_floor+y-0.006)*0.5,front), Vector3(0.018,y-0.006-front_floor,0.024),black).name = "SightFrontBase"
+	P.box(root, Vector3(0,(rear_floor+y-0.006)*0.5,back), Vector3(0.029,y-0.006-rear_floor,0.024),black).name = "SightRearBase"
 	P.box(root, Vector3(0, y, front), Vector3(0.006, 0.012, 0.012), black)
 	for side: float in [-1, 1]:
 		P.box(root, Vector3(side * 0.009, y, back), Vector3(0.006, 0.012, 0.015), black)

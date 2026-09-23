@@ -98,7 +98,7 @@ func _physics_process(delta: float) -> void:
 	_reload_pending = false
 	_impact_remaining = maxf(0.0, _impact_remaining - delta)
 	impact_marker.visible = _impact_remaining > 0.0
-	camera.fov = lerpf(camera.fov, 62.0 if _aiming else _base_fov, 1.0 - exp(-15.0 * delta))
+	camera.fov = lerpf(camera.fov, minf(62.0, _base_fov) if _aiming else _base_fov, 1.0 - exp(-15.0 * delta))
 
 
 func _notification(what: int) -> void:

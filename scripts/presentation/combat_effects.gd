@@ -1,6 +1,8 @@
 class_name CombatEffects
 extends RefCounted
 
+static var _disc_cache: Dictionary[Color, GradientTexture2D] = {}
+
 static func burst(context: Node3D, point: Vector3, normal: Vector3, surface: StringName, explosion: bool = false) -> void:
 	var scene: Node = context.get_tree().current_scene
 	if scene == null: return
@@ -87,6 +89,7 @@ static func _decal(context: Node3D, point: Vector3, normal: Vector3, explosion: 
 	tween.tween_callback(decal.queue_free)
 
 static func _disc(color: Color) -> GradientTexture2D:
+	if _disc_cache.has(color): return _disc_cache[color]
 	var gradient: Gradient = Gradient.new()
 	gradient.set_color(0, color)
 	gradient.set_color(1, Color(color, 0))
@@ -97,4 +100,5 @@ static func _disc(color: Color) -> GradientTexture2D:
 	texture.fill = GradientTexture2D.FILL_RADIAL
 	texture.fill_from = Vector2(0.5, 0.5)
 	texture.fill_to = Vector2(0.5, 0)
+	_disc_cache[color] = texture
 	return texture

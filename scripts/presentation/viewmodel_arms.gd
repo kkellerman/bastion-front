@@ -1,43 +1,61 @@
 extends Node3D
 const P = preload("res://scripts/presentation/dressing_parts.gd")
+const Grip = preload("res://scripts/presentation/weapon_grip.gd")
+const Hand = preload("res://scripts/presentation/grip_hand_mesh.gd")
 var support: Node3D
-var _time: float = 0.0
+var _wrists: Array[Node3D] = []
+var _sleeves: Array[MeshInstance3D] = []
+var _cuffs: Array[MeshInstance3D] = []
+var _support_mesh: MeshInstance3D
+var _cradle: bool = false
 
 func build(data: WeaponData, faction: FactionData) -> void:
 	name = "Arms"
-	var cloth: ShaderMaterial = ShaderMaterial.new()
+	var cloth := ShaderMaterial.new()
 	cloth.shader = load("res://shaders/uniform_fabric.gdshader")
-	cloth.set_shader_parameter("cloth_color", faction.sleeve_color if faction != null else Color(0.38, 0.36, 0.25))
+	cloth.set_shader_parameter("cloth_color", faction.sleeve_color if faction != null else Color(0.38,0.36,0.25))
 	cloth.set_shader_parameter("fabric_albedo", load("res://assets/textures/polyhaven/rough_linen/rough_linen_diff_1k.jpg"))
 	cloth.set_shader_parameter("fabric_normal", load("res://assets/textures/polyhaven/rough_linen/rough_linen_nor_gl_1k.jpg"))
 	cloth.set_shader_parameter("fabric_rough", load("res://assets/textures/polyhaven/rough_linen/rough_linen_rough_1k.jpg"))
-	var skin: Material = P.worn(Color(0.43, 0.29, 0.21))
-	var trigger: Vector3 = Vector3(0.027, -0.077, 0.074)
-	var left: Vector3 = data.support_hand_position
-	for side: int in [-1, 1]:
-		var hand: Node3D = Node3D.new()
-		add_child(hand)
-		hand.position = left if side < 0 else trigger
-		if side < 0: support = hand
-		_segment(hand, Vector3(side * 0.20, -0.25, 0.40), Vector3(side * 0.04, -0.025, 0.065), 0.065, 0.038, cloth)
-		_segment(hand, Vector3(side * 0.04, -0.025, 0.065), Vector3.ZERO, 0.031, 0.033, skin)
-		var palm: MeshInstance3D = _segment(hand, Vector3(0, -0.018, 0.015), Vector3(0, 0.012, -0.042), 0.032, 0.027, skin)
-		palm.scale.z = 0.75
-		for finger: int in range(4):
-			var start: Vector3 = Vector3(0, 0.015 - finger * 0.013, -0.024)
-			var joint: Vector3 = start + Vector3(-side * 0.031, -0.006, -0.007)
-			_segment(hand, start, joint, 0.0085, 0.0075, skin)
-			_segment(hand, joint, joint + Vector3(0, -0.012, 0.022), 0.0075, 0.006, skin)
-		_segment(hand, Vector3(side * 0.018, 0.015, 0.018), Vector3(-side * 0.020, 0.030, -0.010), 0.011, 0.008, skin)
+	for left: bool in [false,true]:
+		var wrist := Node3D.new()
+		wrist.name = "SupportHand" if left else "TriggerHand"
+		add_child(wrist)
+		wrist.position = Grip.support(data) if left else Grip.trigger(data)
+		if left: support = wrist
+		_wrists.append(wrist)
+		var hand_mesh: MeshInstance3D = P.shape(wrist, Vector3.ZERO, Hand.build(left, left and Grip.cradle(data)), Grip.skin())
+		var joint := SphereMesh.new()
+		joint.radius = 0.026
+		joint.height = 0.052
+		joint.radial_segments = 16
+		joint.rings = 8
+		P.shape(wrist,Vector3(0,0,0.004),joint,Grip.skin()).scale = Vector3(0.85,1.0,1.3)
+		if left:
+			_support_mesh = hand_mesh
+			_cradle = Grip.cradle(data)
+		_sleeves.append(P.shape(self,Vector3.ZERO,preload("res://scripts/presentation/crafted_mesh.gd").limb(1.0,0.058,0.028,true),cloth))
+		_cuffs.append(P.shape(self,Vector3.ZERO,preload("res://scripts/presentation/crafted_mesh.gd").limb(1.0,0.028,0.023,false),Grip.skin()))
+	_update_arms()
 
-func _process(delta: float) -> void:
-	_time += delta
+func _process(_delta: float) -> void:
+	_update_arms()
 
-func _segment(parent: Node3D, start: Vector3, end: Vector3, radius: float, tip: float, material: Material) -> MeshInstance3D:
-	var mesh: ArrayMesh = preload("res://scripts/presentation/crafted_mesh.gd").limb(start.distance_to(end), radius, tip, radius > 0.04)
-	var part: MeshInstance3D = P.shape(parent, (start + end) * 0.5, mesh, material)
-	var axis: Vector3 = (end - start).normalized()
+func _update_arms() -> void:
+	# Elbows stay below/outside the camera while hands follow the reload.
+	for i: int in range(_wrists.size()):
+		var wrist: Vector3 = _wrists[i].position
+		var elbow := Vector3(-0.35 if i==1 else 0.35,-0.45,0.80)
+		var cuff: Vector3 = wrist+(elbow-wrist).normalized()*0.055
+		_place(_sleeves[i],elbow,cuff)
+		_place(_cuffs[i],cuff,wrist+Vector3(0,0,-0.009))
+
+func _place(part: MeshInstance3D, start: Vector3, end: Vector3) -> void:
+	var axis: Vector3 = (end-start).normalized()
 	var right: Vector3 = axis.cross(Vector3.FORWARD).normalized()
-	part.basis = Basis(right, axis, right.cross(axis))
+	if right.length_squared()<0.1: right=Vector3.RIGHT
+	part.transform = Transform3D(Basis(right,axis*start.distance_to(end),right.cross(axis)),(start+end)*0.5)
 	part.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	return part
+
+func set_support_reload(gripping_magazine: bool) -> void:
+	_support_mesh.mesh = Hand.build(true,_cradle and not gripping_magazine)

@@ -16,6 +16,7 @@ static func launch(data: WeaponData, origin: Node3D, shooter: CollisionObject3D)
 		end = hit["position"] + hit["normal"] * 0.12
 	shooter.get_tree().current_scene.add_child(projectile)
 	projectile.global_position = end
+	projectile.global_basis = origin.global_basis.orthonormalized()
 	projectile.linear_velocity = direction * data.projectile_speed
 	if not data.explode_on_contact:
 		# A consistent throw angle above the aim ray, like a real lob, rather than a
@@ -28,5 +29,6 @@ static func launch(data: WeaponData, origin: Node3D, shooter: CollisionObject3D)
 	var spin_axis: Vector3 = direction.cross(Vector3.UP)
 	if spin_axis.length_squared() < 0.01:
 		spin_axis = Vector3.RIGHT
-	projectile.angular_velocity = spin_axis.normalized() * randf_range(6.0, 11.0) * (1.0 if randf() < 0.5 else -1.0)
+	if not data.explode_on_contact:
+		projectile.angular_velocity = spin_axis.normalized() * randf_range(6.0, 11.0) * (1.0 if randf() < 0.5 else -1.0)
 	return projectile

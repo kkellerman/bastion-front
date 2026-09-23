@@ -53,7 +53,7 @@ func _install() -> void:
 			animator.model = model
 			enemy.add_child(animator)
 			held.reparent(model.get_node("Skeleton3D/WeaponSocket"), false)
-			held.position = Vector3(0, 0.07, -0.06)
+			preload("res://scripts/presentation/infantry_weapon_pose.gd").install(model, held, enemy.combat.weapon.data, enemy)
 			enemy.combat.muzzle.reparent(held, false)
 			enemy.combat.muzzle.transform = muzzle_transform
 		if is_instance_valid(enemy.mounted_weapon): held.hide()

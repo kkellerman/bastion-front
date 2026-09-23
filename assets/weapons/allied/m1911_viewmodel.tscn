@@ -431,6 +431,22 @@ _surfaces = [{
 "vertex_data": PackedByteArray("Nqqwu6BAKjzSbtE7NqqwO6BAKjzSbtG7bxIDu1RQLTw6jtc7bxIDO1RQLTw6jte7bhIDO1RQLTw6jtc7bhIDu1RQLTw6jte7NqqwO6BAKjzSbtE7Nqqwu6BAKjzSbtG7nsm2u3VMcDs6jtc7nsm2O3VMcDs6jte7bxIDu3VMcDtCYOU7bxIDO3VMcDtCYOW7bhIDO3VMcDtCYOU7bhIDu3VMcDtCYOW7nsm2O3VMcDs6jtc7nsm2u3VMcDs6jte7nsm2u3ZMcLs6jtc7nsm2O3ZMcLs6jte7bxIDu3ZMcLtCYOU7bxIDO3ZMcLtCYOW7bhIDO3ZMcLtCYOU7bhIDu3ZMcLtCYOW7nsm2O3ZMcLs6jtc7nsm2u3ZMcLs6jte7Nqqwu6BAKrzSbtE7NqqwO6BAKrzSbtG7bxIDu1RQLbw6jtc7bxIDO1RQLbw6jte7bhIDO1RQLbw6jtc7bhIDu1RQLbw6jte7NqqwO6BAKrzSbtE7Nqqwu6BAKrzSbtG7NqqwO6BAKjzSbtE7Nqqwu6BAKjzSbtG7nsm2O1RQLTzX6hg7nsm2u1RQLTzX6hi7nsm2O1RQLTzW6hi7nsm2u1RQLTzW6hg7NqqwO6BAKjzSbtG7Nqqwu6BAKjzSbtE7nsm2O3VMcDs6jtc7nsm2u3VMcDs6jte7ppvEO3VMcDvX6hg7ppvEu3VMcDvX6hi7ppvEO3VMcDvW6hi7ppvEu3VMcDvW6hg7nsm2O3VMcDs6jte7nsm2u3VMcDs6jtc7nsm2O3ZMcLs6jtc7nsm2u3ZMcLs6jte7ppvEO3ZMcLvX6hg7ppvEu3ZMcLvX6hi7ppvEO3ZMcLvW6hi7ppvEu3ZMcLvW6hg7nsm2O3ZMcLs6jte7nsm2u3ZMcLs6jtc7NqqwO6BAKrzSbtE7Nqqwu6BAKrzSbtG7nsm2O1RQLbzX6hg7nsm2u1RQLbzX6hi7nsm2O1RQLbzW6hi7nsm2u1RQLbzW6hg7NqqwO6BAKrzSbtG7Nqqwu6BAKrzSbtE7NqqwO6BAKjzSbtE7Nqqwu6BAKrzSbtE7bxIDO1RQLTw6jtc7bxIDu1RQLbw6jtc7bhIDu1RQLTw6jtc7bhIDO1RQLbw6jtc7Nqqwu6BAKjzSbtE7NqqwO6BAKrzSbtE7nsm2O1RQLTzX6hg7nsm2u1RQLbzX6hg7bxIDO1g5NDzX6hg7bxIDu1g5NLzX6hg7bhIDu1g5NDzX6hg7bhIDO1g5NLzX6hg7nsm2u1RQLTzX6hg7nsm2O1RQLbzX6hg7nsm2O1RQLTzW6hi7nsm2u1RQLbzW6hi7bxIDO1g5NDzW6hi7bxIDu1g5NLzW6hi7bhIDu1g5NDzW6hi7bhIDO1g5NLzW6hi7nsm2u1RQLTzW6hi7nsm2O1RQLbzW6hi7NqqwO6BAKjzSbtG7Nqqwu6BAKrzSbtG7bxIDO1RQLTw6jte7bxIDu1RQLbw6jte7bhIDu1RQLTw6jte7bhIDO1RQLbw6jte7Nqqwu6BAKjzSbtG7NqqwO6BAKrzSbtG7VFWqqv///79U1VTVAAD/v/9//7////+//7///wAA/7//f/+/////v/+///8AAP+/qqqqqv///7+qKlTVAAD/v/8//3////+/////vwAA/7//f/9/////v/////8AAP+//3//f////7//////AAD/v/+//3////+/AAD/vwAA/7//P/9/////v////78AAP+//3//f////7//////AAD/v/9//3////+//////wAA/7//v/9/////vwAA/78AAP+/VFVUVf///79U1aoqAAD/v/9//z////+//78AAAAA/7//f/8/////v/+/AAAAAP+/qqpUVf///7+qKqoqAAD/v6qqqqr/////qipU1f9//7//v/+///////8//7//f/+//7//v///////P/+//3//v1TVVNX/////VFWqqv9//7//v/9//////wAA/7//f/+/////f/////8AAP9//3//v////3//////AAD/f/9//7////+///////8//3//f/+//7//f/////8AAP+//3//v////3//////AAD/f/9//7////9//////wAA/3//f/+/////v///////P/9//3//v6qqVFX/////qiqqKv9//7//v/8///////8//z//f/+//7//P///////P/8//3//v1TVqir/////VFVUVf9//7+qqqqqAAD/v1RVVFX///+//3//vwAA/7//f/8/////v/9//78AAP+//3//P////79UVaqqAAD/v6qqVFX///+//7//vwAA/7//P/8/////v/9///8AAP+//38AAP///7//f///AAD/v/9/AAD///+//z//vwAA/7//v/8/////v/+//78AAP+//z//P////7//f///AAD/v/9/AAD///+//3///wAA/7//fwAA////v/8//78AAP+//7//P////79U1VTVAAD/v6oqqir///+//7///wAA/7//vwAA////v/+///8AAP+//78AAP///7+qKlTVAAD/v1TVqir///+/")
 }]
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_32qjf"]
+albedo_color = Color(0.05, 0.055, 0.05, 1)
+metallic = 0.6
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="BoxMesh_ewknt"]
+size = Vector3(0.018, 0.009, 0.024)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_emle8"]
+albedo_color = Color(0.05, 0.055, 0.05, 1)
+metallic = 0.6
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="BoxMesh_8eefn"]
+size = Vector3(0.029, 0.009, 0.024)
+
 [node name="WeaponViewModel" type="Node3D" unique_id=1012808269]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.22, -0.22, -0.46)
 script = ExtResource("script")
@@ -698,3 +714,15 @@ material_override = SubResource("ShaderMaterial_32qjf")
 cast_shadow = 0
 visibility_range_end = 65.0
 mesh = SubResource("ArrayMesh_l1cng")
+
+[node name="SightFrontBase" type="MeshInstance3D" parent="WeaponMesh" unique_id=912932341]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0215, -0.09)
+material_override = SubResource("StandardMaterial3D_32qjf")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_ewknt")
+
+[node name="SightRearBase" type="MeshInstance3D" parent="WeaponMesh" unique_id=1220613554]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0215, 0.085)
+material_override = SubResource("StandardMaterial3D_emle8")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_8eefn")

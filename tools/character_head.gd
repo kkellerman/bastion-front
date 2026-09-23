@@ -9,10 +9,11 @@ static func build() -> ArrayMesh:
 				var t: float = float(ring + corner.y) / 48.0
 				var angle: float = float(side + corner.x) * TAU / 64.0
 				var y: float = lerpf(1.50, 1.755, t)
-				var width: float = 0.074 * sin(pow(t, 1.3) * PI)
-				var depth: float = 0.078 * sin(pow(t, 1.18) * PI)
-				width = maxf(width, 0.038 * (1.0 - smoothstep(0.12, 0.25, t)))
-				depth = maxf(depth, 0.043 * (1.0 - smoothstep(0.12, 0.25, t)))
+				# Jaw, cheek, temple and skull widths are authored separately; the old
+				# sine profile pinched the temples into an egg-shaped mask.
+				var profile: Vector2 = _profile(t)
+				var width: float = profile.x
+				var depth: float = profile.y
 				var x: float = cos(angle) * width
 				var z: float = sin(angle) * depth - 0.012
 				if sin(angle) < -0.25:
@@ -27,12 +28,32 @@ static func build() -> ArrayMesh:
 				st.set_bones(PackedInt32Array([4,0,0,0]))
 				st.set_weights(PackedFloat32Array([1,0,0,0]))
 				st.add_vertex(Vector3(x,y,z))
+	# Ears are small volumes tucked beneath the helmet, not painted circles.
+	for side: float in [-1.0,1.0]:
+		var ear := SphereMesh.new()
+		ear.radius = 1.0
+		ear.height = 2.0
+		ear.radial_segments = 12
+		ear.rings = 8
+		var arrays: Array = ear.get_mesh_arrays()
+		var points: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+		for index: int in arrays[Mesh.ARRAY_INDEX]:
+			st.set_bones(PackedInt32Array([4,0,0,0]))
+			st.set_weights(PackedFloat32Array([1,0,0,0]))
+			st.set_uv(Vector2.ZERO)
+			st.add_vertex(Vector3(side*0.075,1.633,0.002)+points[index]*Vector3(0.012,0.025,0.015))
 	st.generate_normals()
 	st.index()
 	var mat: ShaderMaterial = ShaderMaterial.new()
 	mat.shader = load("res://shaders/face_surface.gdshader")
 	st.set_material(mat)
 	return st.commit()
+
+static func _profile(t: float) -> Vector2:
+	var rings: Array[Vector2] = [Vector2(0.032,0.035),Vector2(0.043,0.056),Vector2(0.058,0.068),Vector2(0.066,0.076),Vector2(0.073,0.080),Vector2(0.074,0.085),Vector2(0.073,0.085),Vector2(0.077,0.090),Vector2(0.073,0.086),Vector2(0.050,0.060),Vector2(0.002,0.003)]
+	var at: float = clampf(t,0,1)*(rings.size()-1)
+	var i: int = mini(int(at),rings.size()-2)
+	return rings[i].cubic_interpolate(rings[i+1],rings[maxi(0,i-1)],rings[mini(rings.size()-1,i+2)],at-i)
 
 static func _bump(x: float, y: float, cx: float, cy: float, sx: float, sy: float) -> float:
 	return exp(-pow((x-cx)/sx,2)-pow((y-cy)/sy,2))

@@ -40,16 +40,32 @@ static func body(target: Skeleton3D, positions: Array[Vector3]) -> ArrayMesh:
 				if "UpperArm" in new_name: target_direction = positions[target.find_bone(prefix + "Forearm")] - positions[new_index]
 				elif "Forearm" in new_name: target_direction = positions[target.find_bone(prefix + "Hand")] - positions[new_index]
 				var rotation: Basis = Basis(Quaternion(direction, target_direction.normalized()))
-				neutral = positions[new_index] + rotation * (neutral - anchor)
-				if "Hand" in new_name:
-					var along: float = maxf(0.0, positions[new_index].z - neutral.z - 0.035)
-					neutral.y -= along * 0.65
-					neutral.z += along * 0.25
+				var local: Vector3 = neutral - anchor
+				if "UpperArm" in new_name:
+					local.y *= 0.88
+					local.z *= 0.88
+					n.y /= 0.88
+					n.z /= 0.88
+				# Match the length as well as the direction of the target segment.
+				# Rotating alone leaves weighted elbow/wrist vertices at two locations.
+				if "Hand" not in new_name:
+					var child_name: String = prefix + ("ForeArm" if "UpperArm" in new_name else "Hand")
+					var old_end: Vector3 = turn * skeleton.get_bone_global_rest(skeleton.find_bone(child_name)).origin
+					var ratio: float = target_direction.length() / maxf(anchor.distance_to(old_end), 0.001)
+					local.x *= ratio
+					n.x /= ratio
+				neutral = positions[new_index] + rotation * local
 				n = rotation * n
 			point += neutral * weight
 			normal += n * weight
 			mapped[slot] = new_index
 			influence[slot] = weight
+		# Reduce the donor's exaggerated trouser bulge without changing joint centres.
+		if point.y > 0.52 and point.y < 0.92:
+			var squeeze: float = 1.0 - 0.20 * sin((point.y-0.52)/0.40*PI)
+			var centre: float = -0.105 if point.x < 0 else 0.105
+			point.x = centre+(point.x-centre)*squeeze
+			point.z *= squeeze
 		var merged: Dictionary[int, float] = {}
 		for slot: int in range(8):
 			if influence[slot] > 0: merged[mapped[slot]] = merged.get(mapped[slot], 0.0) + influence[slot]
@@ -71,6 +87,26 @@ static func body(target: Skeleton3D, positions: Array[Vector3]) -> ArrayMesh:
 	st.index()
 	var result: ArrayMesh = st.commit()
 	source.free()
+	return result
+
+static func remove_hands(mesh: ArrayMesh, target: Skeleton3D) -> ArrayMesh:
+	var arrays: Array = mesh.surface_get_arrays(0)
+	var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+	var bones: PackedInt32Array = arrays[Mesh.ARRAY_BONES]
+	var weights: PackedFloat32Array = arrays[Mesh.ARRAY_WEIGHTS]
+	var hands: Array[int] = [target.find_bone("LeftHand"), target.find_bone("RightHand")]
+	var kept := PackedInt32Array()
+	for triangle: int in range(0, indices.size(), 3):
+		var hand_triangle: bool = false
+		for vertex: int in indices.slice(triangle,triangle+3):
+			var hand_weight: float = 0.0
+			for slot: int in range(4):
+				if bones[vertex*4+slot] in hands: hand_weight += weights[vertex*4+slot]
+			if hand_weight > 0.7: hand_triangle = true
+		if not hand_triangle: kept.append_array(indices.slice(triangle,triangle+3))
+	arrays[Mesh.ARRAY_INDEX] = kept
+	var result := ArrayMesh.new()
+	result.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES,arrays)
 	return result
 
 static func _map(old: String) -> String:

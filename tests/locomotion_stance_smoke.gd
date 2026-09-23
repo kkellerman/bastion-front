@@ -45,8 +45,14 @@ func _run() -> void:
 	await _frames(50)
 	_check(absf(animation.stride.ground_offsets.x - animation.stride.ground_offsets.y) > 0.01, "Ground rays adapt feet independently on a slope")
 	actor.health.take_damage(1000)
-	await _frames(55)
-	_check(animation.motion_state == &"death" and absf(actor.get_node("Visuals").rotation.x) > 1, "Controlled death ends below upright stance")
+	await _frames(110)
+	var skeleton: Skeleton3D = animation.model.get_node("Skeleton3D")
+	var hip_height: float = skeleton.get_bone_global_pose(skeleton.find_bone("Hips")).origin.y
+	var sim: PhysicalBoneSimulator3D = skeleton.get_node_or_null("RagdollSimulator")
+	if sim != null:
+		for bone: Node in sim.get_children():
+			if bone is PhysicalBone3D and bone.bone_name == "Hips": hip_height = skeleton.to_local(bone.global_position).y
+	_check(animation.motion_state == &"death" and hip_height < 0.65, "Controlled death lowers the actual pelvis below upright stance")
 	mission.queue_free()
 	await _frames(5)
 	print("Locomotion stance smoke: %d failure(s)" % failures)

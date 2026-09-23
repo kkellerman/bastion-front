@@ -49,12 +49,12 @@ func _run() -> void:
 	_check(await _walk(Vector3(-18, 0, 13)), "Player walks from staging to combat range")
 	_aim(main.get_node("RangeM1919/Pivot").global_position)
 	await _frames(3)
-	_key(KEY_E)
+	_interact()
 	await _frames(3)
-	_check(rig.mounted == main.get_node("RangeM1919"), "E mounts the aimed-at gun using its interaction area")
-	_key(KEY_E)
+	_check(rig.mounted == main.get_node("RangeM1919"), "Interaction key mounts the aimed-at gun using its interaction area")
+	_interact()
 	await _frames(3)
-	_check(rig.mounted == null and player.is_physics_processing(), "E dismounts and restores movement")
+	_check(rig.mounted == null and player.is_physics_processing(), "Interaction key dismounts and restores movement")
 	if "--flank" in OS.get_cmdline_user_args():
 		_check(await _walk(Vector3(12,0,-20)), "Player reaches seeded eastern approach")
 		_check(await _walk(Vector3(12,0,-36)), "Player physically passes optional log restriction")
@@ -64,9 +64,9 @@ func _run() -> void:
 	_check(await _walk(Vector3(-5, 0, -72.5)), "Player walks through bunker entrance and operations doorway")
 	_aim(main.get_node("Interactions/Documents").global_position + Vector3(0, 0.8, 0))
 	await _frames(3)
-	_key(KEY_E)
+	_interact()
 	await _frames(3)
-	_check(main.objective_done, "E recovers documents through the camera interaction ray")
+	_check(main.objective_done, "Interaction key recovers documents through the camera interaction ray")
 	await _capture("mission_documents.png")
 	_check(await _walk(Vector3(0, 0, -84)), "Player walks out through the rear exit")
 	await _frames(5)
@@ -110,6 +110,13 @@ func _aim(point: Vector3) -> void:
 	player.rotation.y = atan2(-offset.x, -offset.z)
 	player.get_node("Head").rotation.x = atan2(offset.y, Vector2(offset.x, offset.z).length())
 
+
+func _interact() -> void:
+	# Follow the configured binding (currently F); E is now lean-right.
+	for binding: InputEvent in InputMap.action_get_events("interact"):
+		if binding is InputEventKey:
+			_key(binding.physical_keycode)
+			return
 
 func _key(code: Key) -> void:
 	var event: InputEventKey = InputEventKey.new()
