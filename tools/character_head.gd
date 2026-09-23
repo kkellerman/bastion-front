@@ -22,6 +22,20 @@ static func build(variant_index: int = 0) -> ArrayMesh:
 	skin.index()
 	skin.set_material(_skin_material(data))
 	skin.commit(mesh)
+	var hair := SurfaceTool.new()
+	hair.begin(Mesh.PRIMITIVE_TRIANGLES)
+	_build_hair(hair, data)
+	hair.generate_normals()
+	hair.index()
+	hair.set_material(_hair_material(data))
+	hair.commit(mesh)
+	var lips := SurfaceTool.new()
+	lips.begin(Mesh.PRIMITIVE_TRIANGLES)
+	_build_lips(lips, data)
+	lips.generate_normals()
+	lips.index()
+	lips.set_material(_lip_material(data))
+	lips.commit(mesh)
 
 	var sclera := SurfaceTool.new()
 	sclera.begin(Mesh.PRIMITIVE_TRIANGLES)
@@ -51,6 +65,8 @@ static func _variant(index: int) -> Dictionary:
 			"nose_length": 0.034, "nose_width": 1.03, "mouth_y": 1.580,
 			"asymmetry": 0.012, "ear_scale": 1.0,
 			"skin": Color(0.58, 0.425, 0.325), "iris": Color(0.18, 0.27, 0.30),
+			"hair": Color(0.060, 0.034, 0.020), "hairline": 0.000,
+			"lip": Color(0.40, 0.225, 0.170),
 			"stubble": 0.12, "freckles": 0.10
 		},
 		{
@@ -60,6 +76,8 @@ static func _variant(index: int) -> Dictionary:
 			"nose_length": 0.038, "nose_width": 0.92, "mouth_y": 1.578,
 			"asymmetry": -0.016, "ear_scale": 0.94,
 			"skin": Color(0.51, 0.365, 0.275), "iris": Color(0.23, 0.31, 0.20),
+			"hair": Color(0.115, 0.061, 0.030), "hairline": 0.007,
+			"lip": Color(0.35, 0.185, 0.140),
 			"stubble": 0.20, "freckles": 0.04
 		},
 		{
@@ -69,6 +87,8 @@ static func _variant(index: int) -> Dictionary:
 			"nose_length": 0.032, "nose_width": 1.08, "mouth_y": 1.583,
 			"asymmetry": 0.019, "ear_scale": 1.06,
 			"skin": Color(0.65, 0.475, 0.355), "iris": Color(0.25, 0.20, 0.13),
+			"hair": Color(0.235, 0.155, 0.075), "hairline": 0.003,
+			"lip": Color(0.46, 0.260, 0.195),
 			"stubble": 0.07, "freckles": 0.16
 		}
 	]
@@ -156,6 +176,54 @@ static func _build_ears(st: SurfaceTool, data: Dictionary) -> void:
 		var center := Vector3(side * 0.076 * float(data.width), 1.632, 0.002)
 		_ellipsoid(st, center, Vector3(0.012, 0.026, 0.015) * scale, 12, 8)
 
+static func _build_hair(st: SurfaceTool, data: Dictionary) -> void:
+	# A scalp-conforming military cut. The authored hairline stays below the helmet
+	# at the temples and nape while the shell occludes the unseen crown.
+	var rings := 12
+	var sides := 64
+	for ring: int in range(rings):
+		for side: int in range(sides):
+			for corner: Vector2i in [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1), Vector2i(0, 0), Vector2i(1, 1), Vector2i(0, 1)]:
+				var angle: float = float(side + corner.x) * TAU / float(sides)
+				var v: float = float(ring + corner.y) / float(rings)
+				var y: float = lerpf(_hairline(angle, data), 1.765, v)
+				var t: float = inverse_lerp(1.505, 1.765, y)
+				var point: Vector3 = _head_point(t, angle, data)
+				var outward := Vector3(point.x, 0, point.z + 0.010).normalized()
+				_add(st, point + outward * 0.0013, Vector2(float(side + corner.x) / float(sides), v))
+
+static func _hairline(angle: float, data: Dictionary) -> float:
+	var front: float = maxf(0.0, -sin(angle))
+	var rear: float = maxf(0.0, sin(angle))
+	var sides: float = absf(cos(angle))
+	return 1.635 + front * 0.046 + sides * 0.017 - rear * 0.004 + float(data.hairline)
+
+static func _build_lips(st: SurfaceTool, data: Dictionary) -> void:
+	var segments := 20
+	var half_width := 0.024
+	for segment: int in range(segments):
+		var x0: float = lerpf(-half_width, half_width, float(segment) / float(segments))
+		var x1: float = lerpf(-half_width, half_width, float(segment + 1) / float(segments))
+		var upper0: Array[Vector3] = _lip_pair(x0, true, data)
+		var upper1: Array[Vector3] = _lip_pair(x1, true, data)
+		for point: Vector3 in [upper0[0], upper0[1], upper1[1], upper0[0], upper1[1], upper1[0]]:
+			_add(st, point, Vector2(inverse_lerp(-half_width, half_width, point.x), 0.25))
+		var lower0: Array[Vector3] = _lip_pair(x0, false, data)
+		var lower1: Array[Vector3] = _lip_pair(x1, false, data)
+		for point: Vector3 in [lower0[0], lower1[1], lower0[1], lower0[0], lower1[0], lower1[1]]:
+			_add(st, point, Vector2(inverse_lerp(-half_width, half_width, point.x), 0.75))
+
+static func _lip_pair(x: float, upper: bool, data: Dictionary) -> Array[Vector3]:
+	var half_width := 0.024
+	var fullness: float = sqrt(maxf(0.0, 1.0 - pow(x / half_width, 2.0)))
+	var mouth_y: float = float(data.mouth_y)
+	var corner_drop: float = (1.0 - fullness) * 0.0012
+	var outer_y: float = mouth_y + 0.0032 * fullness - corner_drop if upper else mouth_y - 0.0038 * fullness - corner_drop
+	var inner_y: float = mouth_y + 0.00045 * fullness if upper else mouth_y - 0.00055 * fullness
+	var outer: Vector3 = _front_point(x, outer_y, data) - Vector3(0, 0, 0.0011 * fullness)
+	var inner: Vector3 = _front_point(x, inner_y, data) - Vector3(0, 0, 0.0020 * fullness)
+	return [outer, inner]
+
 static func _build_eye(sclera: SurfaceTool, iris: SurfaceTool, pupil: SurfaceTool, side: float, data: Dictionary) -> void:
 	var center_y: float = float(data.eye_y) + side * float(data.eye_tilt)
 	var face: Vector3 = _front_point(side * float(data.eye_x), center_y, data)
@@ -205,6 +273,19 @@ static func _eye_material(color: Color, roughness: float) -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()
 	material.albedo_color = color
 	material.roughness = roughness
+	material.cull_mode = BaseMaterial3D.CULL_DISABLED
+	return material
+
+static func _hair_material(data: Dictionary) -> ShaderMaterial:
+	var material := ShaderMaterial.new()
+	material.shader = load("res://shaders/hair_surface.gdshader")
+	material.set_shader_parameter("hair_color", data.hair)
+	return material
+
+static func _lip_material(data: Dictionary) -> StandardMaterial3D:
+	var material := StandardMaterial3D.new()
+	material.albedo_color = data.lip
+	material.roughness = 0.68
 	material.cull_mode = BaseMaterial3D.CULL_DISABLED
 	return material
 

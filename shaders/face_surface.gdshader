@@ -36,6 +36,7 @@ void fragment() {
 	float brows = spot(mirrored, vec2(0.032, eye_height + 0.016), vec2(0.020, 0.0035)) * front;
 	float lips = spot(mirrored, vec2(0.0, mouth_height), vec2(0.023, 0.0045)) * front;
 	float mouth = spot(mirrored, vec2(0.0, mouth_height), vec2(0.015, 0.0007)) * front;
+	float mouth_corners = spot(mirrored, vec2(0.021, mouth_height - 0.0005), vec2(0.004, 0.0022)) * front;
 	float nostrils = spot(mirrored, vec2(0.013, 1.598), vec2(0.0042, 0.0017)) * front;
 	float beard_mask = (1.0 - smoothstep(1.570, 1.620, local.y)) * front;
 	float pores = hash3(floor(local * 1850.0));
@@ -45,7 +46,7 @@ void fragment() {
 	skin *= 1.0 - sockets * 0.10 - beard_mask * stubble_strength;
 	skin = mix(skin, vec3(0.17, 0.055, 0.040), lips * 0.15);
 	skin = mix(skin, vec3(0.045, 0.030, 0.022), brows * 0.30);
-	skin = mix(skin, vec3(0.15, 0.075, 0.050), clamp(mouth * 0.12 + nostrils * 0.20, 0.0, 1.0));
+	skin = mix(skin, vec3(0.15, 0.075, 0.050), clamp(mouth * 0.17 + mouth_corners * 0.12 + nostrils * 0.20, 0.0, 1.0));
 	skin *= 1.0 - freckles * freckle_strength;
 	ALBEDO = skin;
 	ROUGHNESS = mix(0.72, 0.57, sockets + lips * 0.25);

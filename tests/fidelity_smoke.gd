@@ -32,7 +32,13 @@ func _run() -> void:
 			if absf(sum - 1.0) > 0.002: normalized = false
 		_check(normalized, id + " retargeted skin weights are normalized")
 		_check(model.has_node("Skeleton3D/WeaponSocket") and model.has_node("AnimationTree"), id + " attachment and AnimationTree hooks")
-		_check(model.get_node("AnatomicalHead").mesh.get_surface_count() == 4, id + " head has skin, sclera, iris and pupil geometry")
+		_check(model.get_node("AnatomicalHead").mesh.get_surface_count() == 6, id + " head has skin, hair, lips, sclera, iris and pupil geometry")
+		var helmet_bounds: AABB = model.get_node("HelmetAndEquipment").mesh.get_aabb()
+		for variant_scene: PackedScene in faction.visual_variants:
+			var variant_model: Node3D = variant_scene.instantiate()
+			var variant_bounds: AABB = variant_model.get_node("HelmetAndEquipment").mesh.get_aabb()
+			_check(variant_bounds.position.is_equal_approx(helmet_bounds.position) and variant_bounds.size.is_equal_approx(helmet_bounds.size), id + " face variant preserves helmet dimensions")
+			variant_model.free()
 		var animations: AnimationPlayer = model.get_node("AnimationPlayer")
 		for clip: String in ["idle", "walk", "run", "aim", "fire", "reload", "hurt", "death", "switch"]:
 			_check(animations.has_animation(clip), id + " animation " + clip)
