@@ -32,11 +32,14 @@ float fbm(vec3 p) {
 void fragment() {
 	vec2 mirrored = vec2(abs(local.x), local.y);
 	float front = 1.0 - smoothstep(-0.045, -0.018, local.z);
-	float sockets = spot(mirrored, vec2(0.032, eye_height), vec2(0.023, 0.014)) * front;
+	float sockets = spot(mirrored, vec2(0.032, eye_height - 0.002), vec2(0.021, 0.011)) * front;
 	float brows = spot(mirrored, vec2(0.032, eye_height + 0.016), vec2(0.020, 0.0035)) * front;
-	float lips = spot(mirrored, vec2(0.0, mouth_height), vec2(0.023, 0.0045)) * front;
-	float mouth = spot(mirrored, vec2(0.0, mouth_height), vec2(0.015, 0.0007)) * front;
-	float mouth_corners = spot(mirrored, vec2(0.021, mouth_height - 0.0005), vec2(0.004, 0.0022)) * front;
+	// Just a contact shadow where the lip mesh meets the skin, not a broad smear:
+	// the lips themselves are now real geometry with their own material, so this
+	// only needs to seat them into the face rather than paint the mouth shape.
+	float lips = spot(mirrored, vec2(0.0, mouth_height), vec2(0.025, 0.0075)) * front;
+	float mouth = spot(mirrored, vec2(0.0, mouth_height), vec2(0.014, 0.0009)) * front;
+	float mouth_corners = spot(mirrored, vec2(0.0225, mouth_height - 0.0006), vec2(0.0035, 0.0020)) * front;
 	float nostrils = spot(mirrored, vec2(0.013, 1.598), vec2(0.0042, 0.0017)) * front;
 	float beard_mask = (1.0 - smoothstep(1.570, 1.620, local.y)) * front;
 	float pores = hash3(floor(local * 1850.0));
@@ -44,9 +47,9 @@ void fragment() {
 
 	vec3 skin = skin_tone * (0.94 + pores * 0.10);
 	skin *= 1.0 - sockets * 0.10 - beard_mask * stubble_strength;
-	skin = mix(skin, vec3(0.17, 0.055, 0.040), lips * 0.15);
+	skin = mix(skin, vec3(0.17, 0.055, 0.040), lips * 0.08);
 	skin = mix(skin, vec3(0.045, 0.030, 0.022), brows * 0.30);
-	skin = mix(skin, vec3(0.15, 0.075, 0.050), clamp(mouth * 0.17 + mouth_corners * 0.12 + nostrils * 0.20, 0.0, 1.0));
+	skin = mix(skin, vec3(0.15, 0.075, 0.050), clamp(mouth * 0.22 + mouth_corners * 0.16 + nostrils * 0.20, 0.0, 1.0));
 	skin *= 1.0 - freckles * freckle_strength;
 	ALBEDO = skin;
 	ROUGHNESS = mix(0.72, 0.57, sockets + lips * 0.25);

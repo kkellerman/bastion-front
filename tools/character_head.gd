@@ -153,20 +153,28 @@ static func _front_point(x: float, y: float, data: Dictionary) -> Vector3:
 	return _head_point(t, angle, data)
 
 static func _build_eyelids(st: SurfaceTool, data: Dictionary) -> void:
-	var segments := 20
+	# The lid is an annulus that wraps toward the eyeball (not a flat disc), so its
+	# inner edge tracks just in front of the sclera surface instead of leaving the
+	# ball proud of a flat rim. The opening is also asymmetric top/bottom, narrower
+	# under the eye than above it, matching a natural palpebral fissure.
+	var segments := 24
 	for side: float in [-1.0, 1.0]:
 		var center := Vector2(side * float(data.eye_x), float(data.eye_y) + side * float(data.eye_tilt))
 		for segment: int in range(segments):
 			var a0: float = float(segment) * TAU / float(segments)
 			var a1: float = float(segment + 1) * TAU / float(segments)
-			var outer0 := center + Vector2(cos(a0) * 0.0175, sin(a0) * 0.0085)
-			var outer1 := center + Vector2(cos(a1) * 0.0175, sin(a1) * 0.0085)
-			var inner0 := center + Vector2(cos(a0) * 0.0105, sin(a0) * 0.0038)
-			var inner1 := center + Vector2(cos(a1) * 0.0105, sin(a1) * 0.0038)
-			var p_outer0: Vector3 = _front_point(outer0.x, outer0.y, data) - Vector3(0, 0, 0.0005)
-			var p_outer1: Vector3 = _front_point(outer1.x, outer1.y, data) - Vector3(0, 0, 0.0005)
-			var p_inner0: Vector3 = _front_point(inner0.x, inner0.y, data) - Vector3(0, 0, 0.0020)
-			var p_inner1: Vector3 = _front_point(inner1.x, inner1.y, data) - Vector3(0, 0, 0.0020)
+			var outer0 := center + Vector2(cos(a0) * 0.0155, sin(a0) * 0.0088)
+			var outer1 := center + Vector2(cos(a1) * 0.0155, sin(a1) * 0.0088)
+			var open0: float = 0.0064 if sin(a0) >= 0.0 else 0.0048
+			var open1: float = 0.0064 if sin(a1) >= 0.0 else 0.0048
+			var inner0 := center + Vector2(cos(a0) * 0.0092, sin(a0) * open0)
+			var inner1 := center + Vector2(cos(a1) * 0.0092, sin(a1) * open1)
+			var p_outer0: Vector3 = _front_point(outer0.x, outer0.y, data) - Vector3(0, 0, 0.0004)
+			var p_outer1: Vector3 = _front_point(outer1.x, outer1.y, data) - Vector3(0, 0, 0.0004)
+			# Curl the inner rim forward toward the eyeball center so the lid edge
+			# reads as a rounded fold sitting on top of the sclera, not a hard ring.
+			var p_inner0: Vector3 = _front_point(inner0.x, inner0.y, data) - Vector3(0, 0, 0.0058)
+			var p_inner1: Vector3 = _front_point(inner1.x, inner1.y, data) - Vector3(0, 0, 0.0058)
 			for point: Vector3 in [p_outer0, p_inner0, p_inner1, p_outer0, p_inner1, p_outer1]:
 				_add(st, point, Vector2(point.x * 5.0 + 0.5, inverse_lerp(1.505, 1.765, point.y)))
 
@@ -199,41 +207,66 @@ static func _hairline(angle: float, data: Dictionary) -> float:
 	return 1.635 + front * 0.046 + sides * 0.017 - rear * 0.004 + float(data.hairline)
 
 static func _build_lips(st: SurfaceTool, data: Dictionary) -> void:
-	var segments := 20
-	var half_width := 0.024
+	# Each lip is now a 3-ring ribbon (skin border -> ridge -> mouth seam) instead
+	# of a single flat sliver, so the lip has an actual rolled cross-section and
+	# catches light as a distinct volume rather than a painted line.
+	var segments := 24
+	var half_width := 0.025
 	for segment: int in range(segments):
 		var x0: float = lerpf(-half_width, half_width, float(segment) / float(segments))
 		var x1: float = lerpf(-half_width, half_width, float(segment + 1) / float(segments))
-		var upper0: Array[Vector3] = _lip_pair(x0, true, data)
-		var upper1: Array[Vector3] = _lip_pair(x1, true, data)
-		for point: Vector3 in [upper0[0], upper0[1], upper1[1], upper0[0], upper1[1], upper1[0]]:
-			_add(st, point, Vector2(inverse_lerp(-half_width, half_width, point.x), 0.25))
-		var lower0: Array[Vector3] = _lip_pair(x0, false, data)
-		var lower1: Array[Vector3] = _lip_pair(x1, false, data)
-		for point: Vector3 in [lower0[0], lower1[1], lower0[1], lower0[0], lower1[0], lower1[1]]:
-			_add(st, point, Vector2(inverse_lerp(-half_width, half_width, point.x), 0.75))
+		var upper0: Array[Vector3] = _lip_ring(x0, true, data)
+		var upper1: Array[Vector3] = _lip_ring(x1, true, data)
+		for ring: int in range(2):
+			var quad: Array[Vector3] = [upper0[ring], upper0[ring + 1], upper1[ring + 1], upper0[ring], upper1[ring + 1], upper1[ring]]
+			for point: Vector3 in quad:
+				_add(st, point, Vector2(inverse_lerp(-half_width, half_width, point.x), 0.15 + float(ring) * 0.20))
+		var lower0: Array[Vector3] = _lip_ring(x0, false, data)
+		var lower1: Array[Vector3] = _lip_ring(x1, false, data)
+		for ring: int in range(2):
+			var quad: Array[Vector3] = [lower0[ring], lower1[ring + 1], lower0[ring + 1], lower0[ring], lower1[ring], lower1[ring + 1]]
+			for point: Vector3 in quad:
+				_add(st, point, Vector2(inverse_lerp(-half_width, half_width, point.x), 0.85 - float(ring) * 0.20))
 
-static func _lip_pair(x: float, upper: bool, data: Dictionary) -> Array[Vector3]:
-	var half_width := 0.024
+static func _lip_ring(x: float, upper: bool, data: Dictionary) -> Array[Vector3]:
+	var half_width := 0.025
 	var fullness: float = sqrt(maxf(0.0, 1.0 - pow(x / half_width, 2.0)))
 	var mouth_y: float = float(data.mouth_y)
-	var corner_drop: float = (1.0 - fullness) * 0.0012
-	var outer_y: float = mouth_y + 0.0032 * fullness - corner_drop if upper else mouth_y - 0.0038 * fullness - corner_drop
-	var inner_y: float = mouth_y + 0.00045 * fullness if upper else mouth_y - 0.00055 * fullness
-	var outer: Vector3 = _front_point(x, outer_y, data) - Vector3(0, 0, 0.0011 * fullness)
-	var inner: Vector3 = _front_point(x, inner_y, data) - Vector3(0, 0, 0.0020 * fullness)
-	return [outer, inner]
+	var corner_drop: float = (1.0 - fullness) * 0.0014
+	if upper:
+		# Cupid's bow: a small peak right at the philtrum, fading out toward the
+		# corners, giving the upper lip a real profile instead of a flat arc.
+		var bow: float = maxf(0.00045 - absf(x) * 0.028, 0.0)
+		var border_y: float = mouth_y + 0.0068 * fullness - corner_drop + bow * 0.4
+		var ridge_y: float = mouth_y + 0.0038 * fullness - corner_drop + bow
+		var seam_y: float = mouth_y + 0.0007 * fullness
+		var border: Vector3 = _front_point(x, border_y, data) - Vector3(0, 0, 0.0004 * fullness)
+		var ridge: Vector3 = _front_point(x, ridge_y, data) - Vector3(0, 0, 0.0016 * fullness)
+		var seam: Vector3 = _front_point(x, seam_y, data) - Vector3(0, 0, 0.0026 * fullness)
+		return [border, ridge, seam]
+	else:
+		var border_y: float = mouth_y - 0.0078 * fullness - corner_drop
+		var ridge_y: float = mouth_y - 0.0046 * fullness - corner_drop
+		var seam_y: float = mouth_y - 0.0009 * fullness
+		var border: Vector3 = _front_point(x, border_y, data) - Vector3(0, 0, 0.0004 * fullness)
+		var ridge: Vector3 = _front_point(x, ridge_y, data) - Vector3(0, 0, 0.0022 * fullness)
+		var seam: Vector3 = _front_point(x, seam_y, data) - Vector3(0, 0, 0.0030 * fullness)
+		return [border, ridge, seam]
 
 static func _build_eye(sclera: SurfaceTool, iris: SurfaceTool, pupil: SurfaceTool, side: float, data: Dictionary) -> void:
 	var center_y: float = float(data.eye_y) + side * float(data.eye_tilt)
 	var face: Vector3 = _front_point(side * float(data.eye_x), center_y, data)
-	var center := Vector3(face.x, center_y, face.z + 0.0045)
-	_ellipsoid(sclera, center, Vector3(0.0110, 0.0065, 0.0095), 18, 10)
+	# Sit the ball further back in the socket than the lid fold so the lid
+	# geometry actually crops the sclera instead of the ball poking past it.
+	var center := Vector3(face.x, center_y, face.z + 0.0015)
+	_ellipsoid(sclera, center, Vector3(0.0082, 0.0060, 0.0078), 18, 10)
 	# Pull the colored discs just ahead of the curved sclera. A sub-millimeter
-	# separation was lost to depth precision at normal gameplay distances.
-	var iris_center := Vector3(center.x, center.y, center.z - 0.0115)
-	_disc(iris, iris_center, 0.0040, 18)
-	_disc(pupil, iris_center + Vector3(0, 0, -0.00045), 0.00175, 16)
+	# separation was lost to depth precision at normal gameplay distances. The
+	# iris is sized closer to a real eye's ratio so it doesn't read as a small
+	# dot swimming in a field of white.
+	var iris_center := Vector3(center.x, center.y, center.z - 0.0074)
+	_disc(iris, iris_center, 0.0052, 20)
+	_disc(pupil, iris_center + Vector3(0, 0, -0.00045), 0.00210, 16)
 
 static func _ellipsoid(st: SurfaceTool, center: Vector3, radius: Vector3, segments: int, rings: int) -> void:
 	for ring: int in range(rings):
